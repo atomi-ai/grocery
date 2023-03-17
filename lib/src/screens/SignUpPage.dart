@@ -27,7 +27,7 @@ class _SignUpPageState extends State<SignUpPage> {
             style: TextStyle(
                 color: Colors.grey, fontFamily: 'Poppins', fontSize: 15)),
         actions: <Widget>[
-          FlatButton(
+          TextButton(
             onPressed: () {
               // Navigator.of(context).pushReplacementNamed('/signin');
               Navigator.pushReplacement(context, PageTransition(type: PageTransitionType.rightToLeft, child: SignInPage()));
@@ -59,13 +59,16 @@ class _SignUpPageState extends State<SignUpPage> {
             Positioned(
               bottom: 15,
               right: -15,
-              child: FlatButton(
+              child: TextButton(
                 onPressed: () {
                     Navigator.pushReplacement(context, PageTransition(type: PageTransitionType.rightToLeft, child: Dashboard()));
                 },
-                color: primaryColor,
-                padding: EdgeInsets.all(13),
-               shape: CircleBorder(),
+                style: TextButton.styleFrom(
+                    primary: primaryColor,
+                    padding: EdgeInsets.all(13),
+                    shape: CircleBorder(),
+                ),
+                //  color: primaryColor,
                 child: Icon(Icons.arrow_forward, color: white),
               ),
             )

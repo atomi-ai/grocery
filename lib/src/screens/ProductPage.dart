@@ -82,7 +82,7 @@ class _ProductPageState extends State<ProductPage> {
                                     Container(
                                       width: 55,
                                       height: 55,
-                                      child: OutlineButton(
+                                      child: OutlinedButton(
                                         onPressed: () {
                                           setState(() {
                                             _quantity += 1;
@@ -99,7 +99,7 @@ class _ProductPageState extends State<ProductPage> {
                                     Container(
                                       width: 55,
                                       height: 55,
-                                      child: OutlineButton(
+                                      child: OutlinedButton(
                                         onPressed: () {
                                           setState(() {
                                            if(_quantity == 1) return;

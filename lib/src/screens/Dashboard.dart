@@ -61,34 +61,19 @@ class _DashboardState extends State<Dashboard> {
           items: <BottomNavigationBarItem>[
             BottomNavigationBarItem(
                 icon: Icon(Fryo.shop),
-                title: Text(
-                  'Store',
-                  style: tabLinkStyle,
-                )),
+                label: 'Store',),
             BottomNavigationBarItem(
                 icon: Icon(Fryo.cart),
-                title: Text(
-                  'My Cart',
-                  style: tabLinkStyle,
-                )),
+                label: 'My Cart'),
             BottomNavigationBarItem(
                 icon: Icon(Fryo.heart_1),
-                title: Text(
-                  'Favourites',
-                  style: tabLinkStyle,
-                )),
+                label: 'Favorites'),
             BottomNavigationBarItem(
                 icon: Icon(Fryo.user_1),
-                title: Text(
-                  'Profile',
-                  style: tabLinkStyle,
-                )),
+                label: 'Profile'),
             BottomNavigationBarItem(
                 icon: Icon(Fryo.cog_1),
-                title: Text(
-                  'Settings',
-                  style: tabLinkStyle,
-                ))
+                label: 'Settings'),
           ],
           currentIndex: _selectedIndex,
           type: BottomNavigationBarType.fixed,
@@ -283,7 +268,7 @@ Widget sectionHeader(String headerTitle, {onViewMore}) {
       ),
       Container(
         margin: EdgeInsets.only(left: 15, top: 2),
-        child: FlatButton(
+        child: TextButton(
           onPressed: onViewMore,
           child: Text('View all ›', style: contrastText),
         ),

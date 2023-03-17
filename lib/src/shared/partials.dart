@@ -16,12 +16,13 @@ Widget foodItem(Product food,
         Container(
             width: 180,
             height: 180,
-            child: RaisedButton(
-                color: white,
-                elevation: (isProductPage) ? 20 : 12,
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(5)),
+            child: ElevatedButton(
                 onPressed: onTapped,
+                style: ElevatedButton.styleFrom(
+                  primary: Colors.white,
+                  elevation: (isProductPage) ? 20 : 12,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
+                ),
                 child: Hero(
                     transitionOnUserGestures: true,
                     tag: food.name,
@@ -30,17 +31,19 @@ Widget foodItem(Product food,
         Positioned(
           bottom: (isProductPage) ? 10 : 70,
           right: 0,
-          child: FlatButton(
-            padding: EdgeInsets.all(20),
-            shape: CircleBorder(),
+          child: TextButton(
             onPressed: onLike,
+            style: TextButton.styleFrom(
+              padding: EdgeInsets.all(20),
+              shape: CircleBorder(),
+            ),
             child: Icon(
               (food.userLiked) ? Icons.favorite : Icons.favorite_border,
               color: (food.userLiked) ? primaryColor : darkText,
               size: 30,
             ),
           ),
-        ),
+  ),
         Positioned(
           bottom: 0,
           left: 0,
