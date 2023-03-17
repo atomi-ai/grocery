@@ -55,7 +55,7 @@ class _ProductPageState extends State<ProductPage> {
                             margin: EdgeInsets.only(top: 5, bottom: 20),
                             child: SmoothStarRating(
                               allowHalfRating: false,
-                              onRatingChanged: (v) {
+                              onRated: (v) {
                                 setState(() {
                                   _rating = v;
                                 });

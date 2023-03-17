@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:fryo/src/screens/FirebaseAuthExample.dart';
 import '../shared/styles.dart';
 import '../shared/colors.dart';
 import '../shared/buttons.dart';
 
 import 'package:page_transition/page_transition.dart';
 import './SignUpPage.dart';
-import './SignInPage.dart';
 
 class HomePage extends StatefulWidget {
   final String pageTitle;
@@ -33,9 +33,12 @@ class _HomePageState extends State<HomePage> {
           Container(
             width: 200,
             margin: EdgeInsets.only(bottom: 0),
-            child: froyoFlatBtn('Sign In', (){ 
-
-              Navigator.pushReplacement(context, PageTransition(type: PageTransitionType.rotate, duration: Duration(seconds: 1),  child: SignInPage()));
+            child: froyoFlatBtn('Sign In', (){
+              Navigator.pushReplacement(context, PageTransition(
+                  type: PageTransitionType.rotate,
+                  duration: Duration(seconds: 1),
+                  alignment: Alignment.center,
+                  child: FirebaseAuthExample()));
             }),
           ),
           Container(
