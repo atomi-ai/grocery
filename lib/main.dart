@@ -1,13 +1,12 @@
-import 'package:flutter/material.dart';
-import 'package:fryo/src/screens/FirebaseAuthExample.dart';
-import './src/screens/SignUpPage.dart';
-import './src/screens/HomePage.dart';
-import './src/screens/Dashboard.dart';
-import './src/screens/ProductPage.dart';
-
 import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
+import 'package:fryo/src/screens/SignInPage.dart';
 
+import './src/screens/Dashboard.dart';
+import './src/screens/HomePage.dart';
+import './src/screens/ProductPage.dart';
+import './src/screens/SignUpPage.dart';
+import './src/shared/config.dart';
 import 'firebase_options.dart';
 
 void main() async {
@@ -15,6 +14,7 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+  await Config.loadConfig();
   runApp(MyApp());
 }
 
@@ -30,7 +30,7 @@ class MyApp extends StatelessWidget {
       home: HomePage(pageTitle: 'Welcome'),
       routes: <String, WidgetBuilder> {
         '/signup': (BuildContext context) =>  SignUpPage(),
-        '/signin': (BuildContext context) =>  FirebaseAuthExample(),
+        '/signin': (BuildContext context) =>  SignInPage(),
         '/dashboard': (BuildContext context) => Dashboard(),
         '/productPage': (BuildContext context) => ProductPage(),
       },

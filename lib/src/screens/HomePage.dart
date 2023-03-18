@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:fryo/src/screens/FirebaseAuthExample.dart';
+import 'package:fryo/src/screens/SignInPage.dart';
 import '../shared/styles.dart';
 import '../shared/colors.dart';
 import '../shared/buttons.dart';
@@ -38,7 +38,7 @@ class _HomePageState extends State<HomePage> {
                   type: PageTransitionType.rotate,
                   duration: Duration(seconds: 1),
                   alignment: Alignment.center,
-                  child: FirebaseAuthExample()));
+                  child: SignInPage()));
             }),
           ),
           Container(

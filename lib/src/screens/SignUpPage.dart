@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:fryo/src/screens/FirebaseAuthExample.dart';
+import 'package:fryo/src/screens/SignInPage.dart';
 import '../shared/styles.dart';
 import '../shared/colors.dart';
 import '../shared/inputFields.dart';
@@ -30,7 +30,7 @@ class _SignUpPageState extends State<SignUpPage> {
           TextButton(
             onPressed: () {
               // Navigator.of(context).pushReplacementNamed('/signin');
-              Navigator.pushReplacement(context, PageTransition(type: PageTransitionType.rightToLeft, child: FirebaseAuthExample()));
+              Navigator.pushReplacement(context, PageTransition(type: PageTransitionType.rightToLeft, child: SignInPage()));
 
             },
             child: Text('Sign In', style: contrastText),

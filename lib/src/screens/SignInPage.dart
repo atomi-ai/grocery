@@ -1,27 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import '../logic/login.dart';
 
-class FirebaseAuthExample extends StatefulWidget {
+class SignInPage extends StatefulWidget {
   @override
-  _FirebaseAuthExampleState createState() => _FirebaseAuthExampleState();
+  _SignInPageState createState() => _SignInPageState();
 }
 
-class _FirebaseAuthExampleState extends State<FirebaseAuthExample> {
+class _SignInPageState extends State<SignInPage> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-
-  Future<void> _registerWithEmailPassword() async {
-    try {
-      UserCredential userCredential = await _auth.createUserWithEmailAndPassword(
-        email: _emailController.text.trim(),
-        password: _passwordController.text.trim(),
-      );
-      print("User registered: ${userCredential.user?.email}");
-    } on FirebaseAuthException catch (e) {
-      print("Error: $e");
-    }
-  }
 
   Future<void> _signInWithEmailPassword() async {
     try {
@@ -29,10 +18,10 @@ class _FirebaseAuthExampleState extends State<FirebaseAuthExample> {
         email: _emailController.text.trim(),
         password: _passwordController.text.trim(),
       );
-      print("User signed in: ${userCredential.user?.email}");
-      print(userCredential);
-      String idToken = await FirebaseAuth.instance.currentUser.getIdToken(true);
-      print('user token ${idToken}');
+      print('Successfully signed in on firebase ${userCredential.user?.email}');
+      final res = await login();
+
+      print('User successfully logged in to the backend');
     } on FirebaseAuthException catch (e) {
       print("Error: $e");
     }
@@ -57,11 +46,6 @@ class _FirebaseAuthExampleState extends State<FirebaseAuthExample> {
               controller: _passwordController,
               decoration: InputDecoration(labelText: 'Password'),
               obscureText: true,
-            ),
-            SizedBox(height: 16),
-            ElevatedButton(
-              onPressed: _registerWithEmailPassword,
-              child: Text('Register'),
             ),
             SizedBox(height: 16),
             ElevatedButton(
