@@ -4,6 +4,7 @@ import '../shared/config.dart';
 
 Future<void> login() async {
   String token = await FirebaseAuth.instance.currentUser.getIdToken(true);
+  print('xfguo: id token = ${token}');
   final response = await http.get(
     Uri.parse("${Config.instance.apiUrl}/login"),
     headers: {

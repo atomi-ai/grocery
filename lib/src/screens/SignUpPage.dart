@@ -1,86 +1,96 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:fryo/src/screens/SignInPage.dart';
-import '../shared/styles.dart';
-import '../shared/colors.dart';
-import '../shared/inputFields.dart';
-import 'package:page_transition/page_transition.dart';
-import './Dashboard.dart';
-
+import 'package:http/http.dart' as http;
+import 'package:firebase_auth/firebase_auth.dart';
+import '../shared/config.dart';
 
 class SignUpPage extends StatefulWidget {
-  final String pageTitle;
-
-  SignUpPage({Key key, this.pageTitle}) : super(key: key);
-
   @override
   _SignUpPageState createState() => _SignUpPageState();
 }
 
 class _SignUpPageState extends State<SignUpPage> {
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _phoneController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+
+  Future<void> _signUp() async {
+    // Step 1: Send sign up data to the backend
+    final response = await http.post(
+      Uri.parse("${Config.instance.apiUrl}/signup"),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({
+        'email': _emailController.text.trim(),
+        'name': _nameController.text.trim(),
+        'phone': _phoneController.text.trim(),
+        'password': _passwordController.text.trim(),
+      }),
+    );
+
+    if (response.statusCode == 200) {
+      // Step 2: Sign in with Firebase
+      try {
+        UserCredential userCredential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
+          email: _emailController.text.trim(),
+          password: _passwordController.text.trim(),
+        );
+        String token = await FirebaseAuth.instance.currentUser.getIdToken(true);
+
+        // Step 3: Confirm user creation on the backend
+        final confirmResponse = await http.get(
+          Uri.parse("${Config.instance.apiUrl}/confirm"),
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer $token',
+          },
+        );
+
+        if (confirmResponse.statusCode == 200) {
+          print('User created successfully');
+        } else {
+          print('Failed to confirm user creation: ${confirmResponse.reasonPhrase}');
+        }
+      } on FirebaseAuthException catch (e) {
+        print('Error signing in with Firebase: $e');
+      }
+    } else {
+      print('Failed to sign up: ${response.reasonPhrase}');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        elevation: 0,
-        backgroundColor: white,
-        title: Text('Sign Up',
-            style: TextStyle(
-                color: Colors.grey, fontFamily: 'Poppins', fontSize: 15)),
-        actions: <Widget>[
-          TextButton(
-            onPressed: () {
-              // Navigator.of(context).pushReplacementNamed('/signin');
-              Navigator.pushReplacement(context, PageTransition(type: PageTransitionType.rightToLeft, child: SignInPage()));
-
-            },
-            child: Text('Sign In', style: contrastText),
-          )
-        ],
-      ),
-      body: ListView(
-        shrinkWrap: true,
-        children: <Widget>[
-          Container(
-        padding: EdgeInsets.only(left: 18, right: 18),
-        child: Stack(
-          children: <Widget>[
-            Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Text('Welcome to Fryo!', style: h3),
-                Text('Let\'s get started', style: taglineText),
-                fryoTextInput('Username'),
-                fryoTextInput('Full Name'),
-                fryoEmailInput('Email Address'),
-                fryoPasswordInput('Password')
-              ],
+      appBar: AppBar(title: Text('Sign Up')),
+      body: Padding(
+        padding: EdgeInsets.all(16),
+        child: Column(
+          children: [
+            TextField(
+              controller: _emailController,
+              decoration: InputDecoration(labelText: 'Email'),
             ),
-            Positioned(
-              bottom: 15,
-              right: -15,
-              child: TextButton(
-                onPressed: () {
-                    Navigator.pushReplacement(context, PageTransition(type: PageTransitionType.rightToLeft, child: Dashboard()));
-                },
-                style: TextButton.styleFrom(
-                    primary: primaryColor,
-                    padding: EdgeInsets.all(13),
-                    shape: CircleBorder(),
-                ),
-                //  color: primaryColor,
-                child: Icon(Icons.arrow_forward, color: white),
-              ),
-            )
+            TextField(
+              controller: _nameController,
+              decoration: InputDecoration(labelText: 'Name'),
+            ),
+            TextField(
+              controller: _phoneController,
+              decoration: InputDecoration(labelText: 'Phone'),
+            ),
+            TextField(
+              controller: _passwordController,
+              decoration: InputDecoration(labelText: 'Password'),
+              obscureText: true,
+            ),
+            ElevatedButton(
+              onPressed: _signUp,
+              child: Text('Sign Up'),
+            ),
           ],
         ),
-        height: 360,
-        
-        width: double.infinity,
-        decoration: authPlateDecoration,
       ),
-        ],
-      )
     );
   }
 }

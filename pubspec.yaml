@@ -23,6 +23,7 @@ dependencies:
   smooth_star_rating: '^1.1.1'
   firebase_core: '^2.8.0'
   firebase_auth: '^4.3.0'
+  google_sign_in: '^6.0.2'
   http: '^0.13.5'
   cupertino_icons: '^1.0.5'
 

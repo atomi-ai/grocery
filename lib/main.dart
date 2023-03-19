@@ -15,6 +15,7 @@ void main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
   await Config.loadConfig();
+  print('xfguo: main() to run app');
   runApp(MyApp());
 }
 

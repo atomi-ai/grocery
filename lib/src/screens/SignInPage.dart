@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import '../logic/login.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 class SignInPage extends StatefulWidget {
   @override
@@ -9,22 +9,22 @@ class SignInPage extends StatefulWidget {
 
 class _SignInPageState extends State<SignInPage> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
-  final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
 
-  Future<void> _signInWithEmailPassword() async {
-    try {
-      UserCredential userCredential = await _auth.signInWithEmailAndPassword(
-        email: _emailController.text.trim(),
-        password: _passwordController.text.trim(),
-      );
-      print('Successfully signed in on firebase ${userCredential.user?.email}');
-      final res = await login();
+  Future<void> _signInWithGoogle() async {
+    final GoogleSignIn googleSignIn = GoogleSignIn();
+    final GoogleSignInAccount googleUser = await googleSignIn.signIn();
 
-      print('User successfully logged in to the backend');
-    } on FirebaseAuthException catch (e) {
-      print("Error: $e");
+    if (googleUser == null) {
+      throw Exception('User cancelled sign in');
     }
+
+    final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+    final GoogleAuthCredential credential = GoogleAuthProvider.credential(
+      accessToken: googleAuth.accessToken,
+      idToken: googleAuth.idToken,
+    );
+
+    await _auth.signInWithCredential(credential);
   }
 
   @override
@@ -33,24 +33,13 @@ class _SignInPageState extends State<SignInPage> {
       appBar: AppBar(
         title: Text('Firebase Auth Example'),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
+      body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            TextField(
-              controller: _emailController,
-              decoration: InputDecoration(labelText: 'Email'),
-            ),
-            TextField(
-              controller: _passwordController,
-              decoration: InputDecoration(labelText: 'Password'),
-              obscureText: true,
-            ),
-            SizedBox(height: 16),
             ElevatedButton(
-              onPressed: _signInWithEmailPassword,
-              child: Text('Sign In'),
+              onPressed: _signInWithGoogle,
+              child: Text('Sign In with Google'),
             ),
           ],
         ),
