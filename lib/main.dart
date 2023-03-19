@@ -1,11 +1,11 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:fryo/src/screens/SignInPage.dart';
+import 'package:provider/provider.dart';
 
+import './src/logic/user_provider.dart';
 import './src/screens/Dashboard.dart';
-import './src/screens/HomePage.dart';
 import './src/screens/ProductPage.dart';
-import './src/screens/SignUpPage.dart';
 import './src/shared/config.dart';
 import 'firebase_options.dart';
 
@@ -16,7 +16,12 @@ void main() async {
   );
   await Config.loadConfig();
   print('xfguo: main() to run app');
-  runApp(MyApp());
+  runApp(
+    ChangeNotifierProvider(
+      create: (context) => UserProvider(),
+      child: MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -28,9 +33,8 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.green,
       ),
-      home: HomePage(pageTitle: 'Welcome'),
+      home: Dashboard(pageTitle: 'Welcome'),
       routes: <String, WidgetBuilder> {
-        '/signup': (BuildContext context) =>  SignUpPage(),
         '/signin': (BuildContext context) =>  SignInPage(),
         '/dashboard': (BuildContext context) => Dashboard(),
         '/productPage': (BuildContext context) => ProductPage(),

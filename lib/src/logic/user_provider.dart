@@ -1,8 +1,10 @@
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:firebase_auth/firebase_auth.dart';
 import '../shared/config.dart';
 
-Future<void> login() async {
+Future<void> backendLogin() async {
   String token = await FirebaseAuth.instance.currentUser.getIdToken(true);
   print('xfguo: id token = ${token}');
   final response = await http.get(
@@ -16,5 +18,26 @@ Future<void> login() async {
   int statusCode = response.statusCode;
   if (statusCode != 200) {
     throw Exception('Failed to send token: ${response.reasonPhrase}');
+  }
+}
+
+class UserProvider with ChangeNotifier {
+  User _user;
+
+  User get user => _user;
+
+  bool get isLoggedIn => _user != null;
+
+  void login(User user) {
+    backendLogin();
+
+    _user = user;
+    notifyListeners();
+  }
+
+  Future<void> logout() async {
+    await FirebaseAuth.instance.signOut();
+    _user = null;
+    notifyListeners();
   }
 }
