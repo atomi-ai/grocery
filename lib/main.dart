@@ -3,13 +3,16 @@ import 'package:flutter/material.dart';
 import 'package:fryo/src/screens/SignInPage.dart';
 import 'package:provider/provider.dart';
 
+import './src/logic/cart_provider.dart';
 import './src/logic/user_provider.dart';
+import './src/logic/product_data.dart';
 import './src/screens/Dashboard.dart';
 import './src/screens/ProductPage.dart';
 import './src/shared/config.dart';
 import 'firebase_options.dart';
 
 void main() async {
+  initProducts();
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
@@ -17,8 +20,11 @@ void main() async {
   await Config.loadConfig();
   print('xfguo: main() to run app');
   runApp(
-    ChangeNotifierProvider(
-      create: (context) => UserProvider(),
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => UserProvider()),
+        ChangeNotifierProvider(create: (_) => CartProvider()),
+      ],
       child: MyApp(),
     ),
   );

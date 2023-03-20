@@ -6,172 +6,44 @@ import '../shared/colors.dart';
 import '../shared/fryo_icons.dart';
 import '../shared/partials.dart';
 import '../shared/styles.dart';
+import '../logic/product_data.dart';
 
 Widget storeTab(BuildContext context) {
-
-  // will pick it up from here
-  // am to start another template
-  List<Product> foods = [
-    Product(
-        name: "Hamburger",
-        image: "images/3.png",
-        price: "\$25.00",
-        userLiked: true,
-        discount: 10),
-    Product(
-        name: "Pasta",
-        image: "images/5.png",
-        price: "\$150.00",
-        userLiked: false,
-        discount: 7.8),
-    Product(
-      name: "Akara",
-      image: 'images/2.png',
-      price: '\$10.99',
-      userLiked: false,
-    ),
-    Product(
-        name: "Strawberry",
-        image: "images/1.png",
-        price: '\$50.00',
-        userLiked: true,
-        discount: 14)
-  ];
-
-  List<Product> drinks = [
-    Product(
-        name: "Coca-Cola",
-        image: "images/6.png",
-        price: "\$45.12",
-        userLiked: true,
-        discount: 2),
-    Product(
-        name: "Lemonade",
-        image: "images/7.png",
-        price: "\$28.00",
-        userLiked: false,
-        discount: 5.2),
-    Product(
-        name: "Vodka",
-        image: "images/8.png",
-        price: "\$78.99",
-        userLiked: false),
-    Product(
-        name: "Tequila",
-        image: "images/9.png",
-        price: "\$168.99",
-        userLiked: true,
-        discount: 3.4)
-  ];
-
   return ListView(children: <Widget>[
     headerTopCategories(),
-    deals('Hot Deals', onViewMore: () {}, items: <Widget>[
-      foodItem(foods[0], onTapped: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) {
-              return new ProductPage(
-                productData: foods[0],
-              );
-            },
-          ),
-        );
-      }, onLike: () {}),
-      foodItem(foods[1], onTapped: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) {
-              return new ProductPage(
-                productData: foods[1],
-              );
-            },
-          ),
-        );
-      }, imgWidth: 250, onLike: () {
-
-      }),
-      foodItem(foods[2], onTapped: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) {
-              return new ProductPage(
-                productData: foods[2],
-              );
-            },
-          ),
-        );
-      }, imgWidth: 200, onLike: () {
-
-      }),
-      foodItem(foods[3], onTapped: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) {
-              return new ProductPage(
-                productData: foods[3],
-              );
-            },
-          ),
-        );
-      }, onLike: () {
-
-      }),
-    ]),
-    deals('Drinks Parol', onViewMore: () {}, items: <Widget>[
-      foodItem(drinks[0], onTapped: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) {
-              return new ProductPage(
-                productData: drinks[0],
-              );
-            },
-          ),
-        );
-      }, onLike: () {}, imgWidth: 60),
-      foodItem(drinks[1], onTapped: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) {
-              return new ProductPage(
-                productData: drinks[1],
-              );
-            },
-          ),
-        );
-      }, onLike: () {}, imgWidth: 75),
-      foodItem(drinks[2], onTapped: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) {
-              return new ProductPage(
-                productData: drinks[2],
-              );
-            },
-          ),
-        );
-      }, imgWidth: 110, onLike: () {}),
-      foodItem(drinks[3], onTapped: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) {
-              return new ProductPage(
-                productData: drinks[3],
-              );
-            },
-          ),
-        );
-      }, onLike: () {}),
-    ])
+    deals('Hot Deals',
+      onViewMore: () {},
+      items: foods.map<Widget>((product) {
+        return foodItem(product, onTapped: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) {
+                return new ProductPage(
+                  productData: product,
+                );
+              },
+            ),
+          );
+        }, onLike: () {});
+      }).toList(),
+    ),
+    deals('Drinks Parol',
+      onViewMore: () {},
+      items: drinks.map<Widget>((product) {
+        return foodItem(product, onTapped: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) {
+                return new ProductPage(
+                  productData: product,
+                );
+              },
+            ),
+          );
+        }, onLike: () {});
+      }).toList(),),
   ]);
 }
 

@@ -6,6 +6,8 @@ import '../shared/buttons.dart';
 import '../shared/colors.dart';
 import '../shared/partials.dart';
 import '../shared/styles.dart';
+import 'package:provider/provider.dart';
+import '../logic/cart_provider.dart';
 
 class ProductPage extends StatefulWidget {
   final String pageTitle;
@@ -20,8 +22,22 @@ class ProductPage extends StatefulWidget {
 class _ProductPageState extends State<ProductPage> {
   double _rating = 4;
   int _quantity = 1;
+
+  void _addToCart(BuildContext context, Product product, int quantity) {
+    final cartProvider = Provider.of<CartProvider>(context, listen: false);
+    cartProvider.addToCart(product, quantity);
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Added ${product.name} to cart'),
+        duration: Duration(seconds: 2),
+      ),
+    );
+    Navigator.pop(context); // Add this line to navigate back to the dashboard
+  }
+
   @override
   Widget build(BuildContext context) {
+    final cartProvider = Provider.of<CartProvider>(context, listen: false);
     return Scaffold(
         backgroundColor: bgColor,
         appBar: AppBar(
@@ -51,7 +67,7 @@ class _ProductPageState extends State<ProductPage> {
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: <Widget>[
                           Text(widget.productData.name, style: h5),
-                          Text(widget.productData.price, style: h3),
+                          Text(widget.productData.price.toStringAsFixed(2), style: h3),
                           Container(
                             margin: EdgeInsets.only(top: 5, bottom: 20),
                             child: SmoothStarRating(
@@ -121,7 +137,9 @@ class _ProductPageState extends State<ProductPage> {
                           ),
                           Container(
                             width: 180,
-                            child: froyoFlatBtn('Add to Cart', () {}),
+                            child: froyoFlatBtn('Add to Cart', () {
+                              _addToCart(context, widget.productData, _quantity);
+                            }),
                           )
                         ],
                       ),

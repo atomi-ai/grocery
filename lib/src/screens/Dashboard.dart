@@ -8,6 +8,7 @@ import '../shared/colors.dart';
 import '../shared/fryo_icons.dart';
 import '../shared/styles.dart';
 import 'SignInPage.dart';
+import 'my_cart.dart';
 
 class Dashboard extends StatefulWidget {
   final String pageTitle;
@@ -73,7 +74,7 @@ class _DashboardState extends State<Dashboard> {
     UserProvider userProvider = Provider.of<UserProvider>(context);
     final _tabs = [
       storeTab(context),
-      Text('Tab2'),
+      MyCart(),
       Text('Tab3'),
       AccountTab(),
     ];
