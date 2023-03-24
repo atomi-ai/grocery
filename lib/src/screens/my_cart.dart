@@ -127,8 +127,10 @@ class _MyCartState extends State<MyCart> {
 
   double _calculateTotal(CartProvider cartProvider) {
     double total = 0.0;
+    print('xfguo: productsMap = ${productsMap}');
     cartProvider.cartItems.forEach((productId, quantity) {
       final product = productsMap[productId];
+      print('xfguo: productId = ${productId}, product = ${product}');
       total += product.price * quantity;
     });
     return total;

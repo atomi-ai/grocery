@@ -1,16 +1,17 @@
-
 import '../entity/entities.dart';
 
-Map<String, Product> productsMap = {};
+Map<int, Product> productsMap = {};
 List<Product> foods = [];
 List<Product> drinks = [];
+Set<int> productIdsInCurrentStore = {};
 
 void initializeProducts(List<Product> productsList) {
-  productsMap = {};
   foods = [];
   drinks = [];
+  productIdsInCurrentStore = {};
   productsList.forEach((product) {
-    productsMap[product.id.toString()] = product;
+    productsMap[product.id] = product;
+    productIdsInCurrentStore.add(product.id);
     if (product.category == 'FOOD') {
       foods.add(product);
     } else if (product.category == 'DRINK') {
