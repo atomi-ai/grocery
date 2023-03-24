@@ -1,18 +1,18 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:fryo/src/logic/data_provider.dart';
 import 'package:fryo/src/screens/SignInPage.dart';
 import 'package:provider/provider.dart';
 
 import './src/logic/cart_provider.dart';
+import './src/logic/favorites_provider.dart';
 import './src/logic/user_provider.dart';
-import './src/logic/product_data.dart';
 import './src/screens/Dashboard.dart';
 import './src/screens/ProductPage.dart';
 import './src/shared/config.dart';
 import 'firebase_options.dart';
 
 void main() async {
-  initProducts();
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
@@ -24,6 +24,8 @@ void main() async {
       providers: [
         ChangeNotifierProvider(create: (_) => UserProvider()),
         ChangeNotifierProvider(create: (_) => CartProvider()),
+        ChangeNotifierProvider(create: (context) => FavoritesProvider()),
+        ChangeNotifierProvider(create: (_) => DataProvider()),
       ],
       child: MyApp(),
     ),
@@ -34,6 +36,9 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
+    DataProvider dataProvider = Provider.of<DataProvider>(context);
+    dataProvider.startFetchingProducts();
+
     return MaterialApp(
       title: 'Fryo',
       theme: ThemeData(

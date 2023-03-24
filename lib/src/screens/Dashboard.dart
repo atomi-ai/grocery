@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:fryo/src/logic/data_provider.dart';
 import 'package:provider/provider.dart';
 
+import '../entity/entities.dart';
+import '../widget/dashboard_appbar.dart';
 import './StoreTab.dart';
 import '../logic/user_provider.dart';
 import '../screens/AccountTab.dart';
@@ -8,6 +11,8 @@ import '../shared/colors.dart';
 import '../shared/fryo_icons.dart';
 import '../shared/styles.dart';
 import 'SignInPage.dart';
+import 'customiz_tab.dart';
+import 'favorites_tab.dart';
 import 'my_cart.dart';
 
 class Dashboard extends StatefulWidget {
@@ -21,6 +26,7 @@ class Dashboard extends StatefulWidget {
 
 class _DashboardState extends State<Dashboard> {
   int _selectedIndex = 0;
+  Store _defaultStore;
 
   void _checkLoginStatus(BuildContext context) async {
     final userProvider = Provider.of<UserProvider>(context, listen: false);
@@ -31,9 +37,16 @@ class _DashboardState extends State<Dashboard> {
     }
   }
 
+  Future<void> _getDefaultStore() async {
+    final dataProvider = Provider.of<DataProvider>(context, listen: false);
+    _defaultStore ??= await dataProvider.getDefaultStore();
+  }
+
   @override
   void initState() {
     super.initState();
+    _getDefaultStore();
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _checkLoginStatus(context);
     });
@@ -72,40 +85,27 @@ class _DashboardState extends State<Dashboard> {
   @override
   Widget build(BuildContext context) {
     UserProvider userProvider = Provider.of<UserProvider>(context);
+    DataProvider dataProvider = Provider.of<DataProvider>(context);
+
     final _tabs = [
       storeTab(context),
       MyCart(),
-      Text('Tab3'),
+      CustomizedTab(),
+      FavoritesTab(),
       AccountTab(),
     ];
 
     return Scaffold(
         backgroundColor: bgColor,
-        appBar: AppBar(
-          centerTitle: true,
-          elevation: 0,
-          leading: IconButton(
-            onPressed: () {},
-            iconSize: 21,
-            icon: Icon(Fryo.funnel),
-          ),
-          backgroundColor: primaryColor,
-          title:
-              Text('Atomi', style: logoWhiteStyle, textAlign: TextAlign.center),
-          actions: <Widget>[
-            IconButton(
-              padding: EdgeInsets.all(0),
-              onPressed: () {},
-              iconSize: 21,
-              icon: Icon(Fryo.magnifier),
-            ),
-            IconButton(
-              padding: EdgeInsets.all(0),
-              onPressed: () {},
-              iconSize: 21,
-              icon: Icon(Fryo.alarm),
-            )
-          ],
+        appBar: DashboardAppBar(
+          defaultStore: _defaultStore,
+          onSelectStore: (store) {
+            setState(() {
+              _defaultStore = store;
+            });
+            print('xfguo: select store: ${store.id}');
+            dataProvider.setDefaultStore(store);
+          },
         ),
         body: _tabs[_selectedIndex],
         bottomNavigationBar: BottomNavigationBar(
@@ -115,6 +115,7 @@ class _DashboardState extends State<Dashboard> {
               label: 'Store',
             ),
             BottomNavigationBarItem(icon: Icon(Fryo.cart), label: 'My Cart'),
+            BottomNavigationBarItem(icon: Icon(Fryo.cart), label: 'Customize'),
             BottomNavigationBarItem(
                 icon: Icon(Fryo.heart_1), label: 'Favorites'),
             BottomNavigationBarItem(

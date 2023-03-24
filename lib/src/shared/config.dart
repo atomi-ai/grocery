@@ -13,7 +13,7 @@ class Config {
   }
 
   static Future<void> loadConfig() async {
-    String apiUrl = 'http://10.0.2.2:8081/api/v1';
+    String apiUrl = 'http://10.0.2.2:8081/api';
 
     _instance = Config._(apiUrl);
   }

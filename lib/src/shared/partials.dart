@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
-import '../shared/Product.dart';
+import 'package:provider/provider.dart';
+
+import '../entity/entities.dart';
+import '../logic/favorites_provider.dart';
 import '../shared/colors.dart';
 import '../shared/styles.dart';
 
 Widget foodItem(Product food,
     {double imgWidth, onLike, onTapped, bool isProductPage = false}) {
-
   return Container(
     width: 180,
     height: 180,
@@ -21,12 +23,13 @@ Widget foodItem(Product food,
                 style: ElevatedButton.styleFrom(
                   primary: Colors.white,
                   elevation: (isProductPage) ? 20 : 12,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(5)),
                 ),
                 child: Hero(
                     transitionOnUserGestures: true,
                     tag: food.name,
-                    child: Image.asset(food.image,
+                    child: Image.asset(food.imageUrl,
                         width: (imgWidth != null) ? imgWidth : 100)))),
         Positioned(
           bottom: (isProductPage) ? 10 : 70,
@@ -37,13 +40,22 @@ Widget foodItem(Product food,
               padding: EdgeInsets.all(20),
               shape: CircleBorder(),
             ),
-            child: Icon(
-              (food.userLiked) ? Icons.favorite : Icons.favorite_border,
-              color: (food.userLiked) ? primaryColor : darkText,
-              size: 30,
+            child: Consumer<FavoritesProvider>(
+              builder: (context, favoritesProvider, child) {
+                return IconButton(
+                  icon: Icon(
+                    favoritesProvider.isFavorite(food) ? Icons.favorite : Icons.favorite_border,
+                    color: favoritesProvider.isFavorite(food) ? primaryColor : darkText,
+                    size: 30,
+                  ),
+                  onPressed: () {
+                    favoritesProvider.toggleFavorite(food);
+                  },
+                );
+              },
             ),
           ),
-  ),
+        ),
         Positioned(
           bottom: 0,
           left: 0,

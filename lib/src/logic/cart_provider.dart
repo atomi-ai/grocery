@@ -1,10 +1,10 @@
 import 'package:flutter/foundation.dart';
 
-import '../shared/Product.dart';
+import '../entity/entities.dart';
 
 class CartProvider with ChangeNotifier {
-  Map<String, int> _cartItems = {};
-  Map<String, int> get cartItems => _cartItems;
+  Map<int, int> _cartItems = {};
+  Map<int, int> get cartItems => _cartItems;
 
   void addToCart(Product product, int quantity) {
     if (_cartItems.containsKey(product.id)) {

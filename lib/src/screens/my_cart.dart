@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:fryo/src/logic/product_data.dart';
 import 'package:provider/provider.dart';
 
+import '../entity/entities.dart';
 import '../logic/cart_provider.dart';
-import '../shared/Product.dart';
 import '../shared/styles.dart';
 
 class MyCart extends StatefulWidget {
@@ -24,7 +24,7 @@ class _MyCartState extends State<MyCart> {
           children: [
             // Product image
             Image.asset(
-              product.image,
+              product.imageUrl,
               width: 50,
               height: 50,
               fit: BoxFit.cover,
@@ -95,7 +95,7 @@ class _MyCartState extends State<MyCart> {
       body: ListView.builder(
         itemCount: cartProvider.cartItems.length,
         itemBuilder: (BuildContext context, int index) {
-          String productId = cartProvider.cartItems.keys.elementAt(index);
+          int productId = cartProvider.cartItems.keys.elementAt(index);
           int quantity = cartProvider.cartItems[productId];
           Product product = productsMap[productId];
           return _buildCartItem(context, product, quantity);

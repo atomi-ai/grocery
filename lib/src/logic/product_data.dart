@@ -1,77 +1,20 @@
-import '../shared/Product.dart';
+
+import '../entity/entities.dart';
 
 Map<String, Product> productsMap = {};
+List<Product> foods = [];
+List<Product> drinks = [];
 
-void _initializeProducts(List<Product> productsList) {
+void initializeProducts(List<Product> productsList) {
+  productsMap = {};
+  foods = [];
+  drinks = [];
   productsList.forEach((product) {
-    productsMap[product.id] = product;
+    productsMap[product.id.toString()] = product;
+    if (product.category == 'FOOD') {
+      foods.add(product);
+    } else if (product.category == 'DRINK') {
+      drinks.add(product);
+    }
   });
 }
-
-void initProducts() {
-  _initializeProducts(foods);
-  _initializeProducts(drinks);
-}
-
-// will pick it up from here
-// am to start another template
-List<Product> foods = [
-  Product(
-    id: "food_0001",
-      name: "Hamburger",
-      image: "images/3.png",
-      price: 25,
-      userLiked: true,
-      discount: 10),
-  Product(
-      id: "food_0002",
-      name: "Pasta",
-      image: "images/5.png",
-      price: 150,
-      userLiked: false,
-      discount: 7.8),
-  Product(
-    id: "food_0003",
-    name: "Akara",
-    image: 'images/2.png',
-    price: 10.99,
-    userLiked: false,
-  ),
-  Product(
-      id: "food_0004",
-      name: "Strawberry",
-      image: "images/1.png",
-      price: 50,
-      userLiked: true,
-      discount: 14)
-];
-
-List<Product> drinks = [
-  Product(
-      id: "drink_0001",
-      name: "Coca-Cola",
-      image: "images/6.png",
-      price: 45.12,
-      userLiked: true,
-      discount: 2),
-  Product(
-      id: "drink_0002",
-      name: "Lemonade",
-      image: "images/7.png",
-      price: 28,
-      userLiked: false,
-      discount: 5.2),
-  Product(
-      id: "drink_0003",
-      name: "Vodka",
-      image: "images/8.png",
-      price: 78.99,
-      userLiked: false),
-  Product(
-      id: "drink_0004",
-      name: "Tequila",
-      image: "images/9.png",
-      price: 16899999,
-      userLiked: true,
-      discount: 3.4)
-];

@@ -1,49 +1,68 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import './ProductPage.dart';
-import '../shared/Product.dart';
+import '../logic/favorites_provider.dart';
+import '../logic/product_data.dart';
 import '../shared/colors.dart';
 import '../shared/fryo_icons.dart';
 import '../shared/partials.dart';
 import '../shared/styles.dart';
-import '../logic/product_data.dart';
 
 Widget storeTab(BuildContext context) {
+  FavoritesProvider _favoritesProvider =
+      Provider.of<FavoritesProvider>(context, listen: false);
+
   return ListView(children: <Widget>[
     headerTopCategories(),
-    deals('Hot Deals',
+    deals(
+      'Hot Deals',
       onViewMore: () {},
       items: foods.map<Widget>((product) {
-        return foodItem(product, onTapped: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) {
-                return new ProductPage(
-                  productData: product,
-                );
-              },
-            ),
-          );
-        }, onLike: () {});
+        return foodItem(
+          product,
+          onTapped: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) {
+                  return new ProductPage(
+                    productData: product,
+                  );
+                },
+              ),
+            );
+          },
+          onLike: () {
+            _favoritesProvider.toggleFavorite(product);
+          },
+        );
       }).toList(),
     ),
-    deals('Drinks Parol',
+    deals(
+      'Drinks Parol',
       onViewMore: () {},
       items: drinks.map<Widget>((product) {
-        return foodItem(product, onTapped: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) {
-                return new ProductPage(
-                  productData: product,
-                );
-              },
-            ),
-          );
-        }, onLike: () {});
-      }).toList(),),
+        return foodItem(
+          product,
+          onTapped: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) {
+                  return new ProductPage(
+                    productData: product,
+                  );
+                },
+              ),
+            );
+          },
+          onLike: () {
+            _favoritesProvider.toggleFavorite(product);
+          },
+        );
+      }).toList(),
+    ),
   ]);
 }
 
@@ -131,12 +150,12 @@ Widget deals(String dealTitle, {onViewMore, List<Widget> items}) {
             children: (items != null)
                 ? items
                 : <Widget>[
-              Container(
-                margin: EdgeInsets.only(left: 15),
-                child: Text('No items available at this moment.',
-                    style: taglineText),
-              )
-            ],
+                    Container(
+                      margin: EdgeInsets.only(left: 15),
+                      child: Text('No items available at this moment.',
+                          style: taglineText),
+                    )
+                  ],
           ),
         )
       ],
