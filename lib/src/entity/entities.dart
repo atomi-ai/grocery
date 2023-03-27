@@ -45,4 +45,31 @@ class Product {
     );
   }
 }
+class Address {
+  final int id;
+  final String street;
+  final String city;
+  final String state;
+  final String country;
+  final String zipCode;
 
+  Address({
+    this.id,
+    this.street,
+    this.city,
+    this.state,
+    this.country,
+    this.zipCode,
+  });
+
+  factory Address.fromJson(Map<String, dynamic> json) {
+    return Address(
+      id: json['id'],
+      street: json['street'],
+      city: json['city'],
+      state: json['state'],
+      country: json['country'],
+      zipCode: json['zip_code'],
+    );
+  }
+}

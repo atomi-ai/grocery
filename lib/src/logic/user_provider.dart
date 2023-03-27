@@ -24,9 +24,7 @@ Future<void> backendLogin() async {
 
 class UserProvider with ChangeNotifier {
   User _user;
-
   User get user => _user;
-
   bool get isLoggedIn => _user != null;
 
   void login(User user) {

@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:fryo/src/logic/data_provider.dart';
+import 'package:fryo/src/logic/store_provider.dart';
 import 'package:provider/provider.dart';
 
-import '../entity/entities.dart';
-import '../widget/dashboard_appbar.dart';
 import './StoreTab.dart';
+import '../entity/entities.dart';
+import '../logic/product_provider.dart';
 import '../logic/user_provider.dart';
 import '../screens/AccountTab.dart';
 import '../shared/colors.dart';
 import '../shared/fryo_icons.dart';
-import '../shared/styles.dart';
+import '../widget/dashboard_appbar.dart';
 import 'SignInPage.dart';
 import 'customiz_tab.dart';
 import 'favorites_tab.dart';
@@ -37,19 +37,22 @@ class _DashboardState extends State<Dashboard> {
     }
   }
 
-  Future<void> _getDefaultStore() async {
-    final dataProvider = Provider.of<DataProvider>(context, listen: false);
-    _defaultStore ??= await dataProvider.getDefaultStore();
-  }
-
   @override
   void initState() {
     super.initState();
-    _getDefaultStore();
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _checkLoginStatus(context);
     });
+
+    final storeProvider = Provider.of<StoreProvider>(context, listen: false);
+    storeProvider.getDefaultStore();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
   }
 
   void _showSignInDialog(BuildContext context) {
@@ -84,11 +87,12 @@ class _DashboardState extends State<Dashboard> {
 
   @override
   Widget build(BuildContext context) {
-    UserProvider userProvider = Provider.of<UserProvider>(context);
-    DataProvider dataProvider = Provider.of<DataProvider>(context);
+    final userProvider = Provider.of<UserProvider>(context);
+    final storeProvider = Provider.of<StoreProvider>(context);
+    final productProvider = Provider.of<ProductProvider>(context);
 
     final _tabs = [
-      storeTab(context),
+      StoreTab(),
       MyCart(),
       CustomizedTab(),
       FavoritesTab(),
@@ -98,13 +102,12 @@ class _DashboardState extends State<Dashboard> {
     return Scaffold(
         backgroundColor: bgColor,
         appBar: DashboardAppBar(
-          defaultStore: _defaultStore,
+          defaultStore: storeProvider.defaultStore,
           onSelectStore: (store) {
             setState(() {
-              _defaultStore = store;
+              storeProvider.setDefaultStore(context, store);
+              productProvider.getProducts(store.id);
             });
-            print('xfguo: select store: ${store.id}');
-            dataProvider.setDefaultStore(store);
           },
         ),
         body: _tabs[_selectedIndex],

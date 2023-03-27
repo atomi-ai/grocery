@@ -1,69 +1,91 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../logic/store_provider.dart';
 import './ProductPage.dart';
 import '../logic/favorites_provider.dart';
-import '../logic/product_data.dart';
+import '../logic/product_provider.dart';
 import '../shared/colors.dart';
 import '../shared/fryo_icons.dart';
 import '../shared/partials.dart';
 import '../shared/styles.dart';
 
-Widget storeTab(BuildContext context) {
-  FavoritesProvider _favoritesProvider =
-      Provider.of<FavoritesProvider>(context, listen: false);
+class StoreTab extends StatefulWidget {
+  @override
+  _StoreTabState createState() => _StoreTabState();
+}
 
-  return ListView(children: <Widget>[
-    headerTopCategories(),
-    deals(
-      'Hot Deals',
-      onViewMore: () {},
-      items: foods.map<Widget>((product) {
-        return foodItem(
-          product,
-          onTapped: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) {
-                  return new ProductPage(
-                    productData: product,
-                  );
-                },
-              ),
-            );
-          },
-          onLike: () {
-            _favoritesProvider.toggleFavorite(product);
-          },
-        );
-      }).toList(),
-    ),
-    deals(
-      'Drinks Parol',
-      onViewMore: () {},
-      items: drinks.map<Widget>((product) {
-        return foodItem(
-          product,
-          onTapped: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) {
-                  return new ProductPage(
-                    productData: product,
-                  );
-                },
-              ),
-            );
-          },
-          onLike: () {
-            _favoritesProvider.toggleFavorite(product);
-          },
-        );
-      }).toList(),
-    ),
-  ]);
+class _StoreTabState extends State<StoreTab> {
+  FavoritesProvider favoritesProvider;
+  ProductProvider productProvider;
+
+  @override
+  void initState() {
+    super.initState();
+
+    favoritesProvider = Provider.of<FavoritesProvider>(context, listen: false);
+    productProvider = Provider.of<ProductProvider>(context, listen: false);
+
+    final storeProvider = Provider.of<StoreProvider>(context, listen: false);
+    if (storeProvider.defaultStore != null) {
+      productProvider.getProducts(storeProvider.defaultStore.id);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView(children: <Widget>[
+      headerTopCategories(),
+      deals(
+        'Hot Deals',
+        onViewMore: () {},
+        items: productProvider.foods.map<Widget>((product) {
+          return foodItem(
+            product,
+            onTapped: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) {
+                    return new ProductPage(
+                      productData: product,
+                    );
+                  },
+                ),
+              );
+            },
+            onLike: () {
+              favoritesProvider.toggleFavorite(product);
+            },
+          );
+        }).toList(),
+      ),
+      deals(
+        'Drinks Parol',
+        onViewMore: () {},
+        items: productProvider.drinks.map<Widget>((product) {
+          return foodItem(
+            product,
+            onTapped: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) {
+                    return new ProductPage(
+                      productData: product,
+                    );
+                  },
+                ),
+              );
+            },
+            onLike: () {
+              favoritesProvider.toggleFavorite(product);
+            },
+          );
+        }).toList(),
+      ),
+    ]);
+  }
 }
 
 Widget sectionHeader(String headerTitle, {onViewMore}) {

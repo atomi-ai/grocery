@@ -2,10 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:fryo/src/shared/colors.dart';
 import 'package:fryo/src/shared/fryo_icons.dart';
 import 'package:fryo/src/shared/styles.dart';
-import 'package:provider/provider.dart';
 
 import '../entity/entities.dart';
-import '../logic/data_provider.dart';
+import '../logic/api_client.dart' as api;
 import 'store_picker_dialog.dart';
 
 class DashboardAppBar extends StatelessWidget with PreferredSizeWidget {
@@ -59,8 +58,7 @@ class DashboardAppBar extends StatelessWidget with PreferredSizeWidget {
   }
 
   void _showStorePicker(BuildContext context) async {
-    DataProvider dataProvider = Provider.of<DataProvider>(context, listen: false);
-    final List<Store> stores = await dataProvider.fetchStores();
+    final List<Store> stores = await api.fetchStores();
     final selectedStore = await showDialog<Store>(
       context: context,
       builder: (BuildContext context) {

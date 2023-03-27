@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:fryo/src/logic/product_data.dart';
 import 'package:provider/provider.dart';
 
 import '../entity/entities.dart';
 import '../logic/cart_provider.dart';
+import '../logic/product_provider.dart';
 import '../shared/styles.dart';
+import 'checkout.dart';
 
 class MyCart extends StatefulWidget {
   @override
@@ -87,6 +88,10 @@ class _MyCartState extends State<MyCart> {
   @override
   Widget build(BuildContext context) {
     final cartProvider = Provider.of<CartProvider>(context);
+    final productProvider = Provider.of<ProductProvider>(context);
+
+    final total = cartProvider.calculateTotal(
+      cartProvider.cartItems, productProvider.productIdsInCurrentStore, productProvider.productsMap);
 
     return Scaffold(
       appBar: AppBar(
@@ -97,26 +102,49 @@ class _MyCartState extends State<MyCart> {
         itemBuilder: (BuildContext context, int index) {
           int productId = cartProvider.cartItems.keys.elementAt(index);
           int quantity = cartProvider.cartItems[productId];
-          Product product = productsMap[productId];
+          Product product = productProvider.productsMap[productId];
           return _buildCartItem(context, product, quantity);
         },
       ),
       bottomNavigationBar: BottomAppBar(
         child: Container(
-          height: 60,
           padding: EdgeInsets.symmetric(horizontal: 20),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
             children: [
-              Text(
-                'Total: \$${_calculateTotal(cartProvider).toStringAsFixed(2)}',
-                style: h5,
-              ),
-              ElevatedButton(
-                onPressed: () {
-                  // Implement checkout logic here
-                },
-                child: Text('Checkout'),
+              if (!cartProvider.cartItemsInCurrentStore(
+                  cartProvider.cartItems, productProvider.productIdsInCurrentStore))
+                Container(
+                  child: Column(
+                    children: [
+                      Text(
+                        'Warning: Some items are not available in this store.',
+                        style: TextStyle(color: Colors.redAccent,fontWeight: FontWeight.bold),
+                      ),
+                    ],
+                  )
+                ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'Total: \$${total.toStringAsFixed(2)}',
+                    style: h5,
+                  ),
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => CheckoutPage(
+                            total: total,
+                          ),
+                        ),
+                      );
+                    },
+                    child: Text('Checkout'),
+                  ),
+                ],
               ),
             ],
           ),
@@ -125,14 +153,4 @@ class _MyCartState extends State<MyCart> {
     );
   }
 
-  double _calculateTotal(CartProvider cartProvider) {
-    double total = 0.0;
-    print('xfguo: productsMap = ${productsMap}');
-    cartProvider.cartItems.forEach((productId, quantity) {
-      final product = productsMap[productId];
-      print('xfguo: productId = ${productId}, product = ${product}');
-      total += product.price * quantity;
-    });
-    return total;
-  }
 }

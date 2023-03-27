@@ -27,6 +27,8 @@ dependencies:
   http: '^0.13.5'
   cupertino_icons: '^1.0.5'
   provider: ^6.0.1
+  flutter_stripe: ^9.0.0+1
+  logging: ^1.1.1
 
 dev_dependencies:
   flutter_test:

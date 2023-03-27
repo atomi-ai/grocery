@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import '../entity/entities.dart';
 import '../logic/favorites_provider.dart';
 import '../logic/product_data.dart';
+import '../logic/product_provider.dart';
 import '../shared/colors.dart';
 import 'ProductPage.dart';
 
@@ -54,12 +55,12 @@ class FavoritesTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    FavoritesProvider _favoritesProvider =
-        Provider.of<FavoritesProvider>(context, listen: false);
+    final favoritesProvider = Provider.of<FavoritesProvider>(context);
+    final productProvider = Provider.of<ProductProvider>(context);
 
     List<Product> favoriteProducts = [];
-    for (int favoriteId in _favoritesProvider.favorites) {
-      favoriteProducts.add(productsMap[favoriteId]);
+    for (int favoriteId in favoritesProvider.favorites) {
+      favoriteProducts.add(productProvider.productsMap[favoriteId]);
     }
     return Consumer<FavoritesProvider>(
       builder: (context, favoritesProvider, child) {
@@ -67,7 +68,7 @@ class FavoritesTab extends StatelessWidget {
           itemCount: favoriteProducts.length,
           itemBuilder: (context, index) {
             Product product = favoriteProducts[index];
-            return getItem(!productIdsInCurrentStore.contains(product.id),
+            return getItem(!productProvider.productIdsInCurrentStore.contains(product.id),
                 product, favoritesProvider, context);
           },
           separatorBuilder: (context, index) {
