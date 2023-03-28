@@ -2,16 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:fryo/src/logic/store_provider.dart';
 import 'package:provider/provider.dart';
 
-import './StoreTab.dart';
-import '../entity/entities.dart';
+import './store_tab.dart';
 import '../logic/product_provider.dart';
 import '../logic/user_provider.dart';
-import '../screens/AccountTab.dart';
+import '../screens/account_tab.dart';
 import '../shared/colors.dart';
 import '../shared/fryo_icons.dart';
 import '../widget/dashboard_appbar.dart';
 import 'SignInPage.dart';
-import 'customiz_tab.dart';
+import 'customize_tab.dart';
 import 'favorites_tab.dart';
 import 'my_cart.dart';
 
@@ -26,7 +25,6 @@ class Dashboard extends StatefulWidget {
 
 class _DashboardState extends State<Dashboard> {
   int _selectedIndex = 0;
-  Store _defaultStore;
 
   void _checkLoginStatus(BuildContext context) async {
     final userProvider = Provider.of<UserProvider>(context, listen: false);
@@ -47,12 +45,20 @@ class _DashboardState extends State<Dashboard> {
 
     final storeProvider = Provider.of<StoreProvider>(context, listen: false);
     storeProvider.getDefaultStore();
+
+    print('xfguo: _DashboardState::initState()');
   }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
 
+    print('xfguo: _DashboardState::didChangeDependencies()');
+    final storeProvider = Provider.of<StoreProvider>(context, listen: false);
+    if (storeProvider.defaultStore != null) {
+      final productProvider = Provider.of<ProductProvider>(context, listen: false);
+      productProvider.getProducts(storeProvider.defaultStore.id);
+    }
   }
 
   void _showSignInDialog(BuildContext context) {
@@ -86,7 +92,16 @@ class _DashboardState extends State<Dashboard> {
   }
 
   @override
+  void didUpdateWidget(covariant Dashboard oldWidget) {
+    // TODO: implement didUpdateWidget
+    super.didUpdateWidget(oldWidget);
+
+    print('xfguo: _DashboardState::didUpdateWidget()');
+  }
+
+  @override
   Widget build(BuildContext context) {
+    print('xfguo: _DashboardState::build()');
     final userProvider = Provider.of<UserProvider>(context);
     final storeProvider = Provider.of<StoreProvider>(context);
     final productProvider = Provider.of<ProductProvider>(context);

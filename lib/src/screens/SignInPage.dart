@@ -4,7 +4,7 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:provider/provider.dart';
 
 import '../logic/user_provider.dart';
-import 'Dashboard.dart';
+import 'dashboard.dart';
 
 class SignInPage extends StatefulWidget {
   @override

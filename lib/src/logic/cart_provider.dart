@@ -1,8 +1,6 @@
 import 'package:flutter/foundation.dart';
-import 'package:fryo/src/logic/product_provider.dart';
 
 import '../entity/entities.dart';
-import 'product_data.dart';
 
 class CartProvider with ChangeNotifier {
   // {productId => quantity}

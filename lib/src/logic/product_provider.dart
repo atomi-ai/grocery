@@ -43,13 +43,13 @@ class ProductProvider with ChangeNotifier {
     print('xfguo: getProducts(${storeId}) products: ${_products}');
     _initializeProducts(_products);
     print('xfguo: foods: ${foods}');
-    notifyListeners();
+    // notifyListeners();
   }
 
   void startFetchingProducts(BuildContext context) {
     stopFetchingProducts();
     _productsTimer = Timer.periodic(Duration(minutes: 1), (timer) async {
-      final storeProvider = Provider.of<StoreProvider>(context);
+      final storeProvider = Provider.of<StoreProvider>(context, listen: false);
       final store = storeProvider.defaultStore;
       if (store == null) {
         return;

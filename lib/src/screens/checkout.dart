@@ -4,7 +4,6 @@ import 'package:provider/provider.dart';
 
 import '../entity/entities.dart';
 import '../logic/cart_provider.dart';
-import '../logic/product_data.dart';
 import '../logic/product_provider.dart';
 
 class CheckoutPage extends StatefulWidget {

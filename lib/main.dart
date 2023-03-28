@@ -9,16 +9,18 @@ import 'package:provider/provider.dart';
 import './src/logic/cart_provider.dart';
 import './src/logic/favorites_provider.dart';
 import './src/logic/user_provider.dart';
-import './src/screens/Dashboard.dart';
+import './src/screens/dashboard.dart';
 import './src/screens/ProductPage.dart';
 import './src/shared/config.dart';
 import 'firebase_options.dart';
+import 'src/logic/account_provider.dart';
 
 Future<void> initStripe() async {
   Stripe.publishableKey = "pk_test_b23w3aM03rrkeOOFbpp2pPWJ";
   await Stripe.instance.applySettings();
 }
 
+// TODO(lamuguo): Upgrade flutter to newer version (support ? and more)
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
@@ -36,6 +38,7 @@ void main() async {
         ChangeNotifierProvider(create: (context) => FavoritesProvider()),
         ChangeNotifierProvider(create: (_) => StoreProvider()),
         ChangeNotifierProvider(create: (_) => ProductProvider()),
+        ChangeNotifierProvider(create: (_) => AccountProvider()),
       ],
       child: MyApp(),
     ),

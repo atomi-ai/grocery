@@ -45,6 +45,7 @@ class Product {
     );
   }
 }
+
 class Address {
   final int id;
   final String street;
@@ -69,7 +70,25 @@ class Address {
       city: json['city'],
       state: json['state'],
       country: json['country'],
-      zipCode: json['zip_code'],
+      zipCode: json['zipCode'],
     );
   }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['id'] = this.id;
+    data['street'] = this.street;
+    data['city'] = this.city;
+    data['state'] = this.state;
+    data['zipCode'] = this.zipCode;
+    data['country'] = this.country;
+    return data;
+  }
+
+  @override
+  String toString() {
+    return 'Address{id: $id, street: $street, city: $city, state: $state, country: $country, zipCode: $zipCode}';
+  }
+
+  static final UNSET_ADDRESS = Address(street: 'UNSET', city: 'UNSET');
 }

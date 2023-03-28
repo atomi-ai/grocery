@@ -3,7 +3,6 @@ import 'package:provider/provider.dart';
 
 import '../entity/entities.dart';
 import '../logic/favorites_provider.dart';
-import '../logic/product_data.dart';
 import '../logic/product_provider.dart';
 import '../shared/colors.dart';
 import 'ProductPage.dart';

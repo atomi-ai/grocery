@@ -58,27 +58,35 @@ Future<List<Product>> fetchProducts(int storeId) async {
 }
 
 // Address related
-Future<T> get<T>(Uri uri, T Function(Map<String, dynamic>) fromJson) async {
+Future<String> get(Uri uri) async {
   String token = await getCurrentToken();
   final response = await http.get(uri, headers: {
     'Content-Type': 'application/json',
     'Authorization': 'Bearer $token',
   },);
 
+  print('xfguo: GET response = ${response.statusCode}, body = ${response.body}');
   if (response.statusCode != HttpStatus.ok) {
     print('xfguo: Failed to fetch uri: ${uri}, resp = ${response.statusCode}, ${response.body}');
     throw Exception('Failed to fetch uri: ${uri}');
   }
-  final json = jsonDecode(response.body) as Map<String, dynamic>;
-  return fromJson(json);
+  return response.body;
 }
 
-Future<Address> getDefaultShippingAddress() async {
-  return get(Uri.parse('${Config.instance.apiUrl}/addresses/shipping'),
-          (json) => Address.fromJson(json));
-}
-
-Future<Address> getDefaultBillingAddress() async {
-  return get(Uri.parse('${Config.instance.apiUrl}/addresses/billing'),
-          (json) => Address.fromJson(json));
+Future<T> post<T>(Uri url,
+    T Function(Map<String, dynamic> json) parser,
+    {dynamic body}) async {
+  String token = await getCurrentToken();
+  print('xfguo: ${url}, body: ${body}');
+  final response = await http.post(
+      url, body: body, headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      });
+  print('xfguo: post response = ${response.statusCode}, body = ${response.body}');
+  if (response.statusCode != HttpStatus.ok) {
+    throw Exception('Failed to post ${url} with data ${body}, and response code: ${response.statusCode}');
+  }
+  final json = jsonDecode(response.body);
+  return parser(json);
 }

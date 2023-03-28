@@ -1,35 +1,55 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:fryo/src/logic/user_provider.dart';
 import 'package:provider/provider.dart';
 
-import '../logic/api_client.dart' as api;
-import '../entity/entities.dart' as entities;
-import 'Dashboard.dart';
+import '../entity/entities.dart';
+import '../logic/account_provider.dart';
+import 'address_page.dart';
+import 'dashboard.dart';
 
-class AccountTab extends StatelessWidget {
-  Widget getAddress<T>(Future<T> Function() func) {
-    return FutureBuilder<T>(
+class AccountTab extends StatefulWidget {
+  @override
+  _AccountTabState createState() => _AccountTabState();
+}
+
+class _AccountTabState extends State<AccountTab> {
+  Widget getAddressText(Address t) {
+    return Text('${t.street}, ${t.city}, ${t.state}');
+  }
+
+  Widget getAddress<T>(AccountProvider provider, Future<T> Function() func) {
+    return FutureBuilder(
       future: func(),
-      builder: (BuildContext context, AsyncSnapshot snapshot) {
-        if (snapshot.connectionState == ConnectionState.done) {
-          if (snapshot.hasError) {
-            return Text('Error: ${snapshot.error}');
-          } else {
-            final t = snapshot.data;
-            return Text('${t.street}, ${t.city}, ${t.state}');
-          }
-        } else {
-          return Text('');
+      builder: (BuildContext context, AsyncSnapshot<T> snapshot) {
+        final userProvider = Provider.of<UserProvider>(context, listen: false);
+        if (snapshot.hasError) {
+          return Text('Error: ${snapshot.error}');
         }
+        return getAddressText(provider.shippingAddress);
       },
     );
   }
 
+  Widget aaa(BuildContext context) {
+    return Text('');
+  }
+
+  @override
+  void initState() {
+    super.initState();
+
+    final accountProvider = Provider.of<AccountProvider>(context, listen: false);
+    accountProvider.fetchShippingAddress();
+    accountProvider.fetchBillingAddress();
+    print('xfguo: AccountTab::initState()');
+  }
+
   @override
   Widget build(BuildContext context) {
-    final userProvider = Provider.of<UserProvider>(context);
+    print('xfguo: AccountTab::build()');
+    final userProvider = Provider.of<UserProvider>(context, listen: false);
     final user = userProvider.user;
+    final accountProvider = Provider.of<AccountProvider>(context);
 
     return Center(
       child: Column(
@@ -56,15 +76,23 @@ class AccountTab extends StatelessWidget {
                   leading: Icon(Icons.email),
                   title: Text(user?.email ?? ''),
                 ),
-                ListTile(
+                GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => AddressPage()),
+                    );
+                  },
+                  child: ListTile(
                     leading: Icon(Icons.location_on),
                     title: Text('Shipping Address'),
-                    subtitle: getAddress(api.getDefaultShippingAddress),
+                    subtitle: getAddressText(accountProvider.shippingAddress),
+                  ),
                 ),
                 ListTile(
                   leading: Icon(Icons.payment),
                   title: Text('Billing Address'),
-                  subtitle: getAddress(api.getDefaultBillingAddress),
+                  subtitle: getAddressText(accountProvider.billingAddress),
                 ),
                 ListTile(
                   leading: Icon(Icons.credit_card),

@@ -30,10 +30,12 @@ class _StoreTabState extends State<StoreTab> {
     if (storeProvider.defaultStore != null) {
       productProvider.getProducts(storeProvider.defaultStore.id);
     }
+    print('xfguo: _StoreTabState::initState()');
   }
 
   @override
   Widget build(BuildContext context) {
+    print('xfguo: _StoreTabState::build()');
     return ListView(children: <Widget>[
       headerTopCategories(),
       deals(
