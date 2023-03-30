@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:fryo/src/logic/payment_method_provider.dart';
 import 'package:fryo/src/logic/user_provider.dart';
+import 'package:fryo/src/screens/payment_method_page.dart';
 import 'package:provider/provider.dart';
 
 import '../entity/entities.dart';
-import '../logic/account_provider.dart';
+import '../logic/address_provider.dart';
+import '../widget/util.dart';
 import 'address_page.dart';
 import 'dashboard.dart';
 
@@ -13,11 +16,7 @@ class AccountTab extends StatefulWidget {
 }
 
 class _AccountTabState extends State<AccountTab> {
-  Widget getAddressText(Address t) {
-    return Text('${t.street}, ${t.city}, ${t.state}');
-  }
-
-  Widget getAddress<T>(AccountProvider provider, Future<T> Function() func) {
+  Widget getAddress<T>(AddressProvider provider, Future<T> Function() func) {
     return FutureBuilder(
       future: func(),
       builder: (BuildContext context, AsyncSnapshot<T> snapshot) {
@@ -38,9 +37,9 @@ class _AccountTabState extends State<AccountTab> {
   void initState() {
     super.initState();
 
-    final accountProvider = Provider.of<AccountProvider>(context, listen: false);
-    accountProvider.fetchShippingAddress();
-    accountProvider.fetchBillingAddress();
+    final addressProvider = Provider.of<AddressProvider>(context, listen: false);
+    addressProvider.fetchShippingAddress();
+    addressProvider.fetchBillingAddress();
     print('xfguo: AccountTab::initState()');
   }
 
@@ -49,14 +48,14 @@ class _AccountTabState extends State<AccountTab> {
     print('xfguo: AccountTab::build()');
     final userProvider = Provider.of<UserProvider>(context, listen: false);
     final user = userProvider.user;
-    final accountProvider = Provider.of<AccountProvider>(context);
+    final accountProvider = Provider.of<AddressProvider>(context);
+    final pmProvider = Provider.of<AtomiPaymentMethodProvider>(context);
 
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           if (user != null) ...[
-            Text('Hello, ${user.displayName}'),
             SizedBox(height: 10),
             CircleAvatar(
               backgroundImage: NetworkImage(user.photoURL),
@@ -80,7 +79,7 @@ class _AccountTabState extends State<AccountTab> {
                   onTap: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => AddressPage()),
+                      MaterialPageRoute(builder: (context) => AddressPage(is_shipping: true)),
                     );
                   },
                   child: ListTile(
@@ -89,15 +88,32 @@ class _AccountTabState extends State<AccountTab> {
                     subtitle: getAddressText(accountProvider.shippingAddress),
                   ),
                 ),
-                ListTile(
-                  leading: Icon(Icons.payment),
-                  title: Text('Billing Address'),
-                  subtitle: getAddressText(accountProvider.billingAddress),
+                GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => AddressPage(is_shipping: false)),
+                    );
+                  },
+                  child: ListTile(
+                    leading: Icon(Icons.location_on),
+                    title: Text('Billing Address'),
+                    subtitle: getAddressText(accountProvider.billingAddress),
+                  ),
                 ),
                 ListTile(
-                  leading: Icon(Icons.credit_card),
-                  title: Text('Credit Card'),
-                  subtitle: Text('**** **** **** 1234'),
+                  leading: Icon(Icons.payment),
+                  title: Text('Payment Method'),
+                  subtitle: Text(pmProvider.currentPaymentMethodId?.toString() ?? 'No payment method selected'),
+                  onTap: () async {
+                    final pmId = await showDialog<String>(
+                        context: context,
+                        builder: (context) => PaymentMethodDialog(),
+                    );
+                    print('xfguo: pmId = ${pmId}');
+                    Provider.of<AtomiPaymentMethodProvider>(context, listen: false)
+                        .setCurrentPaymentMethod(pmId);
+                  },
                 ),
               ],
             ),

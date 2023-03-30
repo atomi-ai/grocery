@@ -12,6 +12,11 @@ class Store {
       address: json['address'],
     );
   }
+
+  @override
+  String toString() {
+    return 'Store{id: $id, name: $name, address: $address}';
+  }
 }
 
 class Product {
@@ -44,11 +49,19 @@ class Product {
       category: json['category'],
     );
   }
+
+  @override
+  String toString() {
+    return 'Product(id: $id, name: $name, imageUrl: $imageUrl, '
+        'description: $description, price: $price, discount: $discount, '
+        'category: $category)';
+  }
 }
 
 class Address {
   final int id;
-  final String street;
+  final String line1;
+  final String line2;
   final String city;
   final String state;
   final String country;
@@ -56,7 +69,8 @@ class Address {
 
   Address({
     this.id,
-    this.street,
+    this.line1,
+    this.line2,
     this.city,
     this.state,
     this.country,
@@ -66,7 +80,8 @@ class Address {
   factory Address.fromJson(Map<String, dynamic> json) {
     return Address(
       id: json['id'],
-      street: json['street'],
+      line1: json['line1'],
+      line2: json['line2'],
       city: json['city'],
       state: json['state'],
       country: json['country'],
@@ -77,7 +92,8 @@ class Address {
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['id'] = this.id;
-    data['street'] = this.street;
+    data['line1'] = this.line1;
+    data['line2'] = this.line2;
     data['city'] = this.city;
     data['state'] = this.state;
     data['zipCode'] = this.zipCode;
@@ -87,8 +103,8 @@ class Address {
 
   @override
   String toString() {
-    return 'Address{id: $id, street: $street, city: $city, state: $state, country: $country, zipCode: $zipCode}';
+    return 'Address{id: $id, line1: $line1, line2: $line2, city: $city, state: $state, country: $country, zipCode: $zipCode}';
   }
 
-  static final UNSET_ADDRESS = Address(street: 'UNSET', city: 'UNSET');
+  static final UNSET_ADDRESS = Address(line1: 'UNSET', city: 'UNSET');
 }

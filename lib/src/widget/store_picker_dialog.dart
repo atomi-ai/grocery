@@ -13,15 +13,13 @@ class StorePickerDialog extends StatelessWidget {
       title: Text('Select Store'),
       content: SingleChildScrollView(
         child: ListBody(
-          children: stores
-              .map((store) => ListTile(
+          children: stores.map((store) => ListTile(
             title: Text(store.name),
             subtitle: Text(store.address),
             onTap: () {
               Navigator.of(context).pop(store);
             },
-          ))
-              .toList(),
+          )).toList(),
         ),
       ),
     );

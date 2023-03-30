@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:fryo/src/logic/address_provider.dart';
 import 'package:fryo/src/logic/store_provider.dart';
 import 'package:provider/provider.dart';
 
@@ -45,6 +46,7 @@ class _DashboardState extends State<Dashboard> {
 
     final storeProvider = Provider.of<StoreProvider>(context, listen: false);
     storeProvider.getDefaultStore();
+    Provider.of<AddressProvider>(context, listen:false).init();
 
     print('xfguo: _DashboardState::initState()');
   }

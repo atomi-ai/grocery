@@ -9,11 +9,12 @@ import 'package:provider/provider.dart';
 import './src/logic/cart_provider.dart';
 import './src/logic/favorites_provider.dart';
 import './src/logic/user_provider.dart';
-import './src/screens/dashboard.dart';
 import './src/screens/ProductPage.dart';
+import './src/screens/dashboard.dart';
 import './src/shared/config.dart';
 import 'firebase_options.dart';
-import 'src/logic/account_provider.dart';
+import 'src/logic/address_provider.dart';
+import 'src/logic/payment_method_provider.dart';
 
 Future<void> initStripe() async {
   Stripe.publishableKey = "pk_test_b23w3aM03rrkeOOFbpp2pPWJ";
@@ -21,6 +22,11 @@ Future<void> initStripe() async {
 }
 
 // TODO(lamuguo): Upgrade flutter to newer version (support ? and more)
+// TODO(lamuguo): 把fryo的名字改掉。
+// TODO(lamuguo): 升级flutter（这个太需要了）
+// TODO(lamuguo): Review all providers for data usage.
+// TODO(lamuguo): Dart lint / static code check.
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
@@ -35,10 +41,11 @@ void main() async {
       providers: [
         ChangeNotifierProvider(create: (_) => UserProvider()),
         ChangeNotifierProvider(create: (_) => CartProvider()),
-        ChangeNotifierProvider(create: (context) => FavoritesProvider()),
+        ChangeNotifierProvider(create: (_) => FavoritesProvider()),
         ChangeNotifierProvider(create: (_) => StoreProvider()),
         ChangeNotifierProvider(create: (_) => ProductProvider()),
-        ChangeNotifierProvider(create: (_) => AccountProvider()),
+        ChangeNotifierProvider(create: (_) => AddressProvider()),
+        ChangeNotifierProvider(create: (_) => AtomiPaymentMethodProvider()),
       ],
       child: MyApp(),
     ),

@@ -21,18 +21,33 @@ Future<T> post<T>(Uri url, T Function(Map<String, dynamic> json) parser,
   return parser(json);
 }
 
-void main() {
-  final address = Address(
-    street: '123 Main St',
-    city: 'Anytown',
-    state: 'CA',
-    country: 'USA',
-    zipCode: '12345',
-  );
+dynamic convertKeysToCamelCase(dynamic data) {
+  if (data is Map<String, dynamic>) {
+    Map<String, dynamic> newMap = {};
+    data.forEach((key, value) {
+      final newKey = key.split('_').map((e) => e[0].toUpperCase() + e.substring(1)).join('');
+      newMap[newKey] = convertKeysToCamelCase(value);
+    });
+    return newMap;
+  } else if (data is List) {
+    return data.map((e) => convertKeysToCamelCase(e)).toList();
+  } else {
+    return data;
+  }
+}
 
-  final response = post(
-    Uri.parse('http://127.0.0.1:8081/api/addresses'),
-    (json) => Address.fromJson(json),
-    body: jsonEncode(address.toJson()),
-  );
+String convertStr(String snakeCase) {
+  final camelCase = snakeCase.replaceAllMapped(
+      RegExp(r'_([a-z])'), (match) => match.group(1).toUpperCase());
+  return camelCase;
+}
+
+void main() {
+
+// Example usage:
+  String response = '{"object": "payment_method", "id": "pm_123", "card_exp_month": 10}';
+  print(convertStr(response));
+  // Map<String, dynamic> jsonData = jsonDecode(response);
+  // Map<String, dynamic> convertedData = convertKeysToCamelCase(jsonData);
+  // print('xfguo: $convertedData');
 }

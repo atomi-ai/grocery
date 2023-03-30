@@ -1,10 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_stripe/flutter_stripe.dart' as stripe;
+import 'package:fryo/src/entity/payment_intent_request.dart';
+import 'package:fryo/src/logic/address_provider.dart';
+import 'package:fryo/src/logic/backend_api.dart';
+import 'package:fryo/src/screens/address_selector.dart';
 import 'package:provider/provider.dart';
 
 import '../entity/entities.dart';
 import '../logic/cart_provider.dart';
+import '../logic/payment_method_provider.dart';
 import '../logic/product_provider.dart';
+import '../widget/util.dart';
+import 'payment_method_page.dart';
 
 class CheckoutPage extends StatefulWidget {
   final double total;
@@ -16,7 +23,17 @@ class CheckoutPage extends StatefulWidget {
 }
 
 class _CheckoutPageState extends State<CheckoutPage> {
-  String _paymentMethod = 'Credit Card';
+  String _paymentMethodId = '';
+  Address _shippingAddress = null;
+  String _currentPaymentMethodId = null;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    _shippingAddress = Provider.of<AddressProvider>(context).shippingAddress;
+    _currentPaymentMethodId = Provider.of<AtomiPaymentMethodProvider>(context).currentPaymentMethodId;
+  }
 
   Widget _buildOrderSummary(BuildContext context) {
     final cartProvider = Provider.of<CartProvider>(context);
@@ -36,39 +53,36 @@ class _CheckoutPageState extends State<CheckoutPage> {
 
       itemsList.add(
         Card(
-          child: Padding(
-            padding: EdgeInsets.symmetric(vertical: 0.0),
-            child: Row(
-              children: [
-                Image.asset(
-                  product.imageUrl,
-                  width: 50.0,
-                  height: 50.0,
-                  fit: BoxFit.cover,
+          child: Row(
+            children: [
+              Image.asset(
+                product.imageUrl,
+                width: 50.0,
+                height: 50.0,
+                fit: BoxFit.cover,
+              ),
+              SizedBox(width: 10.0),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      product.name,
+                      style: TextStyle(fontSize: 16.0),
+                    ),
+                    SizedBox(height: 5.0),
+                    Text(
+                      '${quantity} x \$${product.price}',
+                      style: TextStyle(fontSize: 14.0, color: Colors.grey),
+                    ),
+                  ],
                 ),
-                SizedBox(width: 10.0),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        product.name,
-                        style: TextStyle(fontSize: 16.0),
-                      ),
-                      SizedBox(height: 5.0),
-                      Text(
-                        '${quantity} x \$${product.price}',
-                        style: TextStyle(fontSize: 14.0, color: Colors.grey),
-                      ),
-                    ],
-                  ),
-                ),
-                Text(
-                  '\$${price.toStringAsFixed(2)}',
-                  style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
-                ),
-              ],
-            ),
+              ),
+              Text(
+                '\$${price.toStringAsFixed(2)}',
+                style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
+              ),
+            ],
           ),
         ),
       );
@@ -87,14 +101,11 @@ class _CheckoutPageState extends State<CheckoutPage> {
     );
 
     columnItems.add(
-      ConstrainedBox(
-        constraints: BoxConstraints(maxHeight: 180),
-        child: ListView.builder(
-          shrinkWrap: true,
-          physics: BouncingScrollPhysics(),
-          itemCount: itemsList.length,
-          itemBuilder: (BuildContext context, int index) => itemsList[index],
-        ),
+      ListView.builder(
+        shrinkWrap: true,
+        physics: BouncingScrollPhysics(),
+        itemCount: itemsList.length,
+        itemBuilder: (BuildContext context, int index) => itemsList[index],
       ),
     );
 
@@ -197,8 +208,21 @@ class _CheckoutPageState extends State<CheckoutPage> {
             style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
           ),
         ),
-        stripe.CardField(
-          controller: stripe.CardEditController(),
+        GestureDetector(
+          onTap: () async {
+            final pmId = await showDialog<String>(
+              context: context,
+              builder: (context) => PaymentMethodDialog(),
+            );
+            print('xfguo: pmId = ${pmId}');
+            Provider.of<AtomiPaymentMethodProvider>(context, listen: false)
+                .setCurrentPaymentMethod(pmId);
+          },
+          child: ListTile(
+            leading: Icon(Icons.payment),
+            title: Text('Payment Method'),
+            subtitle: Text(_currentPaymentMethodId ?? 'No payment method selected'),
+          ),
         ),
       ],
     );
@@ -206,7 +230,6 @@ class _CheckoutPageState extends State<CheckoutPage> {
 
   Widget _buildShippingAddress() {
     bool _hasShippingAddress = false;
-    String _shippingAddress = '123 Main St, Anytown, USA';
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -217,16 +240,25 @@ class _CheckoutPageState extends State<CheckoutPage> {
             style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
           ),
         ),
-        Container(
-          alignment: Alignment.center,
-          child: _hasShippingAddress
-              ? Container(child: Text(_shippingAddress))
-              : ElevatedButton(
-                  onPressed: () {
-                    // Implement add shipping address logic here
-                  },
-                  child: Text('Add Shipping Address'),
-                ),
+        GestureDetector(
+          onTap: () async {
+            final newSelectedAddress = await showDialog<Address>(
+              context: context,
+              builder: (context) => AddressSelector(),
+            );
+            if (newSelectedAddress == null) {
+              return;
+            }
+            print('xfguo: new selectedBillingAddress: ${newSelectedAddress}');
+            setState(() {
+              _shippingAddress = newSelectedAddress;
+            });
+          },
+          child: ListTile(
+            leading: Icon(Icons.location_on),
+            title: Text('Billing Address'),
+            subtitle: getAddressText(_shippingAddress),
+          ),
         ),
       ],
     );
@@ -241,18 +273,19 @@ class _CheckoutPageState extends State<CheckoutPage> {
         title: Text('Checkout'),
       ),
       body: Padding(
-        padding: EdgeInsets.all(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildOrderSummary(context),
-            // SizedBox(height: 10),
-            // _buildShippingAddress(),
-            SizedBox(height: 10),
-            _buildPaymentMethod(),
-          ],
-        ),
-      ),
+          padding: EdgeInsets.all(20),
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildOrderSummary(context),
+                // SizedBox(height: 10),
+                _buildShippingAddress(),
+                SizedBox(height: 10),
+                _buildPaymentMethod(),
+              ],
+            ),
+          )),
       bottomNavigationBar: BottomAppBar(
         child: Container(
           height: 60,
@@ -265,8 +298,15 @@ class _CheckoutPageState extends State<CheckoutPage> {
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
               ),
               ElevatedButton(
-                onPressed: () {
+                onPressed: () async {
                   // Implement place order logic here
+                  PaymentIntentRequest piReq = PaymentIntentRequest(
+                    amount: 1111,
+                    paymentMethodId: _currentPaymentMethodId,
+                    shippingAddressId: _shippingAddress.id,
+                  );
+                  print('xfguo: place order, ${piReq}');
+                  await placeOrder(piReq);
                 },
                 child: Text('Place Order'),
               ),

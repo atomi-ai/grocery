@@ -16,77 +16,103 @@ Future<String> getCurrentToken() async {
   return user.getIdToken();
 }
 
-Future<List<Store>> fetchStores() async {
-  String token = await getCurrentToken();
-  final response = await http.get(
-    Uri.parse('${Config.instance.apiUrl}/stores'),
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': 'Bearer $token',
-    },
-  );
-
-  if (response.statusCode != 200) {
-    throw Exception('Failed to fetch stores');
-  }
-
-  final jsonList = jsonDecode(response.body) as List<dynamic>;
-  final stores = jsonList.map((json) => Store.fromJson(json)).toList();
-  return stores;
+// Generic part of API calls.
+String requestToString(http.Request req) {
+  return '{ ${req.method} ${req.url}\tBody: ${req.body}}';
 }
 
-Future<List<Product>> fetchProducts(int storeId) async {
-  String token = await getCurrentToken();
-  final url = '${Config.instance.apiUrl}/products/$storeId';
-
-  final response = await http.get(
-    Uri.parse(url),
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': 'Bearer $token',
-    },
-  );
-
-  if (response.statusCode != 200) {
-    throw Exception('Failed to fetch products');
-  }
-
-  final jsonList = jsonDecode(response.body) as List<dynamic>;
-  print('xfguo: products jsonList: ${jsonList}');
-  final products = jsonList.map((json) => Product.fromJson(json)).toList();
-  return products;
+String responseToString(http.Response resp) {
+  return '{ ${resp.statusCode} \tHeaders: ${resp.headers}\n\tBody: ${resp.body}}';
 }
 
-// Address related
-Future<String> get(Uri uri) async {
-  String token = await getCurrentToken();
-  final response = await http.get(uri, headers: {
-    'Content-Type': 'application/json',
-    'Authorization': 'Bearer $token',
-  },);
+class HttpRequestException implements Exception {
+  final String method;
+  final Uri uri;
+  final dynamic body;
+  final http.Response response;
 
-  print('xfguo: GET response = ${response.statusCode}, body = ${response.body}');
+  HttpRequestException({
+    this.method,
+    this.uri,
+    this.body,
+    this.response,
+  });
+
+  @override
+  String toString() {
+    return 'HttpRequestException: $method $uri failed with status code ${response.statusCode}.'
+        ' Response body: ${response.body}';
+  }
+}
+
+Future<String> rawRequest({
+  String method,
+  Uri uri,
+  dynamic body,
+}) async {
+  String token = await getCurrentToken();
+  final client = http.Client();
+  final request = http.Request(method, uri)
+    ..headers.addAll({
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer $token',
+    })
+    ..body = body ?? '';
+
+  final streamedResponse = await client.send(request);
+  final response = await http.Response.fromStream(streamedResponse);
+  print('====xfguo: request: \n${requestToString(request)}');
+  print('****xfguo: response: \n${responseToString(response)}');
+
   if (response.statusCode != HttpStatus.ok) {
-    print('xfguo: Failed to fetch uri: ${uri}, resp = ${response.statusCode}, ${response.body}');
+    print('xfguo: error response: ${responseToString(response)}');
     throw Exception('Failed to fetch uri: ${uri}');
   }
   return response.body;
 }
 
-Future<T> post<T>(Uri url,
-    T Function(Map<String, dynamic> json) parser,
-    {dynamic body}) async {
-  String token = await getCurrentToken();
-  print('xfguo: ${url}, body: ${body}');
-  final response = await http.post(
-      url, body: body, headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer $token',
-      });
-  print('xfguo: post response = ${response.statusCode}, body = ${response.body}');
-  if (response.statusCode != HttpStatus.ok) {
-    throw Exception('Failed to post ${url} with data ${body}, and response code: ${response.statusCode}');
+Future<T> request<T, E>({
+  String method,
+  String url,
+  E Function(dynamic json) fromJson,
+  dynamic body,
+}) async {
+  final uri = Uri.parse(url);
+  final resBody = await rawRequest(method: method, uri: uri, body: body);
+
+  if (fromJson == null) {
+    return resBody as T;
   }
-  final json = jsonDecode(response.body);
-  return parser(json);
+  return parseData<T, E>(jsonDecode(resBody), fromJson);
+}
+
+T parseData<T, E>(dynamic json, E Function(dynamic json) fromJson) {
+  dynamic result;
+
+  if (json is Map<String, dynamic>) {
+    result = fromJson(json);
+  } else if (json is List<dynamic>) {
+    result = json.map<E>((e) => fromJson(e)).toList();
+  } else {
+    throw Exception('Unsupport JSON: ${json}');
+  }
+
+  print('xfguo: Parsed data: $result');
+  return result as T;
+}
+
+Future<T> get<T, E>({String url, E Function(dynamic json) fromJson = null}) async {
+  return request<T, E>(method: 'GET', url: url, fromJson: fromJson);
+}
+
+Future<dynamic> put({String url, dynamic Function(dynamic json) fromJson = null, dynamic body = null}) async {
+  return request(method: 'PUT', url: url, fromJson: fromJson, body: body);
+}
+
+Future<dynamic> post({String url, dynamic Function(dynamic json) fromJson = null, dynamic body = null}) async {
+  return request(method: 'POST', url: url, fromJson: fromJson, body: body);
+}
+
+Future<dynamic> delete({String url, dynamic Function(dynamic json) fromJson = null}) async {
+  return request(method: 'DELETE', url: url, fromJson: fromJson);
 }
