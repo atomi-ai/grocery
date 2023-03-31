@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fryo/src/logic/address_provider.dart';
 import 'package:fryo/src/logic/store_provider.dart';
+import 'package:fryo/src/screens/sign_in_dialog.dart';
 import 'package:provider/provider.dart';
 
 import './store_tab.dart';
@@ -10,7 +11,6 @@ import '../screens/account_tab.dart';
 import '../shared/colors.dart';
 import '../shared/fryo_icons.dart';
 import '../widget/dashboard_appbar.dart';
-import 'SignInPage.dart';
 import 'customize_tab.dart';
 import 'favorites_tab.dart';
 import 'my_cart.dart';
@@ -42,31 +42,12 @@ class _DashboardState extends State<Dashboard> {
   }
 
   void _showSignInDialog(BuildContext context) {
-    showDialog(
+    showModalBottomSheet(
       context: context,
-      barrierDismissible: false, // 用户必须点击按钮才能关闭对话框
+      isScrollControlled: true, // 允许全屏显示
+      backgroundColor: Colors.transparent, // 透明背景
       builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text('Sign In Required'),
-          content: SingleChildScrollView(
-            child: ListBody(
-              children: <Widget>[
-                Text('You must sign in to access the dashboard.'),
-              ],
-            ),
-          ),
-          actions: <Widget>[
-            TextButton(
-              child: Text('Sign In'),
-              onPressed: () {
-                Navigator.of(context).pop();
-                Navigator.of(context).push(MaterialPageRoute(
-                  builder: (context) => SignInPage(),
-                ));
-              },
-            ),
-          ],
-        );
+        return FullScreenSignInDialog();
       },
     );
   }
