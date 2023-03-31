@@ -311,6 +311,8 @@ class _CheckoutPageState extends State<CheckoutPage> {
                   );
                   print('xfguo: place order, ${piReq}');
                   await placeOrder(piReq);
+                  cartProvider.clearCart();
+                  Navigator.pop(context);
                 },
                 child: Text('Place Order'),
               ),
