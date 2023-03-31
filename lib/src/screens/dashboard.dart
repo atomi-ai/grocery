@@ -18,7 +18,7 @@ import 'my_cart.dart';
 class Dashboard extends StatefulWidget {
   final String pageTitle;
 
-  Dashboard({Key key, this.pageTitle}) : super(key: key);
+  Dashboard({Key? key, required this.pageTitle}) : super(key: key);
 
   @override
   _DashboardState createState() => _DashboardState();
@@ -39,10 +39,9 @@ class _DashboardState extends State<Dashboard> {
   @override
   void initState() {
     super.initState();
-
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _checkLoginStatus(context);
-    });
+    //
+    // WidgetsBinding.instance.addPostFrameCallback((_) {
+    // });
 
     final storeProvider = Provider.of<StoreProvider>(context, listen: false);
     storeProvider.getDefaultStore();
@@ -103,6 +102,8 @@ class _DashboardState extends State<Dashboard> {
 
   @override
   Widget build(BuildContext context) {
+    _checkLoginStatus(context);
+
     print('xfguo: _DashboardState::build()');
     final userProvider = Provider.of<UserProvider>(context);
     final storeProvider = Provider.of<StoreProvider>(context);
@@ -142,7 +143,7 @@ class _DashboardState extends State<Dashboard> {
               icon: userProvider.isLoggedIn
                   ? CircleAvatar(
                       radius: 14,
-                      backgroundImage: NetworkImage(userProvider.user.photoURL),
+                      backgroundImage: NetworkImage(userProvider.user?.photoURL ?? ''),
                     )
                   : Icon(Fryo.user_1),
               label: 'Account',

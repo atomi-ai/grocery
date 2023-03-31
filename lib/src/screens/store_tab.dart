@@ -16,20 +16,24 @@ class StoreTab extends StatefulWidget {
 }
 
 class _StoreTabState extends State<StoreTab> {
-  FavoritesProvider favoritesProvider;
-  ProductProvider productProvider;
+  // TODO(lamuguo): The providers are incorrectly used, please UPDATE.
+  late FavoritesProvider favoritesProvider;
+  late ProductProvider productProvider;
 
   @override
-  void initState() {
-    super.initState();
+  void didChangeDependencies() {
+    super.didChangeDependencies();
 
     favoritesProvider = Provider.of<FavoritesProvider>(context, listen: false);
     productProvider = Provider.of<ProductProvider>(context, listen: false);
 
     final storeProvider = Provider.of<StoreProvider>(context, listen: false);
-    if (storeProvider.defaultStore != null) {
-      productProvider.getProducts(storeProvider.defaultStore.id);
-    }
+    productProvider.getProducts(storeProvider.defaultStore.id);
+  }
+  @override
+  void initState() {
+    super.initState();
+
     print('xfguo: _StoreTabState::initState()');
   }
 
@@ -159,7 +163,7 @@ Widget headerCategoryItem(String name, IconData icon, {onPressed}) {
   );
 }
 
-Widget deals(String dealTitle, {onViewMore, List<Widget> items}) {
+Widget deals(String dealTitle, {onViewMore, required List<Widget> items}) {
   return Container(
     margin: EdgeInsets.only(top: 5),
     child: Column(

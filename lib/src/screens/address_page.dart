@@ -7,7 +7,7 @@ import 'new_address_dialog.dart';
 class AddressPage extends StatelessWidget {
   final bool is_shipping;
 
-  AddressPage({this.is_shipping});
+  AddressPage({required this.is_shipping});
 
   @override
   Widget build(BuildContext context) {

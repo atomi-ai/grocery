@@ -101,8 +101,12 @@ class _MyCartState extends State<MyCart> {
         itemCount: cartProvider.cartItems.length,
         itemBuilder: (BuildContext context, int index) {
           int productId = cartProvider.cartItems.keys.elementAt(index);
-          int quantity = cartProvider.cartItems[productId];
-          Product product = productProvider.productsMap[productId];
+          if (!cartProvider.cartItems.containsKey(productId) || !productProvider.productsMap.containsKey(productId)) {
+            print('xfguo: (ERROR) not found product(${productId}) in cartItems or productMap.');
+            return SizedBox.shrink();
+          }
+          int quantity = cartProvider.cartItems[productId]!;
+          Product product = productProvider.productsMap[productId]!;
           return _buildCartItem(context, product, quantity);
         },
       ),

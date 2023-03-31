@@ -10,15 +10,15 @@ class User {
   final String paymentMethodId;
 
   User({
-    this.id,
-    this.email,
-    this.role,
-    this.phone,
-    this.name,
-    this.defaultShippingAddressId,
-    this.defaultBillingAddressId,
-    this.stripeCustomerId,
-    this.paymentMethodId,
+    required this.id,
+    required this.email,
+    required this.role,
+    this.phone = '',
+    this.name = '',
+    this.defaultShippingAddressId = -1,
+    this.defaultBillingAddressId = -1,
+    this.stripeCustomerId = '',
+    this.paymentMethodId = '',
   });
 
   factory User.fromJson(Map<String, dynamic> json) {
@@ -26,8 +26,8 @@ class User {
       id: json['id'],
       email: json['email'],
       role: json['role'],
-      phone: json['phone'],
-      name: json['name'],
+      phone: json['phone'] ?? '',
+      name: json['name'] ?? '',
       defaultShippingAddressId: json['default_shipping_address_id'],
       defaultBillingAddressId: json['default_billing_address_id'],
       stripeCustomerId: json['stripe_customer_id'],

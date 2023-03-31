@@ -3,7 +3,7 @@ class Store {
   final String name;
   final String address;
 
-  Store({this.id, this.name, this.address});
+  Store({required this.id, required this.name, required this.address});
 
   factory Store.fromJson(Map<String, dynamic> json) {
     return Store(
@@ -29,13 +29,13 @@ class Product {
   final String category;
 
   Product({
-    this.id,
-    this.name,
-    this.imageUrl,
-    this.description,
-    this.price,
-    this.discount,
-    this.category,
+    required this.id,
+    required this.name,
+    required this.imageUrl,
+    required this.description,
+    required this.price,
+    required this.discount,
+    required this.category,
   });
 
   factory Product.fromJson(Map<String, dynamic> json) {
@@ -43,7 +43,7 @@ class Product {
       id: json['id'],
       name: json['name'],
       imageUrl: json['imageUrl'],
-      description: json['description'],
+      description: json['description'] ?? '',
       price: json['price'],
       discount: json['discount'],
       category: json['category'],
@@ -68,13 +68,13 @@ class Address {
   final String zipCode;
 
   Address({
-    this.id,
-    this.line1,
-    this.line2,
-    this.city,
-    this.state,
-    this.country,
-    this.zipCode,
+    required this.line1,
+    required this.city,
+    this.id = -1,
+    this.line2 = '',
+    this.state = '',
+    this.country = '',
+    this.zipCode = '',
   });
 
   factory Address.fromJson(Map<String, dynamic> json) {

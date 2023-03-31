@@ -22,7 +22,7 @@ class ProductProvider with ChangeNotifier {
   Set<int> _productIdsInCurrentStore = {};
   Set<int> get productIdsInCurrentStore => _productIdsInCurrentStore;
 
-  Timer _productsTimer;
+  Timer? _productsTimer;
 
   void _initializeProducts(List<Product> productsList) {
     _foods = [];

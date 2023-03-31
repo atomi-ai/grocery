@@ -59,7 +59,10 @@ class FavoritesTab extends StatelessWidget {
 
     List<Product> favoriteProducts = [];
     for (int favoriteId in favoritesProvider.favorites) {
-      favoriteProducts.add(productProvider.productsMap[favoriteId]);
+      if (!productProvider.productsMap.containsKey(favoriteId)) {
+        continue;
+      }
+      favoriteProducts.add(productProvider.productsMap[favoriteId]!);
     }
     return Consumer<FavoritesProvider>(
       builder: (context, favoritesProvider, child) {

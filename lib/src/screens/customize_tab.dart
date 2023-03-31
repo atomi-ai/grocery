@@ -10,8 +10,8 @@ class Ingredient {
   double price;
 
   Ingredient({
-    this.name,
-    this.price,
+    required this.name,
+    required this.price,
   });
 }
 
@@ -43,10 +43,13 @@ class _CustomizedTabState extends State<CustomizedTab> {
               child: Icon(Icons.remove),
               onTap: () {
                 setState(() {
+                  if (!_selectedIngredients.containsKey(ingredient)) {
+                    return;
+                  }
                   if (_selectedIngredients[ingredient] != null &&
-                      _selectedIngredients[ingredient] > 0 &&
+                      _selectedIngredients[ingredient]! > 0 &&
                       _totalSelectedWeight > 0) {
-                    _selectedIngredients[ingredient] -= 2.0;
+                    _selectedIngredients[ingredient] = _selectedIngredients[ingredient]! - 2.0;
                     _totalSelectedWeight -= 2.0;
                   }
                 });
@@ -66,7 +69,7 @@ class _CustomizedTabState extends State<CustomizedTab> {
                     if (_selectedIngredients[ingredient] == null) {
                       _selectedIngredients[ingredient] = 2.0;
                     } else {
-                      _selectedIngredients[ingredient] += 2.0;
+                      _selectedIngredients[ingredient] = _selectedIngredients[ingredient]! + 2.0;
                     }
                     _totalSelectedWeight += 2.0;
                   });

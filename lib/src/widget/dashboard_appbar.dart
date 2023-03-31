@@ -12,9 +12,9 @@ class DashboardAppBar extends StatelessWidget with PreferredSizeWidget {
   final Function(Store) onSelectStore;
 
   DashboardAppBar({
-    Key key,
-    this.defaultStore,
-    this.onSelectStore,
+    Key? key,
+    required this.defaultStore,
+    required this.onSelectStore,
   }) : super(key: key);
 
   @override

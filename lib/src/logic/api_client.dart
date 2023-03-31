@@ -11,7 +11,7 @@ import '../shared/config.dart';
 Future<String> getCurrentToken() async {
   final user = await FirebaseAuth.instance.currentUser;
   if (user == null) {
-    return null;
+    return '';
   }
   return user.getIdToken();
 }
@@ -32,10 +32,10 @@ class HttpRequestException implements Exception {
   final http.Response response;
 
   HttpRequestException({
-    this.method,
-    this.uri,
-    this.body,
-    this.response,
+    required this.method,
+    required this.uri,
+    required this.response,
+    this.body = '',
   });
 
   @override
@@ -46,8 +46,8 @@ class HttpRequestException implements Exception {
 }
 
 Future<String> rawRequest({
-  String method,
-  Uri uri,
+  required String method,
+  required Uri uri,
   dynamic body,
 }) async {
   String token = await getCurrentToken();
@@ -72,9 +72,9 @@ Future<String> rawRequest({
 }
 
 Future<T> request<T, E>({
-  String method,
-  String url,
-  E Function(dynamic json) fromJson,
+  required String method,
+  required String url,
+  E Function(dynamic json)? fromJson,
   dynamic body,
 }) async {
   final uri = Uri.parse(url);
@@ -101,18 +101,18 @@ T parseData<T, E>(dynamic json, E Function(dynamic json) fromJson) {
   return result as T;
 }
 
-Future<T> get<T, E>({String url, E Function(dynamic json) fromJson = null}) async {
+Future<T> get<T, E>({required String url, E Function(dynamic json)? fromJson = null}) async {
   return request<T, E>(method: 'GET', url: url, fromJson: fromJson);
 }
 
-Future<dynamic> put({String url, dynamic Function(dynamic json) fromJson = null, dynamic body = null}) async {
+Future<dynamic> put({required String url, dynamic Function(dynamic json)? fromJson = null, dynamic body = null}) async {
   return request(method: 'PUT', url: url, fromJson: fromJson, body: body);
 }
 
-Future<dynamic> post({String url, dynamic Function(dynamic json) fromJson = null, dynamic body = null}) async {
+Future<dynamic> post({required String url, dynamic Function(dynamic json)? fromJson = null, dynamic body = null}) async {
   return request(method: 'POST', url: url, fromJson: fromJson, body: body);
 }
 
-Future<dynamic> delete({String url, dynamic Function(dynamic json) fromJson = null}) async {
+Future<dynamic> delete({required String url, dynamic Function(dynamic json)? fromJson = null}) async {
   return request(method: 'DELETE', url: url, fromJson: fromJson);
 }

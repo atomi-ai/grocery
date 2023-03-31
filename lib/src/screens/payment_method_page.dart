@@ -5,14 +5,14 @@ import '../logic/payment_method_provider.dart';
 import 'new_payment_method_dialog.dart';
 
 class PaymentMethodDialog extends StatefulWidget {
-  const PaymentMethodDialog({Key key}) : super(key: key);
+  const PaymentMethodDialog({Key? key}) : super(key: key);
 
   @override
   _PaymentMethodDialogState createState() => _PaymentMethodDialogState();
 }
 
 class _PaymentMethodDialogState extends State<PaymentMethodDialog> {
-  String _currentPaymentMethodId = null;
+  String _currentPaymentMethodId = '';
 
   @override
   void didChangeDependencies() {

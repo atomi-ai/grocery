@@ -7,10 +7,11 @@ class PaymentIntentRequest {
   final String paymentMethodId;
 
   PaymentIntentRequest({
-    this.amount,
+    required this.amount,
+    required this.shippingAddressId,
+    required this.paymentMethodId,
     this.currency = DEFAULT_CURRENCY,
-    this.shippingAddressId,
-    this.paymentMethodId});
+  });
 
   factory PaymentIntentRequest.fromJson(Map<String, dynamic> json) {
     return PaymentIntentRequest(

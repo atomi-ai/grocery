@@ -8,10 +8,10 @@ import '../entity/entities.dart';
 import '../shared/config.dart';
 
 class StoreProvider with ChangeNotifier {
-  Store _defaultStore = null;
+  late Store _defaultStore;
   Store get defaultStore => _defaultStore;
 
-  Future<void> getDefaultStore() async {
+  Future<Store> getDefaultStore() async {
     String token = await getCurrentToken();
     final response = await http.get(
       Uri.parse('${Config.instance.apiUrl}/default-store'),
@@ -31,6 +31,7 @@ class StoreProvider with ChangeNotifier {
 
     _defaultStore = Store.fromJson(json);
     notifyListeners();
+    return _defaultStore;
   }
 
   Future<void> setDefaultStore(BuildContext context, Store store) async {

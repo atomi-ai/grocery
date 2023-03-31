@@ -6,17 +6,12 @@ import '../shared/config.dart';
 import 'api_client.dart' as api;
 
 class AtomiPaymentMethodProvider with ChangeNotifier {
-  List<AtomiPaymentMethod> _paymentMethods;
+  List<AtomiPaymentMethod> _paymentMethods = [];
   List<AtomiPaymentMethod> get paymentMethods => _paymentMethods;
-  String _currentPaymentMethodId;
+  String _currentPaymentMethodId = '';
   String get currentPaymentMethodId => _currentPaymentMethodId;
 
-  AtomiPaymentMethodProvider() {
-    _paymentMethods = [];
-    _currentPaymentMethodId = '';
-  }
-
-  AtomiPaymentMethod findPaymentMethodById(String pmId) {
+  AtomiPaymentMethod? findPaymentMethodById(String pmId) {
     for (var pm in _paymentMethods) {
       if (pm.id == pmId) {
         return pm;
@@ -35,13 +30,13 @@ class AtomiPaymentMethodProvider with ChangeNotifier {
       fromJson: (json) => User.fromJson(json),
     );
     print('xfguo: got user: ${user}');
-    _currentPaymentMethodId = user?.paymentMethodId;
+    _currentPaymentMethodId = user.paymentMethodId;
   }
 
   Future<String> _fetchCurrentPaymentMethodId() async {
     final User user = await api.get(url: '${Config.instance.apiUrl}/user',
         fromJson: (json) => User.fromJson(json));
-    return user?.paymentMethodId;
+    return user.paymentMethodId;
   }
 
   Future<void> _addNewPaymentMethod(String pmId) async {

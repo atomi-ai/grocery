@@ -6,8 +6,12 @@ import '../logic/favorites_provider.dart';
 import '../shared/colors.dart';
 import '../shared/styles.dart';
 
-Widget foodItem(Product food,
-    {double imgWidth, onLike, onTapped, bool isProductPage = false}) {
+Widget foodItem(
+    Product food,
+    {double imgWidth = 100,
+      onLike,
+      onTapped,
+      bool isProductPage = false}) {
   return Container(
     width: 180,
     height: 180,
@@ -29,8 +33,7 @@ Widget foodItem(Product food,
                 child: Hero(
                     transitionOnUserGestures: true,
                     tag: food.name,
-                    child: Image.asset(food.imageUrl,
-                        width: (imgWidth != null) ? imgWidth : 100)))),
+                    child: Image.asset(food.imageUrl, width: imgWidth)))),
         Positioned(
           bottom: (isProductPage) ? 10 : 70,
           right: 0,

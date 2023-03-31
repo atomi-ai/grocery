@@ -9,7 +9,7 @@ import '../widget/util.dart';
 import 'address_selector.dart';
 
 class NewPaymentMethodDialog extends StatefulWidget {
-  const NewPaymentMethodDialog({Key key}) : super(key: key);
+  const NewPaymentMethodDialog({Key? key}) : super(key: key);
 
   @override
   _NewPaymentMethodDialogState createState() => _NewPaymentMethodDialogState();
@@ -20,7 +20,7 @@ class _NewPaymentMethodDialogState extends State<NewPaymentMethodDialog> {
   final _controller = CardFormEditController();
   final _emailController = TextEditingController();
   final _phoneController = TextEditingController();
-  atomi.Address _selectedBillingAddress;
+  late atomi.Address _selectedBillingAddress;
 
   @override
   void didChangeDependencies() {
@@ -87,7 +87,7 @@ class _NewPaymentMethodDialogState extends State<NewPaymentMethodDialog> {
                     labelText: 'Email',
                   ),
                   validator: (value) {
-                    if (value.isEmpty) {
+                    if (value?.isEmpty ?? true) {
                       return 'Please enter email';
                     }
                     return null;
@@ -103,7 +103,7 @@ class _NewPaymentMethodDialogState extends State<NewPaymentMethodDialog> {
                     labelText: 'Phone',
                   ),
                   validator: (value) {
-                    if (value.isEmpty) {
+                    if (value?.isEmpty ?? true) {
                       return 'Please enter phone';
                     }
                     return null;

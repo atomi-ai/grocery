@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:provider/provider.dart';
-import 'package:smooth_star_rating/smooth_star_rating.dart';
 
 import '../entity/entities.dart';
 import '../logic/cart_provider.dart';
@@ -11,10 +11,9 @@ import '../shared/partials.dart';
 import '../shared/styles.dart';
 
 class ProductPage extends StatefulWidget {
-  final String pageTitle;
   final Product productData;
 
-  ProductPage({Key key, this.pageTitle, this.productData}) : super(key: key);
+  ProductPage({Key? key, required this.productData}) : super(key: key);
 
   @override
   _ProductPageState createState() => _ProductPageState();
@@ -73,18 +72,22 @@ class _ProductPageState extends State<ProductPage> {
                                 style: h3),
                             Container(
                               margin: EdgeInsets.only(top: 5, bottom: 20),
-                              child: SmoothStarRating(
+                              child: RatingBar.builder(
+                                initialRating: _rating,
+                                minRating: 1,
+                                direction: Axis.horizontal,
                                 allowHalfRating: false,
-                                onRated: (v) {
+                                itemCount: 5,
+                                itemPadding: EdgeInsets.symmetric(horizontal: 4.0),
+                                itemBuilder: (context, _) => Icon(
+                                  Icons.star,
+                                  color: Colors.orange,
+                                ),
+                                onRatingUpdate: (rating) {
                                   setState(() {
-                                    _rating = v;
+                                    _rating = rating;
                                   });
                                 },
-                                starCount: 5,
-                                rating: _rating,
-                                size: 27.0,
-                                color: Colors.orange,
-                                borderColor: Colors.orange,
                               ),
                             ),
                             Container(

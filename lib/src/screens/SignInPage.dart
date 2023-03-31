@@ -16,14 +16,14 @@ class _SignInPageState extends State<SignInPage> {
 
   Future<void> _signInWithGoogle() async {
     final GoogleSignIn googleSignIn = GoogleSignIn();
-    final GoogleSignInAccount googleUser = await googleSignIn.signIn();
+    final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
 
     if (googleUser == null) {
       throw Exception('User cancelled sign in');
     }
 
     final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
-    final GoogleAuthCredential credential = GoogleAuthProvider.credential(
+    final OAuthCredential credential = GoogleAuthProvider.credential(
       accessToken: googleAuth.accessToken,
       idToken: googleAuth.idToken,
     );
@@ -33,7 +33,11 @@ class _SignInPageState extends State<SignInPage> {
     // Call backend to make sure the user is registered in the backend.
 
     final userProvider = Provider.of<UserProvider>(context, listen: false);
-    userProvider.login(userCredential.user);
+    final user = userCredential.user;
+    if (user == null) {
+      throw Exception("Get null user in /login, please retry");
+    }
+    userProvider.login(user);
 
     // 登录成功后，导航回Dashboard
     Navigator.of(context).popUntil((route) => route.isFirst);

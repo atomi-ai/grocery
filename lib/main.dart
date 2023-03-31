@@ -3,13 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:fryo/src/logic/product_provider.dart';
 import 'package:fryo/src/logic/store_provider.dart';
-import 'package:fryo/src/screens/SignInPage.dart';
 import 'package:provider/provider.dart';
 
 import './src/logic/cart_provider.dart';
 import './src/logic/favorites_provider.dart';
 import './src/logic/user_provider.dart';
-import './src/screens/ProductPage.dart';
 import './src/screens/dashboard.dart';
 import './src/shared/config.dart';
 import 'firebase_options.dart';
@@ -32,8 +30,8 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  await Config.loadConfig();
-  initStripe();
+  Config.loadConfig();
+  await initStripe();
 
   print('xfguo: main() to run app');
   runApp(
@@ -66,9 +64,9 @@ class MyApp extends StatelessWidget {
       ),
       home: Dashboard(pageTitle: 'Welcome'),
       routes: <String, WidgetBuilder> {
-        '/signin': (BuildContext context) =>  SignInPage(),
-        '/dashboard': (BuildContext context) => Dashboard(),
-        '/productPage': (BuildContext context) => ProductPage(),
+        // '/signin': (BuildContext context) =>  SignInPage(),
+        '/dashboard': (BuildContext context) => Dashboard(pageTitle: 'Dashboard',),
+        // '/productPage': (BuildContext context) => ProductPage(),
       },
     );
   }

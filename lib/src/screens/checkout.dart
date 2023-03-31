@@ -14,9 +14,10 @@ import '../widget/util.dart';
 import 'payment_method_page.dart';
 
 class CheckoutPage extends StatefulWidget {
+  // TODO(lamuguo): Change the type to int.
   final double total;
 
-  CheckoutPage({this.total});
+  CheckoutPage({required this.total});
 
   @override
   _CheckoutPageState createState() => _CheckoutPageState();
@@ -24,8 +25,8 @@ class CheckoutPage extends StatefulWidget {
 
 class _CheckoutPageState extends State<CheckoutPage> {
   String _paymentMethodId = '';
-  Address _shippingAddress = null;
-  String _currentPaymentMethodId = null;
+  late Address _shippingAddress;
+  late String _currentPaymentMethodId;
 
   @override
   void didChangeDependencies() {
@@ -47,7 +48,10 @@ class _CheckoutPageState extends State<CheckoutPage> {
     for (var e in cartProvider.cartItems.entries) {
       int productId = e.key;
       int quantity = e.value;
-      Product product = productProvider.productsMap[productId];
+      if (!productProvider.productsMap.containsKey(productId)) {
+        continue;
+      }
+      Product product = productProvider.productsMap[productId]!;
       double price = product.price * quantity;
       total += price;
 
@@ -216,7 +220,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
             );
             print('xfguo: pmId = ${pmId}');
             Provider.of<AtomiPaymentMethodProvider>(context, listen: false)
-                .setCurrentPaymentMethod(pmId);
+                .setCurrentPaymentMethod(pmId ?? '');
           },
           child: ListTile(
             leading: Icon(Icons.payment),

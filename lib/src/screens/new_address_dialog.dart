@@ -29,7 +29,7 @@ class NewAddressDialog extends StatelessWidget {
                   controller: _line1Controller,
                   decoration: InputDecoration(hintText: 'Address Line 1'),
                   validator: (value) {
-                    if (value.isEmpty) {
+                    if (value?.isEmpty ?? true) {
                       return 'Please enter address';
                     }
                     return null;
@@ -39,7 +39,7 @@ class NewAddressDialog extends StatelessWidget {
                   controller: _line2Controller,
                   decoration: InputDecoration(hintText: 'Address Line 2'),
                   validator: (value) {
-                    if (value.isEmpty) {
+                    if (value?.isEmpty ?? true) {
                       return '(optional))';
                     }
                     return null;
@@ -49,7 +49,7 @@ class NewAddressDialog extends StatelessWidget {
                   controller: _cityController,
                   decoration: InputDecoration(hintText: 'City'),
                   validator: (value) {
-                    if (value.isEmpty) {
+                    if (value?.isEmpty ?? true) {
                       return 'Please enter city';
                     }
                     return null;
@@ -59,7 +59,7 @@ class NewAddressDialog extends StatelessWidget {
                   controller: _stateController,
                   decoration: InputDecoration(hintText: 'State/Province'),
                   validator: (value) {
-                    if (value.isEmpty) {
+                    if (value?.isEmpty ?? true) {
                       return 'Please enter state/province';
                     }
                     return null;
@@ -69,7 +69,7 @@ class NewAddressDialog extends StatelessWidget {
                   controller: _zipCodeController,
                   decoration: InputDecoration(hintText: 'ZIP/Postal Code'),
                   validator: (value) {
-                    if (value.isEmpty) {
+                    if (value?.isEmpty ?? true) {
                       return 'Please enter ZIP/postal code';
                     }
                     return null;
@@ -79,7 +79,7 @@ class NewAddressDialog extends StatelessWidget {
                   controller: _countryController,
                   decoration: InputDecoration(hintText: 'Country'),
                   validator: (value) {
-                    if (value.isEmpty) {
+                    if (value?.isEmpty ?? true) {
                       return 'Please enter country';
                     }
                     return null;
@@ -98,7 +98,7 @@ class NewAddressDialog extends StatelessWidget {
         TextButton(
           child: Text('Save'),
           onPressed: () {
-            if (_formKey.currentState.validate()) {
+            if (_formKey.currentState?.validate() ?? false) {
               final newAddress = Address(
                 line1: _line1Controller.text,
                 line2: _line2Controller.text,

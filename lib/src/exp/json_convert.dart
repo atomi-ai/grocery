@@ -36,18 +36,5 @@ dynamic convertKeysToCamelCase(dynamic data) {
   }
 }
 
-String convertStr(String snakeCase) {
-  final camelCase = snakeCase.replaceAllMapped(
-      RegExp(r'_([a-z])'), (match) => match.group(1).toUpperCase());
-  return camelCase;
-}
-
 void main() {
-
-// Example usage:
-  String response = '{"object": "payment_method", "id": "pm_123", "card_exp_month": 10}';
-  print(convertStr(response));
-  // Map<String, dynamic> jsonData = jsonDecode(response);
-  // Map<String, dynamic> convertedData = convertKeysToCamelCase(jsonData);
-  // print('xfguo: $convertedData');
 }

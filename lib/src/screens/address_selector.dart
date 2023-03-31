@@ -10,14 +10,12 @@ class AddressSelector extends StatefulWidget {
 }
 
 class _AddressSelectorState extends State<AddressSelector> {
-  Address _selectedAddress = null;
+  late Address _selectedAddress;
 
   @override
-  void initState() {
-    super.initState();
-
-    final addressProvider = Provider.of<AddressProvider>(context, listen: false);
-    _selectedAddress = addressProvider.billingAddress;
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _selectedAddress = Provider.of<AddressProvider>(context, listen: false).billingAddress;
   }
 
   void _selectAddress(Address address) {

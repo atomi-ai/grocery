@@ -5,7 +5,7 @@ import '../entity/entities.dart';
 class StorePickerDialog extends StatelessWidget {
   final List<Store> stores;
 
-  StorePickerDialog({Key key, this.stores}) : super(key: key);
+  StorePickerDialog({Key? key, required this.stores}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

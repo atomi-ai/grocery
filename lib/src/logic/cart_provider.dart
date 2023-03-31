@@ -9,7 +9,7 @@ class CartProvider with ChangeNotifier {
 
   void addToCart(Product product, int quantity) {
     if (_cartItems.containsKey(product.id)) {
-      _cartItems[product.id] += quantity;
+      _cartItems[product.id] = _cartItems[product.id]! + quantity;
     } else {
       _cartItems[product.id] = quantity;
     }
@@ -19,8 +19,8 @@ class CartProvider with ChangeNotifier {
 
   void removeFromCart(Product product) {
     if (_cartItems.containsKey(product.id)) {
-      _cartItems[product.id] -= 1;
-      if (_cartItems[product.id] <= 0) {
+      _cartItems[product.id] = _cartItems[product.id]! - 1;
+      if (_cartItems[product.id]! <= 0) {
         _cartItems.remove(product.id);
       }
     }
@@ -30,7 +30,7 @@ class CartProvider with ChangeNotifier {
 
   void incrementQuantity(Product product) {
     if (_cartItems.containsKey(product.id)) {
-      _cartItems[product.id] += 1;
+      _cartItems[product.id] = _cartItems[product.id]! + 1;
     }
     print('Cart items after incrementing: $_cartItems');
     notifyListeners();
@@ -38,8 +38,8 @@ class CartProvider with ChangeNotifier {
 
   void decrementQuantity(Product product) {
     if (_cartItems.containsKey(product.id)) {
-      _cartItems[product.id] -= 1;
-      if (_cartItems[product.id] <= 0) {
+      _cartItems[product.id] = _cartItems[product.id]! - 1;
+      if (_cartItems[product.id]! <= 0) {
         _cartItems.remove(product.id);
       }
     }

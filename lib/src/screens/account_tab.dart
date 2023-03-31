@@ -4,7 +4,6 @@ import 'package:fryo/src/logic/user_provider.dart';
 import 'package:fryo/src/screens/payment_method_page.dart';
 import 'package:provider/provider.dart';
 
-import '../entity/entities.dart';
 import '../logic/address_provider.dart';
 import '../widget/util.dart';
 import 'address_page.dart';
@@ -58,7 +57,7 @@ class _AccountTabState extends State<AccountTab> {
           if (user != null) ...[
             SizedBox(height: 10),
             CircleAvatar(
-              backgroundImage: NetworkImage(user.photoURL),
+              backgroundImage: NetworkImage(user.photoURL ?? ''),
               radius: 40,
             ),
             SizedBox(height: 20),
@@ -112,7 +111,7 @@ class _AccountTabState extends State<AccountTab> {
                     );
                     print('xfguo: pmId = ${pmId}');
                     Provider.of<AtomiPaymentMethodProvider>(context, listen: false)
-                        .setCurrentPaymentMethod(pmId);
+                        .setCurrentPaymentMethod(pmId ?? '');
                   },
                 ),
               ],
