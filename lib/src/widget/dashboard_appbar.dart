@@ -8,12 +8,12 @@ import '../logic/backend_api.dart';
 import 'store_picker_dialog.dart';
 
 class DashboardAppBar extends StatelessWidget with PreferredSizeWidget {
-  final Store defaultStore;
+  final Store? defaultStore;
   final Function(Store) onSelectStore;
 
   DashboardAppBar({
     Key? key,
-    required this.defaultStore,
+    this.defaultStore,
     required this.onSelectStore,
   }) : super(key: key);
 
@@ -38,7 +38,7 @@ class DashboardAppBar extends StatelessWidget with PreferredSizeWidget {
             onTap: () => _showStorePicker(context),
             child: FlexibleSpaceBar(
               title: Text(
-                defaultStore == null ? 'No Store' : defaultStore.address,
+                defaultStore?.address ?? 'No Store',
                 style: TextStyle(fontSize: 14),
               ),
               centerTitle: true,

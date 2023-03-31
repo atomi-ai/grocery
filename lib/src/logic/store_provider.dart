@@ -6,51 +6,36 @@ import 'package:http/http.dart' as http;
 
 import '../entity/entities.dart';
 import '../shared/config.dart';
+import 'api_client.dart' as api;
 
 class StoreProvider with ChangeNotifier {
-  late Store _defaultStore;
-  Store get defaultStore => _defaultStore;
+  Store? _defaultStore = null;
+  Store? get defaultStore => _defaultStore;
 
-  Future<Store> getDefaultStore() async {
-    String token = await getCurrentToken();
-    final response = await http.get(
-      Uri.parse('${Config.instance.apiUrl}/default-store'),
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer $token',
-      },
-    );
-
-    if (response.statusCode != 200) {
-      throw Exception('Failed to fetch default store');
-    }
-
-    print('xfguo: default store response: ${response.body}');
-    final json = jsonDecode(response.body) as Map<String, dynamic>;
-    final store = Store.fromJson(json);
-
-    _defaultStore = Store.fromJson(json);
-    notifyListeners();
-    return _defaultStore;
-  }
-
-  Future<void> setDefaultStore(BuildContext context, Store store) async {
-    if (store == null) {
-      return;
-    }
-    String token = await getCurrentToken();
-    final response = await http.put(
-      Uri.parse('${Config.instance.apiUrl}/default-store/${store.id}'),
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer $token',
-      },
-    );
-
-    if (response.statusCode != 200) {
-      throw Exception('Failed to set default store ${response.statusCode}: ${response.body}');
-    }
+  Store? setDefaultStore(Store? store) {
     _defaultStore = store;
     notifyListeners();
+    return store;
+  }
+
+  Future<Store?> getDefaultStore() async {
+    Store? store = null;
+    try {
+      store = await api.get(
+          url: '${Config.instance.apiUrl}/default-store',
+          fromJson: (json) => Store.fromJson(json)
+      );
+    } catch (e) {
+      print('xfguo: get exception in getting store');
+    }
+    return setDefaultStore(store);
+  }
+
+  Future<void> saveDefaultStore(BuildContext context, Store store) async {
+    final Store savedStore = await api.put(
+      url: '${Config.instance.apiUrl}/default-store/${store.id}',
+      fromJson: (json) => Store.fromJson(json)
+    );
+    setDefaultStore(savedStore);
   }
 }

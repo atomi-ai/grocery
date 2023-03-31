@@ -5,7 +5,6 @@ import 'package:fryo/src/logic/store_provider.dart';
 import 'package:provider/provider.dart';
 
 import '../entity/entities.dart';
-import "api_client.dart";
 import 'backend_api.dart';
 
 class ProductProvider with ChangeNotifier {
@@ -49,8 +48,8 @@ class ProductProvider with ChangeNotifier {
 
   void startFetchingProducts(BuildContext context) {
     stopFetchingProducts();
+    final storeProvider = Provider.of<StoreProvider>(context, listen: false);
     _productsTimer = Timer.periodic(Duration(minutes: 1), (timer) async {
-      final storeProvider = Provider.of<StoreProvider>(context, listen: false);
       final store = storeProvider.defaultStore;
       if (store == null) {
         return;

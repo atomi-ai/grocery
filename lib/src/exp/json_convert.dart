@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
 
-import '../entity/entities.dart';
 import 'package:http/http.dart' as http;
 
 Future<T> post<T>(Uri url, T Function(Map<String, dynamic> json) parser,

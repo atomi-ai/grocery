@@ -56,9 +56,9 @@ class _PaymentMethodDialogState extends State<PaymentMethodDialog> {
                       final pm = paymentMethods[index];
                       return ListTile(
                         title: Text(
-                            '**** **** **** ${pm.card?.last4}'),
+                            '**** **** **** ${pm.card.last4}'),
                         subtitle: Text(
-                            '${pm.card?.brand} \n${pm.card?.expMonth}/${pm.card?.expYear}'),
+                            '${pm.card.brand} \n${pm.card.expMonth}/${pm.card.expYear}'),
                         trailing: currentPaymentMethodId == pm.id
                             ? Icon(Icons.check)
                             : null,

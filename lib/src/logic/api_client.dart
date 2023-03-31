@@ -5,9 +5,6 @@ import 'dart:io';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:http/http.dart' as http;
 
-import '../entity/entities.dart';
-import '../shared/config.dart';
-
 Future<String> getCurrentToken() async {
   final user = await FirebaseAuth.instance.currentUser;
   if (user == null) {
@@ -22,7 +19,7 @@ String requestToString(http.Request req) {
 }
 
 String responseToString(http.Response resp) {
-  return '{ ${resp.statusCode} \tHeaders: ${resp.headers}\n\tBody: ${resp.body}}';
+  return '{ ${resp.statusCode}   Headers: ${resp.headers}\n    Body: ${resp.body}}';
 }
 
 class HttpRequestException implements Exception {
@@ -71,19 +68,26 @@ Future<String> rawRequest({
   return response.body;
 }
 
-Future<T> request<T, E>({
+Future<T?> request<T, E>({
   required String method,
   required String url,
   E Function(dynamic json)? fromJson,
   dynamic body,
+  T? defaultResult = null,
 }) async {
-  final uri = Uri.parse(url);
-  final resBody = await rawRequest(method: method, uri: uri, body: body);
+  try {
+    final uri = Uri.parse(url);
+    final resBody = await rawRequest(method: method, uri: uri, body: body);
 
-  if (fromJson == null) {
-    return resBody as T;
+    if (fromJson == null) {
+      return resBody as T;
+    }
+    return parseData<T, E>(jsonDecode(resBody), fromJson);
+  } catch (e, stackTrace) {
+    print('xfguo: api call, but got exception on ${method}, ${url}, exception: ${e}');
+    print('    Stack trace: $stackTrace');
+    return defaultResult;
   }
-  return parseData<T, E>(jsonDecode(resBody), fromJson);
 }
 
 T parseData<T, E>(dynamic json, E Function(dynamic json) fromJson) {
@@ -101,18 +105,18 @@ T parseData<T, E>(dynamic json, E Function(dynamic json) fromJson) {
   return result as T;
 }
 
-Future<T> get<T, E>({required String url, E Function(dynamic json)? fromJson = null}) async {
-  return request<T, E>(method: 'GET', url: url, fromJson: fromJson);
+Future<T?> get<T, E>({required String url, E Function(dynamic json)? fromJson = null, T? defaultResult = null}) async {
+  return request<T, E>(method: 'GET', url: url, fromJson: fromJson, defaultResult: defaultResult);
 }
 
-Future<dynamic> put({required String url, dynamic Function(dynamic json)? fromJson = null, dynamic body = null}) async {
+Future<T?> put<T, E>({required String url, E Function(dynamic json)? fromJson = null, dynamic body = null, T? defaultResult = null}) async {
   return request(method: 'PUT', url: url, fromJson: fromJson, body: body);
 }
 
-Future<dynamic> post({required String url, dynamic Function(dynamic json)? fromJson = null, dynamic body = null}) async {
+Future<T?> post<T, E>({required String url, E Function(dynamic json)? fromJson = null, dynamic body = null, T? defaultResult = null}) async {
   return request(method: 'POST', url: url, fromJson: fromJson, body: body);
 }
 
-Future<dynamic> delete({required String url, dynamic Function(dynamic json)? fromJson = null}) async {
+Future<T?> delete<T, E>({required String url, E Function(dynamic json)? fromJson = null, T? defaultResult = null}) async {
   return request(method: 'DELETE', url: url, fromJson: fromJson);
 }

@@ -4,6 +4,7 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:provider/provider.dart';
 
 import '../logic/user_provider.dart';
+import '../widget/util.dart';
 import 'dashboard.dart';
 
 class SignInPage extends StatefulWidget {
@@ -14,7 +15,7 @@ class SignInPage extends StatefulWidget {
 class _SignInPageState extends State<SignInPage> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
-  Future<void> _signInWithGoogle() async {
+  Future<void> _signInWithGoogle(BuildContext context) async {
     final GoogleSignIn googleSignIn = GoogleSignIn();
     final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
 
@@ -39,6 +40,7 @@ class _SignInPageState extends State<SignInPage> {
     }
     userProvider.login(user);
 
+    await refreshProviders(context);
     // 登录成功后，导航回Dashboard
     Navigator.of(context).popUntil((route) => route.isFirst);
     Navigator.of(context).pushReplacement(
@@ -59,7 +61,7 @@ class _SignInPageState extends State<SignInPage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             ElevatedButton(
-              onPressed: _signInWithGoogle,
+              onPressed: () => _signInWithGoogle(context),
               child: Text('Sign In with Google'),
             ),
           ],

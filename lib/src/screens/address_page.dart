@@ -84,7 +84,7 @@ class AddressPage extends StatelessWidget {
                   child: ListTile(
                     title: Text('${address.line1} ${address.line2}, ${address.city}'),
                     subtitle: Text('${address.state} ${address.zipCode}, ${address.country}'),
-                    selected: (is_shipping ? provider.shippingAddress?.id : provider.billingAddress?.id) == address.id,
+                    selected: (is_shipping ? provider.shippingAddress.id : provider.billingAddress.id) == address.id,
                     selectedTileColor: Colors.yellow,
                     selectedColor: Colors.redAccent,
                   ),

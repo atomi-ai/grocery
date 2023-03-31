@@ -19,7 +19,6 @@ class _AccountTabState extends State<AccountTab> {
     return FutureBuilder(
       future: func(),
       builder: (BuildContext context, AsyncSnapshot<T> snapshot) {
-        final userProvider = Provider.of<UserProvider>(context, listen: false);
         if (snapshot.hasError) {
           return Text('Error: ${snapshot.error}');
         }
@@ -103,7 +102,7 @@ class _AccountTabState extends State<AccountTab> {
                 ListTile(
                   leading: Icon(Icons.payment),
                   title: Text('Payment Method'),
-                  subtitle: Text(pmProvider.currentPaymentMethodId?.toString() ?? 'No payment method selected'),
+                  subtitle: Text(pmProvider.currentPaymentMethodId.toString()),
                   onTap: () async {
                     final pmId = await showDialog<String>(
                         context: context,
@@ -119,7 +118,12 @@ class _AccountTabState extends State<AccountTab> {
           ),
           ElevatedButton(
             onPressed: () async {
+              print('xfguo: before logout: isLoggedIn = ${userProvider.isLoggedIn}, ${userProvider.user}');
               await userProvider.logout();
+              print('xfguo: after1 logout: isLoggedIn = ${userProvider.isLoggedIn}, ${userProvider.user}');
+              await refreshProviders(context);
+
+              print('xfguo: after logout: isLoggedIn = ${userProvider.isLoggedIn}, ${userProvider.user}');
               Navigator.of(context).pushReplacement(
                 MaterialPageRoute(
                   builder: (context) => Dashboard(pageTitle: 'Welcome'),

@@ -6,6 +6,7 @@ class Store {
   Store({required this.id, required this.name, required this.address});
 
   factory Store.fromJson(Map<String, dynamic> json) {
+    print('xfguo: Store.fromJson json = ${json}');
     return Store(
       id: json['id'],
       name: json['name'],

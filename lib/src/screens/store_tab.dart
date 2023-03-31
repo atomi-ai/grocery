@@ -24,11 +24,14 @@ class _StoreTabState extends State<StoreTab> {
   void didChangeDependencies() {
     super.didChangeDependencies();
 
-    favoritesProvider = Provider.of<FavoritesProvider>(context, listen: false);
     productProvider = Provider.of<ProductProvider>(context, listen: false);
+    favoritesProvider = Provider.of<FavoritesProvider>(context, listen: false);
 
     final storeProvider = Provider.of<StoreProvider>(context, listen: false);
-    productProvider.getProducts(storeProvider.defaultStore.id);
+    if (storeProvider.defaultStore == null) {
+      return;
+    }
+    productProvider.getProducts(storeProvider.defaultStore!.id);
   }
   @override
   void initState() {
@@ -175,15 +178,7 @@ Widget deals(String dealTitle, {onViewMore, required List<Widget> items}) {
           height: 250,
           child: ListView(
             scrollDirection: Axis.horizontal,
-            children: (items != null)
-                ? items
-                : <Widget>[
-                    Container(
-                      margin: EdgeInsets.only(left: 15),
-                      child: Text('No items available at this moment.',
-                          style: taglineText),
-                    )
-                  ],
+            children: items
           ),
         )
       ],

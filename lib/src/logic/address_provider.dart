@@ -18,21 +18,21 @@ class AddressProvider with ChangeNotifier {
 
   Future<Address> fetchShippingAddress() async {
     _shippingAddress = await api.get(url: '${Config.instance.apiUrl}/addresses/shipping',
-        fromJson: (json) => Address.fromJson(json));
+        fromJson: (json) => Address.fromJson(json)) ?? Address.UNSET_ADDRESS;
     notifyListeners();
     return _shippingAddress;
   }
 
   Future<Address> fetchBillingAddress() async {
     _billingAddress = await api.get(url: '${Config.instance.apiUrl}/addresses/billing',
-            fromJson: (json) => Address.fromJson(json));
+            fromJson: (json) => Address.fromJson(json)) ?? Address.UNSET_ADDRESS;
     notifyListeners();
     return _billingAddress;
   }
 
   Future<void> fetchAddresses() async {
     _addresses = await api.get(url: '${Config.instance.apiUrl}/addresses',
-            fromJson: (json) => Address.fromJson(json));
+            fromJson: (json) => Address.fromJson(json)) ?? [];
     notifyListeners();
   }
 

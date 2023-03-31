@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_stripe/flutter_stripe.dart' as stripe;
 import 'package:fryo/src/entity/payment_intent_request.dart';
 import 'package:fryo/src/logic/address_provider.dart';
 import 'package:fryo/src/logic/backend_api.dart';
@@ -24,7 +23,6 @@ class CheckoutPage extends StatefulWidget {
 }
 
 class _CheckoutPageState extends State<CheckoutPage> {
-  String _paymentMethodId = '';
   late Address _shippingAddress;
   late String _currentPaymentMethodId;
 
@@ -225,7 +223,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
           child: ListTile(
             leading: Icon(Icons.payment),
             title: Text('Payment Method'),
-            subtitle: Text(_currentPaymentMethodId ?? 'No payment method selected'),
+            subtitle: Text(_currentPaymentMethodId),
           ),
         ),
       ],
@@ -233,7 +231,6 @@ class _CheckoutPageState extends State<CheckoutPage> {
   }
 
   Widget _buildShippingAddress() {
-    bool _hasShippingAddress = false;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [

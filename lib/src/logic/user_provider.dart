@@ -36,7 +36,12 @@ class UserProvider with ChangeNotifier {
   }
 
   Future<void> logout() async {
+    print('xfguo: logout - start');
     await FirebaseAuth.instance.signOut();
+    _user = null;
+    print('xfguo: logout - after signOut');
     notifyListeners();
+    print('xfguo: logout - after notifyListeners');
   }
+
 }

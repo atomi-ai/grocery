@@ -27,15 +27,6 @@ class Dashboard extends StatefulWidget {
 class _DashboardState extends State<Dashboard> {
   int _selectedIndex = 0;
 
-  void _checkLoginStatus(BuildContext context) async {
-    final userProvider = Provider.of<UserProvider>(context, listen: false);
-    bool isLoggedIn = await userProvider.isLoggedIn;
-
-    if (!isLoggedIn) {
-      _showSignInDialog(context);
-    }
-  }
-
   @override
   void initState() {
     super.initState();
@@ -48,18 +39,6 @@ class _DashboardState extends State<Dashboard> {
     Provider.of<AddressProvider>(context, listen:false).init();
 
     print('xfguo: _DashboardState::initState()');
-  }
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-
-    print('xfguo: _DashboardState::didChangeDependencies()');
-    final storeProvider = Provider.of<StoreProvider>(context, listen: false);
-    if (storeProvider.defaultStore != null) {
-      final productProvider = Provider.of<ProductProvider>(context, listen: false);
-      productProvider.getProducts(storeProvider.defaultStore.id);
-    }
   }
 
   void _showSignInDialog(BuildContext context) {
@@ -101,6 +80,27 @@ class _DashboardState extends State<Dashboard> {
   }
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    print('xfguo: _DashboardState::didChangeDependencies()');
+    final storeProvider = Provider.of<StoreProvider>(context, listen: false);
+    if (storeProvider.defaultStore != null) {
+      final productProvider = Provider.of<ProductProvider>(context, listen: false);
+      productProvider.getProducts(storeProvider.defaultStore!.id);
+    }
+  }
+
+  void _checkLoginStatus(BuildContext context) async {
+    final userProvider = Provider.of<UserProvider>(context);
+    bool isLoggedIn = await userProvider.isLoggedIn;
+
+    if (!isLoggedIn) {
+      _showSignInDialog(context);
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     _checkLoginStatus(context);
 
@@ -120,10 +120,10 @@ class _DashboardState extends State<Dashboard> {
     return Scaffold(
         backgroundColor: bgColor,
         appBar: DashboardAppBar(
-          defaultStore: storeProvider.defaultStore,
+          defaultStore: storeProvider.defaultStore ?? null,
           onSelectStore: (store) {
             setState(() {
-              storeProvider.setDefaultStore(context, store);
+              storeProvider.saveDefaultStore(context, store);
               productProvider.getProducts(store.id);
             });
           },

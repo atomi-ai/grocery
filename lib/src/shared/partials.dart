@@ -25,7 +25,7 @@ Widget foodItem(
             child: ElevatedButton(
                 onPressed: onTapped,
                 style: ElevatedButton.styleFrom(
-                  primary: Colors.white,
+                  backgroundColor: Colors.white,
                   elevation: (isProductPage) ? 20 : 12,
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(5)),
@@ -76,8 +76,7 @@ Widget foodItem(
         Positioned(
             top: 10,
             left: 10,
-            child: (food.discount != null)
-                ? Container(
+            child: Container(
                     padding:
                         EdgeInsets.only(top: 5, left: 10, right: 10, bottom: 5),
                     decoration: BoxDecoration(
@@ -87,7 +86,7 @@ Widget foodItem(
                         style: TextStyle(
                             color: Colors.white, fontWeight: FontWeight.w700)),
                   )
-                : SizedBox(width: 0))
+        )
       ],
     ),
   );
