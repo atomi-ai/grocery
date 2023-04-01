@@ -109,7 +109,8 @@ class _AccountTabState extends State<AccountTab> {
                 ListTile(
                   leading: Icon(Icons.payment),
                   title: Text('Payment Method'),
-                  subtitle: Text(pmProvider.currentPaymentMethodId.toString()),
+                  subtitle: getPaymentMethodText(pmProvider.findPaymentMethodById(
+                      pmProvider.currentPaymentMethodId)),
                   onTap: () async {
                     final pmId = await showDialog<String>(
                         context: context,

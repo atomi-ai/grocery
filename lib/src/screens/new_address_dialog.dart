@@ -104,7 +104,7 @@ class NewAddressDialog extends StatelessWidget {
                 line2: _line2Controller.text,
                 city: _cityController.text,
                 state: _stateController.text,
-                zipCode: _zipCodeController.text,
+                postalCode: _zipCodeController.text,
                 country: _countryController.text,
               );
               final accountProvider =

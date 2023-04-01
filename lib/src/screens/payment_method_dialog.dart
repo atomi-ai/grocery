@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../widget/util.dart';
 import 'new_payment_method_dialog.dart';
 import 'package:provider/provider.dart';
 
@@ -56,10 +57,7 @@ class _PaymentMethodDialogState extends State<PaymentMethodDialog> {
                     itemBuilder: (context, index) {
                       final pm = paymentMethods[index];
                       return ListTile(
-                        title: Text(
-                            '**** **** **** ${pm.card.last4}'),
-                        subtitle: Text(
-                            '${pm.card.brand} \n${pm.card.expMonth}/${pm.card.expYear}'),
+                        subtitle: getPaymentMethodText(pm),
                         trailing: currentPaymentMethodId == pm.id
                             ? Icon(Icons.check)
                             : null,

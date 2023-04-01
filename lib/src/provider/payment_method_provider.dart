@@ -20,6 +20,10 @@ class AtomiPaymentMethodProvider with ChangeNotifier {
     return null;
   }
 
+  AtomiPaymentMethod? getCurrentPaymentMethod() {
+    return findPaymentMethodById(_currentPaymentMethodId);
+  }
+
   Future<void> _saveCurrentPaymentMethod(String pmId) async {
     print('xfguo: _saveCurrentPaymentMethod: ${pmId}, ${_currentPaymentMethodId}');
     if (pmId == _currentPaymentMethodId) {
@@ -58,7 +62,7 @@ class AtomiPaymentMethodProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  void setCurrentPaymentMethod(String? pmId) async {
+  Future<void> setCurrentPaymentMethod(String? pmId) async {
     if (pmId == null) {
       return;
     }

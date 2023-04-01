@@ -66,7 +66,7 @@ class Address {
   final String city;
   final String state;
   final String country;
-  final String zipCode;
+  final String postalCode;
 
   Address({
     required this.line1,
@@ -75,18 +75,18 @@ class Address {
     this.line2 = '',
     this.state = '',
     this.country = '',
-    this.zipCode = '',
+    this.postalCode = '',
   });
 
   factory Address.fromJson(Map<String, dynamic> json) {
     return Address(
-      id: json['id'],
+      id: json['id'] ?? -1,
       line1: json['line1'],
       city: json['city'],
       line2: json['line2'] ?? '',
       state: json['state'] ?? 'CA',
       country: json['country'] ?? 'US',
-      zipCode: json['zipCode'] ?? '00000',
+      postalCode: json['postal_code'] ?? '00000',
     );
   }
 
@@ -97,14 +97,14 @@ class Address {
     data['line2'] = this.line2;
     data['city'] = this.city;
     data['state'] = this.state;
-    data['zipCode'] = this.zipCode;
+    data['postal_code'] = this.postalCode;
     data['country'] = this.country;
     return data;
   }
 
   @override
   String toString() {
-    return 'Address{id: $id, line1: $line1, line2: $line2, city: $city, state: $state, country: $country, zipCode: $zipCode}';
+    return 'Address{id: $id, line1: $line1, line2: $line2, city: $city, state: $state, country: $country, postalCode: $postalCode}';
   }
 
   static final UNSET_ADDRESS = Address(line1: 'UNSET', city: 'UNSET');

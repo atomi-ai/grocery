@@ -210,21 +210,25 @@ class _CheckoutPageState extends State<CheckoutPage> {
             style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
           ),
         ),
-        GestureDetector(
-          onTap: () async {
-            final String? pmId = await showDialog<String>(
-              context: context,
-              builder: (context) => PaymentMethodDialog(),
+        Consumer<AtomiPaymentMethodProvider>(
+          builder: (context, pmProvider, child) {
+            return GestureDetector(
+              onTap: () async {
+                final String? pmId = await showDialog<String>(
+                  context: context,
+                  builder: (context) => PaymentMethodDialog(),
+                );
+                print('xfguo: pmId = ${pmId}');
+                await pmProvider.setCurrentPaymentMethod(pmId);
+              },
+              child: ListTile(
+                leading: Icon(Icons.payment),
+                title: Text('Payment Method'),
+                subtitle:
+                    getPaymentMethodText(pmProvider.getCurrentPaymentMethod()),
+              ),
             );
-            print('xfguo: pmId = ${pmId}');
-            Provider.of<AtomiPaymentMethodProvider>(context, listen: false)
-                .setCurrentPaymentMethod(pmId);
           },
-          child: ListTile(
-            leading: Icon(Icons.payment),
-            title: Text('Payment Method'),
-            subtitle: Text(_currentPaymentMethodId),
-          ),
         ),
       ],
     );

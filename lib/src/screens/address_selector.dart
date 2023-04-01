@@ -68,7 +68,7 @@ class _AddressSelectorState extends State<AddressSelector> {
                 selected: _selectedAddress.id == address.id,
                 trailing: _selectedAddress.id == address.id ? Icon(Icons.check) : null,
                 title: Text('${address.line1} ${address.line2}, ${address.city}'),
-                subtitle: Text('${address.state} ${address.zipCode}, ${address.country}'),
+                subtitle: Text('${address.state} ${address.postalCode}, ${address.country}'),
               ),
             SizedBox(height: 10),
           ],

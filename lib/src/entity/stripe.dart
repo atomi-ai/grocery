@@ -1,3 +1,5 @@
+import 'entities.dart';
+
 class AtomiPaymentMethod {
   final String id;
   final AtomiCard card;
@@ -36,7 +38,7 @@ class AtomiPaymentMethod {
 }
 
 class AtomiBillingDetails {
-  final AtomiAddress address;
+  final Address address;
   final String email;
   final String phone;
 
@@ -53,7 +55,7 @@ class AtomiBillingDetails {
 
   factory AtomiBillingDetails.fromJson(Map<String, dynamic> json) {
     return AtomiBillingDetails(
-      address: AtomiAddress.fromJson(json['address']),
+      address: Address.fromJson(json['address']),
       email: json['email'],
       phone: json['phone'],
     );
@@ -64,52 +66,6 @@ class AtomiBillingDetails {
       'address': address.toJson(),
       'email': email,
       'phone': phone,
-    };
-  }
-}
-
-// TODO(lamuguo): Use Address in entities.dart instead.
-class AtomiAddress {
-  final String city;
-  final String country;
-  final String line1;
-  final String line2;
-  final String postalCode;
-  final String state;
-
-  AtomiAddress({
-    required this.line1,
-    required this.city,
-    this.line2 = '',
-    this.state = '',
-    this.country = '',
-    this.postalCode = '',
-  });
-
-  @override
-  String toString() {
-    return 'AtomiAddress{city: $city, country: $country, line1: $line1, line2: $line2, postalCode: $postalCode, state: $state}';
-  }
-
-  factory AtomiAddress.fromJson(Map<String, dynamic> json) {
-    return AtomiAddress(
-      line1: json['line1'],
-      city: json['city'],
-      line2: json['line2'] ?? '',
-      state: json['state'] ?? '',
-      postalCode: json['postal_code'] ?? '',
-      country: json['country'] ?? '',
-    );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      'city': city,
-      'country': country,
-      'line1': line1,
-      'line2': line2,
-      'postal_code': postalCode,
-      'state': state,
     };
   }
 }
