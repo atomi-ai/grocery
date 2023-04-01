@@ -28,10 +28,10 @@ class User {
       role: json['role'],
       phone: json['phone'] ?? '',
       name: json['name'] ?? '',
-      defaultShippingAddressId: json['default_shipping_address_id'],
-      defaultBillingAddressId: json['default_billing_address_id'],
-      stripeCustomerId: json['stripe_customer_id'],
-      paymentMethodId: json['payment_method_id'],
+      defaultShippingAddressId: json['default_shipping_address_id'] ?? -1,
+      defaultBillingAddressId: json['default_billing_address_id'] ?? -1,
+      stripeCustomerId: json['stripe_customer_id'] ?? '',
+      paymentMethodId: json['payment_method_id'] ?? '',
     );
   }
 

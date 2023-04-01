@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:fryo/src/logic/payment_method_provider.dart';
 import 'package:fryo/src/logic/user_provider.dart';
-import 'package:fryo/src/screens/payment_method_page.dart';
+import 'package:fryo/src/screens/payment_method_dialog.dart';
 import 'package:provider/provider.dart';
 
-import '../logic/address_provider.dart';
-import '../widget/util.dart';
-import 'address_page.dart';
-import 'dashboard.dart';
+import '../../logic/address_provider.dart';
+import '../util.dart';
+import '../../screens/address_page.dart';
+import '../dashboard.dart';
 
 class AccountTab extends StatefulWidget {
   @override
@@ -110,7 +110,7 @@ class _AccountTabState extends State<AccountTab> {
                     );
                     print('xfguo: pmId = ${pmId}');
                     Provider.of<AtomiPaymentMethodProvider>(context, listen: false)
-                        .setCurrentPaymentMethod(pmId ?? '');
+                        .setCurrentPaymentMethod(pmId);
                   },
                 ),
               ],

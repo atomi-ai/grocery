@@ -10,7 +10,7 @@ import '../logic/cart_provider.dart';
 import '../logic/payment_method_provider.dart';
 import '../logic/product_provider.dart';
 import '../widget/util.dart';
-import 'payment_method_page.dart';
+import 'payment_method_dialog.dart';
 
 class CheckoutPage extends StatefulWidget {
   // TODO(lamuguo): Change the type to int.
@@ -212,13 +212,13 @@ class _CheckoutPageState extends State<CheckoutPage> {
         ),
         GestureDetector(
           onTap: () async {
-            final pmId = await showDialog<String>(
+            final String? pmId = await showDialog<String>(
               context: context,
               builder: (context) => PaymentMethodDialog(),
             );
             print('xfguo: pmId = ${pmId}');
             Provider.of<AtomiPaymentMethodProvider>(context, listen: false)
-                .setCurrentPaymentMethod(pmId ?? '');
+                .setCurrentPaymentMethod(pmId);
           },
           child: ListTile(
             leading: Icon(Icons.payment),

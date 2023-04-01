@@ -58,16 +58,17 @@ class AtomiPaymentMethodProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  void setCurrentPaymentMethod(String pmId) async {
+  void setCurrentPaymentMethod(String? pmId) async {
+    if (pmId == null) {
+      return;
+    }
     await _saveCurrentPaymentMethod(pmId);
     notifyListeners();
   }
 
   Future<void> addPaymentMethod(String pmId) async {
-    await Future.wait([
-      _addNewPaymentMethod(pmId),
-      _fetchPaymentMethods(),
-    ]);
+    await _addNewPaymentMethod(pmId);
+    await _fetchPaymentMethods();
     notifyListeners();
   }
 }

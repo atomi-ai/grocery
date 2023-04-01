@@ -1,16 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
-import 'package:fryo/src/logic/payment_method_provider.dart';
 import 'package:provider/provider.dart';
 
+import '../widget/shared/custom_alert_dialog.dart';
 import '../entity/entities.dart' as atomi;
 import '../logic/address_provider.dart';
+import '../logic/payment_method_provider.dart';
 import '../widget/util.dart';
 import 'address_selector.dart';
 
 class NewPaymentMethodDialog extends StatefulWidget {
-  const NewPaymentMethodDialog({Key? key}) : super(key: key);
-
   @override
   _NewPaymentMethodDialogState createState() => _NewPaymentMethodDialogState();
 }
@@ -18,14 +17,15 @@ class NewPaymentMethodDialog extends StatefulWidget {
 class _NewPaymentMethodDialogState extends State<NewPaymentMethodDialog> {
   final _formKey = GlobalKey<FormState>();
   final _controller = CardFormEditController();
+  atomi.Address? _selectedBillingAddress = null;
   final _emailController = TextEditingController();
   final _phoneController = TextEditingController();
-  late atomi.Address _selectedBillingAddress;
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    _selectedBillingAddress = Provider.of<AddressProvider>(context).billingAddress;
+    _selectedBillingAddress =
+        Provider.of<AddressProvider>(context, listen: false).billingAddress;
   }
 
   @override
@@ -37,13 +37,12 @@ class _NewPaymentMethodDialogState extends State<NewPaymentMethodDialog> {
 
   @override
   Widget build(BuildContext context) {
-    return AlertDialog(
-      title: Text('New Payment Method'),
+    return CustomAlertDialog(
+      title: 'New Payment Method',
       content: Form(
         key: _formKey,
         child: SingleChildScrollView(
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
             mainAxisSize: MainAxisSize.min,
             children: [
               CardFormField(
@@ -67,7 +66,8 @@ class _NewPaymentMethodDialogState extends State<NewPaymentMethodDialog> {
                   if (newSelectedAddress == null) {
                     return;
                   }
-                  print('xfguo: new selectedBillingAddress: ${newSelectedAddress}');
+                  print(
+                      'xfguo: new selectedBillingAddress: ${newSelectedAddress}');
                   setState(() {
                     _selectedBillingAddress = newSelectedAddress;
                   });
@@ -128,6 +128,8 @@ class _NewPaymentMethodDialogState extends State<NewPaymentMethodDialog> {
           },
         ),
       ],
+      width: MediaQuery.of(context).size.width * 0.9,
+      height: MediaQuery.of(context).size.height * 0.9,
     );
   }
 
@@ -149,12 +151,13 @@ class _NewPaymentMethodDialogState extends State<NewPaymentMethodDialog> {
 
     final paymentMethod = await Stripe.instance.createPaymentMethod(
         params: PaymentMethodParams.card(
-          paymentMethodData: PaymentMethodData(
-            billingDetails: billingDetails,
-          ),
-        ));
+      paymentMethodData: PaymentMethodData(
+        billingDetails: billingDetails,
+      ),
+    ));
 
-    final pmProvider = Provider.of<AtomiPaymentMethodProvider>(context, listen: false);
+    final pmProvider =
+        Provider.of<AtomiPaymentMethodProvider>(context, listen: false);
     pmProvider.addPaymentMethod(paymentMethod.id);
 
     // pop the current page

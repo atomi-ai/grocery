@@ -82,11 +82,11 @@ class Address {
     return Address(
       id: json['id'],
       line1: json['line1'],
-      line2: json['line2'],
       city: json['city'],
-      state: json['state'],
-      country: json['country'],
-      zipCode: json['zipCode'],
+      line2: json['line2'] ?? '',
+      state: json['state'] ?? 'CA',
+      country: json['country'] ?? 'US',
+      zipCode: json['zipCode'] ?? '00000',
     );
   }
 

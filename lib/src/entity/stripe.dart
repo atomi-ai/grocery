@@ -11,6 +11,11 @@ class AtomiPaymentMethod {
     this.type = '',
   });
 
+  @override
+  String toString() {
+    return 'AtomiPaymentMethod{id: $id, card: $card, billingDetails: $billingDetails, type: $type}';
+  }
+
   factory AtomiPaymentMethod.fromJson(Map<String, dynamic> json) {
     return AtomiPaymentMethod(
       id: json['id'],
@@ -40,6 +45,11 @@ class AtomiBillingDetails {
     this.email = '',
     this.phone = '',
   });
+
+  @override
+  String toString() {
+    return 'AtomiBillingDetails{address: $address, email: $email, phone: $phone}';
+  }
 
   factory AtomiBillingDetails.fromJson(Map<String, dynamic> json) {
     return AtomiBillingDetails(
@@ -75,6 +85,11 @@ class AtomiAddress {
     this.country = '',
     this.postalCode = '',
   });
+
+  @override
+  String toString() {
+    return 'AtomiAddress{city: $city, country: $country, line1: $line1, line2: $line2, postalCode: $postalCode, state: $state}';
+  }
 
   factory AtomiAddress.fromJson(Map<String, dynamic> json) {
     return AtomiAddress(
@@ -113,6 +128,11 @@ class AtomiCard {
     required this.expYear,
     required this.last4,
   });
+
+  @override
+  String toString() {
+    return 'AtomiCard{brand: $brand, country: $country, expMonth: $expMonth, expYear: $expYear, last4: $last4}';
+  }
 
   factory AtomiCard.fromJson(Map<String, dynamic> json) {
     return AtomiCard(

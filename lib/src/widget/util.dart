@@ -5,7 +5,10 @@ import '../entity/entities.dart';
 import '../logic/product_provider.dart';
 import '../logic/store_provider.dart';
 
-Widget getAddressText(Address t) {
+Widget getAddressText(Address? t) {
+  if (t == null) {
+    return Text('not set address');
+  }
   return Text('${t.line1} ${t.line2}, ${t.city}, ${t.state}');
 }
 

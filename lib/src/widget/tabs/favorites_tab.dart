@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../entity/entities.dart';
-import '../logic/favorites_provider.dart';
-import '../logic/product_provider.dart';
-import '../shared/colors.dart';
-import 'ProductPage.dart';
+import '../../entity/entities.dart';
+import '../../logic/favorites_provider.dart';
+import '../../logic/product_provider.dart';
+import '../../shared/colors.dart';
+import '../../screens/ProductPage.dart';
 
 class FavoritesTab extends StatelessWidget {
   Widget getItem(bool hidden, Product product, FavoritesProvider favoritesProvider, BuildContext context) {

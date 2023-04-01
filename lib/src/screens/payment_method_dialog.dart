@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
+import 'new_payment_method_dialog.dart';
 import 'package:provider/provider.dart';
 
 import '../logic/payment_method_provider.dart';
-import 'new_payment_method_dialog.dart';
 
 class PaymentMethodDialog extends StatefulWidget {
   const PaymentMethodDialog({Key? key}) : super(key: key);
@@ -12,7 +12,6 @@ class PaymentMethodDialog extends StatefulWidget {
 }
 
 class _PaymentMethodDialogState extends State<PaymentMethodDialog> {
-  String _currentPaymentMethodId = '';
 
   @override
   void didChangeDependencies() {
@@ -20,15 +19,18 @@ class _PaymentMethodDialogState extends State<PaymentMethodDialog> {
 
     final pmProvider = Provider.of<AtomiPaymentMethodProvider>(context, listen: false);
     pmProvider.fetchPaymentMethods();
-    _currentPaymentMethodId = pmProvider.currentPaymentMethodId;
   }
 
   // TODO(lamuguo): Add a functionality to delete a payment method.
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
+    print('xfguo: window size: ${size}');
+
     return Dialog(
       child: Container(
-        width: double.infinity,
+        width: size.width * 0.9,
+        height: size.height * 0.9,
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -47,8 +49,7 @@ class _PaymentMethodDialogState extends State<PaymentMethodDialog> {
               child: Consumer<AtomiPaymentMethodProvider>(
                 builder: (context, provider, child) {
                   final paymentMethods = provider.paymentMethods;
-                  final currentPaymentMethodId =
-                      provider.currentPaymentMethodId;
+                  final currentPaymentMethodId = provider.currentPaymentMethodId;
 
                   return ListView.builder(
                     itemCount: paymentMethods.length,
@@ -64,7 +65,8 @@ class _PaymentMethodDialogState extends State<PaymentMethodDialog> {
                             : null,
                         onTap: () {
                           setState(() {
-                            _currentPaymentMethodId = pm.id;
+                            print('xfguo: choose new payment method: ${pm.id}');
+                            provider.setCurrentPaymentMethod(pm.id);
                           });
                           Navigator.pop(context, pm.id);
                         },
@@ -74,12 +76,11 @@ class _PaymentMethodDialogState extends State<PaymentMethodDialog> {
                 },
               ),
             ),
-            TextButton(
+            ElevatedButton(
               onPressed: () {
                 showDialog(
                   context: context,
-                  builder: (BuildContext context) =>
-                      NewPaymentMethodDialog(),
+                  builder: (context) => NewPaymentMethodDialog(),
                 );
               },
               child: Text('Add Payment Method'),

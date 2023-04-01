@@ -4,16 +4,16 @@ import 'package:fryo/src/logic/store_provider.dart';
 import 'package:fryo/src/screens/sign_in_dialog.dart';
 import 'package:provider/provider.dart';
 
-import './store_tab.dart';
+import 'tabs/store_tab.dart';
 import '../logic/product_provider.dart';
 import '../logic/user_provider.dart';
-import '../screens/account_tab.dart';
+import 'tabs/account_tab.dart';
 import '../shared/colors.dart';
 import '../shared/fryo_icons.dart';
-import '../widget/dashboard_appbar.dart';
-import 'customize_tab.dart';
-import 'favorites_tab.dart';
-import 'my_cart.dart';
+import 'dashboard_appbar.dart';
+import 'tabs/customize_tab.dart';
+import 'tabs/favorites_tab.dart';
+import 'tabs/my_cart.dart';
 
 class Dashboard extends StatefulWidget {
   final String pageTitle;

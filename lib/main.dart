@@ -8,7 +8,7 @@ import 'package:provider/provider.dart';
 import './src/logic/cart_provider.dart';
 import './src/logic/favorites_provider.dart';
 import './src/logic/user_provider.dart';
-import './src/screens/dashboard.dart';
+import 'src/widget/dashboard.dart';
 import './src/shared/config.dart';
 import 'firebase_options.dart';
 import 'src/logic/address_provider.dart';

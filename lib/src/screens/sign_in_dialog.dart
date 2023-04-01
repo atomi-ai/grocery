@@ -5,7 +5,7 @@ import 'package:provider/provider.dart';
 
 import '../logic/user_provider.dart';
 import '../widget/util.dart';
-import 'dashboard.dart';
+import '../widget/dashboard.dart';
 
 class FullScreenSignInDialog extends StatefulWidget {
   @override
