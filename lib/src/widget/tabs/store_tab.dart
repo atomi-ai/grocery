@@ -16,32 +16,11 @@ class StoreTab extends StatefulWidget {
 }
 
 class _StoreTabState extends State<StoreTab> {
-  // TODO(lamuguo): The providers are incorrectly used, please UPDATE.
-  late FavoritesProvider favoritesProvider;
-  late ProductProvider productProvider;
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-
-    productProvider = Provider.of<ProductProvider>(context, listen: false);
-    favoritesProvider = Provider.of<FavoritesProvider>(context, listen: false);
-
-    final storeProvider = Provider.of<StoreProvider>(context, listen: false);
-    if (storeProvider.defaultStore == null) {
-      return;
-    }
-    productProvider.getProducts(storeProvider.defaultStore!.id);
-  }
-  @override
-  void initState() {
-    super.initState();
-
-    print('xfguo: _StoreTabState::initState()');
-  }
 
   @override
   Widget build(BuildContext context) {
+    final productProvider = Provider.of<ProductProvider>(context);
+    final favoritesProvider = Provider.of<FavoritesProvider>(context);
     print('xfguo: _StoreTabState::build()');
     return ListView(children: <Widget>[
       headerTopCategories(),

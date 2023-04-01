@@ -2,20 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:fryo/src/shared/colors.dart';
 import 'package:fryo/src/shared/fryo_icons.dart';
 import 'package:fryo/src/shared/styles.dart';
+import 'package:provider/provider.dart';
 
 import '../entity/entities.dart';
 import '../api/backend_api.dart';
+import '../provider/product_provider.dart';
+import '../provider/store_provider.dart';
 import 'store_picker_dialog.dart';
 
 class DashboardAppBar extends StatelessWidget with PreferredSizeWidget {
-  final Store? defaultStore;
-  final Function(Store) onSelectStore;
-
-  DashboardAppBar({
-    Key? key,
-    this.defaultStore,
-    required this.onSelectStore,
-  }) : super(key: key);
+  DashboardAppBar({Key? key}) : super(key: key);
 
   @override
   Size get preferredSize => Size.fromHeight(kToolbarHeight);
@@ -34,15 +30,19 @@ class DashboardAppBar extends StatelessWidget with PreferredSizeWidget {
             style: logoWhiteStyle,
             textAlign: TextAlign.center,
           ),
-          GestureDetector(
-            onTap: () => _showStorePicker(context),
-            child: FlexibleSpaceBar(
-              title: Text(
-                defaultStore?.address ?? 'No Store',
-                style: TextStyle(fontSize: 14),
-              ),
-              centerTitle: true,
-            ),
+          Consumer<StoreProvider>(
+            builder: (context, storeProvider, child) {
+              return GestureDetector(
+                onTap: () => _showStorePicker(context),
+                child: FlexibleSpaceBar(
+                  title: Text(
+                    storeProvider.defaultStore?.address ?? 'No Store',
+                    style: TextStyle(fontSize: 14),
+                  ),
+                  centerTitle: true,
+                ),
+              );
+            },
           ),
         ],
       ),
@@ -67,7 +67,10 @@ class DashboardAppBar extends StatelessWidget with PreferredSizeWidget {
     );
 
     if (selectedStore != null) {
-      onSelectStore(selectedStore);
+      await Provider.of<StoreProvider>(context, listen: false)
+          .saveDefaultStore(context, selectedStore);
+      await Provider.of<ProductProvider>(context, listen: false)
+          .getProducts(selectedStore.id);
     }
   }
 }

@@ -26,17 +26,17 @@ class Dashboard extends StatefulWidget {
 
 class _DashboardState extends State<Dashboard> {
   int _selectedIndex = 0;
+  final _tabs = [
+    StoreTab(),
+    MyCart(),
+    CustomizedTab(),
+    FavoritesTab(),
+    AccountTab(),
+  ];
 
   @override
   void initState() {
     super.initState();
-    //
-    // WidgetsBinding.instance.addPostFrameCallback((_) {
-    // });
-
-    final storeProvider = Provider.of<StoreProvider>(context, listen: false);
-    storeProvider.getDefaultStore();
-    Provider.of<AddressProvider>(context, listen:false).init();
 
     print('xfguo: _DashboardState::initState()');
   }
@@ -61,15 +61,21 @@ class _DashboardState extends State<Dashboard> {
   }
 
   @override
-  void didChangeDependencies() {
+  void didChangeDependencies() async {
     super.didChangeDependencies();
 
     print('xfguo: _DashboardState::didChangeDependencies()');
+
     final storeProvider = Provider.of<StoreProvider>(context, listen: false);
+    await storeProvider.getDefaultStore();
+
     if (storeProvider.defaultStore != null) {
-      final productProvider = Provider.of<ProductProvider>(context, listen: false);
-      productProvider.getProducts(storeProvider.defaultStore!.id);
+      final productProvider =
+          Provider.of<ProductProvider>(context, listen: false);
+      await productProvider.getProducts(storeProvider.defaultStore!.id);
     }
+
+    // await Provider.of<AddressProvider>(context, listen:false).init();
   }
 
   void _checkLoginStatus(BuildContext context) async {
@@ -83,58 +89,56 @@ class _DashboardState extends State<Dashboard> {
 
   @override
   Widget build(BuildContext context) {
-    _checkLoginStatus(context);
+    // _checkLoginStatus(context);
 
     print('xfguo: _DashboardState::build()');
     final userProvider = Provider.of<UserProvider>(context);
-    final storeProvider = Provider.of<StoreProvider>(context);
-    final productProvider = Provider.of<ProductProvider>(context);
 
-    final _tabs = [
-      StoreTab(),
-      MyCart(),
-      CustomizedTab(),
-      FavoritesTab(),
-      AccountTab(),
-    ];
-
-    return Scaffold(
-        backgroundColor: bgColor,
-        appBar: DashboardAppBar(
-          defaultStore: storeProvider.defaultStore ?? null,
-          onSelectStore: (store) {
-            setState(() {
-              storeProvider.saveDefaultStore(context, store);
-              productProvider.getProducts(store.id);
-            });
-          },
+    return Stack(
+      children: [
+        AbsorbPointer(
+          absorbing: !userProvider.isLoggedIn,
+          child: Opacity(
+            opacity: userProvider.isLoggedIn ? 1.0 : 0.4,
+            child: Scaffold(
+                backgroundColor: bgColor,
+                appBar: DashboardAppBar(),
+                body: _tabs[_selectedIndex],
+                bottomNavigationBar: BottomNavigationBar(
+                  items: <BottomNavigationBarItem>[
+                    BottomNavigationBarItem(
+                      icon: Icon(Fryo.shop),
+                      label: 'Store',
+                    ),
+                    BottomNavigationBarItem(
+                        icon: Icon(Fryo.cart), label: 'My Cart'),
+                    BottomNavigationBarItem(
+                        icon: Icon(Fryo.cart), label: 'Customize'),
+                    BottomNavigationBarItem(
+                        icon: Icon(Fryo.heart_1), label: 'Favorites'),
+                    BottomNavigationBarItem(
+                      icon: userProvider.isLoggedIn
+                          ? CircleAvatar(
+                        radius: 14,
+                        backgroundImage:
+                        NetworkImage(userProvider.user?.photoURL ?? ''),
+                      )
+                          : Icon(Fryo.user_1),
+                      label: 'Account',
+                    ),
+                  ],
+                  currentIndex: _selectedIndex,
+                  type: BottomNavigationBarType.fixed,
+                  fixedColor: Colors.green[600],
+                  onTap: (index) => _onItemTapped(index, userProvider),
+                )
+            ),
+          ),
         ),
-        body: _tabs[_selectedIndex],
-        bottomNavigationBar: BottomNavigationBar(
-          items: <BottomNavigationBarItem>[
-            BottomNavigationBarItem(
-              icon: Icon(Fryo.shop),
-              label: 'Store',
-            ),
-            BottomNavigationBarItem(icon: Icon(Fryo.cart), label: 'My Cart'),
-            BottomNavigationBarItem(icon: Icon(Fryo.cart), label: 'Customize'),
-            BottomNavigationBarItem(
-                icon: Icon(Fryo.heart_1), label: 'Favorites'),
-            BottomNavigationBarItem(
-              icon: userProvider.isLoggedIn
-                  ? CircleAvatar(
-                      radius: 14,
-                      backgroundImage: NetworkImage(userProvider.user?.photoURL ?? ''),
-                    )
-                  : Icon(Fryo.user_1),
-              label: 'Account',
-            ),
-          ],
-          currentIndex: _selectedIndex,
-          type: BottomNavigationBarType.fixed,
-          fixedColor: Colors.green[600],
-          onTap: (index) => _onItemTapped(index, userProvider),
-        ));
+        if (!userProvider.isLoggedIn)
+          FullScreenSignInDialog(),
+      ],
+    );
   }
 
   void _onItemTapped(int index, UserProvider userProvider) {

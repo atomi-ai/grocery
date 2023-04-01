@@ -51,48 +51,54 @@ class _FullScreenSignInDialogState extends State<FullScreenSignInDialog> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: MediaQuery.of(context).size.height,
-      decoration: BoxDecoration(
-        color: Theme.of(context).canvasColor,
-        borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(15.0),
-          topRight: Radius.circular(15.0),
-        ),
+    return Dialog(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(15.0),
       ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[
-          Text(
-            'Sign In Required',
-            style: TextStyle(
-              fontSize: 24.0,
-              fontWeight: FontWeight.bold,
+      child: Container(
+        padding: EdgeInsets.all(20.0),
+        child: Column(
+          mainAxisSize: MainAxisSize.min, // Set mainAxisSize to min
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: <Widget>[
+            Text(
+              'Sign In Required',
+              style: TextStyle(
+                fontSize: 24.0,
+                fontWeight: FontWeight.bold,
+                fontFamily: 'Roboto', // or any other font family you prefer
+                color: Colors.black, // or any other color you prefer
+              ),
+              textAlign: TextAlign.center,
             ),
-          ),
-          SizedBox(height: 20),
-          Text(
-            'You must sign in to access the dashboard.',
-            textAlign: TextAlign.center,
-          ),
-          SizedBox(height: 20),
-          ElevatedButton(
-            onPressed: () async {
-              final GoogleSignIn googleSignIn = GoogleSignIn();
-              _signInWithGoogle(context, googleSignIn);
-            },
-            child: Text('Sign In with Last Google Account'),
-          ),
-          SizedBox(height: 20), // Add some space between the buttons
-          ElevatedButton(
-            onPressed: () async {
-              final GoogleSignIn googleSignIn = GoogleSignIn();
-              await googleSignIn.disconnect();
-              _signInWithGoogle(context, googleSignIn);
-            },
-            child: Text('Sign In with Other Google Account'),
-          ),
-        ],
+            SizedBox(height: 20),
+            Text(
+              'You must sign in to access the dashboard.',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontFamily: 'Roboto', // or any other font family you prefer
+                color: Colors.black, // or any other color you prefer
+              ),
+            ),
+            SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: () async {
+                final GoogleSignIn googleSignIn = GoogleSignIn();
+                _signInWithGoogle(context, googleSignIn);
+              },
+              child: Text('Sign In with Last Google Account'),
+            ),
+            SizedBox(height: 20), // Add some space between the buttons
+            ElevatedButton(
+              onPressed: () async {
+                final GoogleSignIn googleSignIn = GoogleSignIn();
+                await googleSignIn.disconnect();
+                _signInWithGoogle(context, googleSignIn);
+              },
+              child: Text('Sign In with Other Google Account'),
+            ),
+          ],
+        ),
       ),
     );
   }

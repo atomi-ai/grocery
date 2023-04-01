@@ -43,7 +43,7 @@ class ProductProvider with ChangeNotifier {
     print('xfguo: getProducts(${storeId}) products: ${_products}');
     _initializeProducts(_products);
     print('xfguo: foods: ${foods}');
-    // notifyListeners();
+    notifyListeners();
   }
 
   void startFetchingProducts(BuildContext context) {
