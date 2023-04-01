@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 import '../shared/config.dart';
-import 'api_client.dart';
+import '../api/api_client.dart';
 
 // TODO(lamuguo): Move the function to api_client.dart
 Future<void> backendLogin() async {

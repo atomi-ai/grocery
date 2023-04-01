@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'new_payment_method_dialog.dart';
 import 'package:provider/provider.dart';
 
-import '../logic/payment_method_provider.dart';
+import '../provider/payment_method_provider.dart';
 
 class PaymentMethodDialog extends StatefulWidget {
   const PaymentMethodDialog({Key? key}) : super(key: key);

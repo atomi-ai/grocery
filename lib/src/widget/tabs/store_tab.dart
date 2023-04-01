@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../../logic/store_provider.dart';
-import '../../screens/ProductPage.dart';
-import '../../logic/favorites_provider.dart';
-import '../../logic/product_provider.dart';
+import '../../provider/store_provider.dart';
+import '../../screens/product_page.dart';
+import '../../provider/favorites_provider.dart';
+import '../../provider/product_provider.dart';
 import '../../shared/colors.dart';
 import '../../shared/fryo_icons.dart';
 import '../../shared/partials.dart';

@@ -4,7 +4,7 @@ import 'package:fryo/src/shared/fryo_icons.dart';
 import 'package:fryo/src/shared/styles.dart';
 
 import '../entity/entities.dart';
-import '../logic/backend_api.dart';
+import '../api/backend_api.dart';
 import 'store_picker_dialog.dart';
 
 class DashboardAppBar extends StatelessWidget with PreferredSizeWidget {

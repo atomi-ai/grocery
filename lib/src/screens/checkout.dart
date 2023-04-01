@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:fryo/src/entity/payment_intent_request.dart';
-import 'package:fryo/src/logic/address_provider.dart';
-import 'package:fryo/src/logic/backend_api.dart';
+import 'package:fryo/src/provider/address_provider.dart';
+import 'package:fryo/src/api/backend_api.dart';
 import 'package:fryo/src/screens/address_selector.dart';
 import 'package:provider/provider.dart';
 
 import '../entity/entities.dart';
-import '../logic/cart_provider.dart';
-import '../logic/payment_method_provider.dart';
-import '../logic/product_provider.dart';
+import '../provider/cart_provider.dart';
+import '../provider/payment_method_provider.dart';
+import '../provider/product_provider.dart';
 import '../widget/util.dart';
 import 'payment_method_dialog.dart';
 
@@ -244,9 +244,13 @@ class _CheckoutPageState extends State<CheckoutPage> {
         GestureDetector(
           onTap: () async {
             final newSelectedAddress = await showDialog<Address>(
-              context: context,
-              builder: (context) => AddressSelector(),
-            );
+                context: context,
+                builder: (context) {
+                  return AddressSelector(
+                      defaultAddress:
+                          Provider.of<AddressProvider>(context, listen: false)
+                              .shippingAddress);
+                });
             if (newSelectedAddress == null) {
               return;
             }
@@ -257,7 +261,6 @@ class _CheckoutPageState extends State<CheckoutPage> {
           },
           child: ListTile(
             leading: Icon(Icons.location_on),
-            title: Text('Billing Address'),
             subtitle: getAddressText(_shippingAddress),
           ),
         ),

@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../entity/entities.dart';
-import '../logic/product_provider.dart';
-import '../logic/store_provider.dart';
+import '../provider/product_provider.dart';
+import '../provider/store_provider.dart';
 
 Widget getAddressText(Address? t) {
   if (t == null) {

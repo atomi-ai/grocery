@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:fryo/src/logic/address_provider.dart';
-import 'package:fryo/src/logic/store_provider.dart';
+import 'package:fryo/src/provider/address_provider.dart';
+import 'package:fryo/src/provider/store_provider.dart';
 import 'package:fryo/src/screens/sign_in_dialog.dart';
 import 'package:provider/provider.dart';
 
 import 'tabs/store_tab.dart';
-import '../logic/product_provider.dart';
-import '../logic/user_provider.dart';
+import '../provider/product_provider.dart';
+import '../provider/user_provider.dart';
 import 'tabs/account_tab.dart';
 import '../shared/colors.dart';
 import '../shared/fryo_icons.dart';

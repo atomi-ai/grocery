@@ -3,8 +3,8 @@ import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:provider/provider.dart';
 
 import '../entity/entities.dart';
-import '../logic/cart_provider.dart';
-import '../logic/favorites_provider.dart';
+import '../provider/cart_provider.dart';
+import '../provider/favorites_provider.dart';
 import '../shared/buttons.dart';
 import '../shared/colors.dart';
 import '../shared/partials.dart';

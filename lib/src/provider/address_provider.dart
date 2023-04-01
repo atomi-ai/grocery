@@ -5,7 +5,7 @@ import 'package:flutter/foundation.dart';
 
 import '../entity/entities.dart';
 import '../shared/config.dart';
-import 'api_client.dart' as api;
+import '../api/api_client.dart' as api;
 
 class AddressProvider with ChangeNotifier {
   List<Address> _addresses = [];
@@ -43,12 +43,12 @@ class AddressProvider with ChangeNotifier {
     fetchAddresses();
   }
 
-  Future<void> selectShippingAddress(Address address) async {
+  Future<void> saveShippingAddress(Address address) async {
     await api.post(url: '${Config.instance.apiUrl}/addresses/shipping/${address.id}');
     fetchShippingAddress();
   }
 
-  Future<void> selectBillingAddress(Address address) async {
+  Future<void> saveBillingAddress(Address address) async {
     await api.post(url: '${Config.instance.apiUrl}/addresses/billing/${address.id}');
     fetchBillingAddress();
   }

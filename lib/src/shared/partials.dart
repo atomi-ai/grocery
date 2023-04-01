@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../entity/entities.dart';
-import '../logic/favorites_provider.dart';
+import '../provider/favorites_provider.dart';
 import '../shared/colors.dart';
 import '../shared/styles.dart';
 

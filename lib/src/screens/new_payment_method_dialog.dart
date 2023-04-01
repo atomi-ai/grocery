@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:provider/provider.dart';
 
-import '../widget/shared/custom_alert_dialog.dart';
+import '../shared/atomi_alert_dialog.dart';
 import '../entity/entities.dart' as atomi;
-import '../logic/address_provider.dart';
-import '../logic/payment_method_provider.dart';
+import '../provider/address_provider.dart';
+import '../provider/payment_method_provider.dart';
 import '../widget/util.dart';
 import 'address_selector.dart';
 
@@ -37,7 +37,7 @@ class _NewPaymentMethodDialogState extends State<NewPaymentMethodDialog> {
 
   @override
   Widget build(BuildContext context) {
-    return CustomAlertDialog(
+    return AtomiAlertDialog(
       title: 'New Payment Method',
       content: Form(
         key: _formKey,
@@ -61,7 +61,11 @@ class _NewPaymentMethodDialogState extends State<NewPaymentMethodDialog> {
                 onTap: () async {
                   final newSelectedAddress = await showDialog<atomi.Address>(
                     context: context,
-                    builder: (context) => AddressSelector(),
+                    builder: (context) {
+                      return AddressSelector(
+                          defaultAddress: Provider.of<AddressProvider>(
+                              context, listen: false).billingAddress);
+                    }
                   );
                   if (newSelectedAddress == null) {
                     return;

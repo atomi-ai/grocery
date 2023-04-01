@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:fryo/src/logic/payment_method_provider.dart';
-import 'package:fryo/src/logic/user_provider.dart';
+import 'package:fryo/src/provider/payment_method_provider.dart';
+import 'package:fryo/src/provider/user_provider.dart';
+import 'package:fryo/src/screens/address_selector.dart';
 import 'package:fryo/src/screens/payment_method_dialog.dart';
 import 'package:provider/provider.dart';
 
-import '../../logic/address_provider.dart';
-import '../util.dart';
-import '../../screens/address_page.dart';
+import '../../entity/entities.dart';
+import '../../provider/address_provider.dart';
 import '../dashboard.dart';
+import '../util.dart';
 
 class AccountTab extends StatefulWidget {
   @override
@@ -46,7 +47,7 @@ class _AccountTabState extends State<AccountTab> {
     print('xfguo: AccountTab::build()');
     final userProvider = Provider.of<UserProvider>(context, listen: false);
     final user = userProvider.user;
-    final accountProvider = Provider.of<AddressProvider>(context);
+    final addressProvider = Provider.of<AddressProvider>(context);
     final pmProvider = Provider.of<AtomiPaymentMethodProvider>(context);
 
     return Center(
@@ -74,29 +75,35 @@ class _AccountTabState extends State<AccountTab> {
                   title: Text(user?.email ?? ''),
                 ),
                 GestureDetector(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => AddressPage(is_shipping: true)),
+                  onTap: () async {
+                    final selectedAddr = await showDialog<Address>(
+                        context: context,
+                        builder: (context) => AddressSelector(defaultAddress: addressProvider.shippingAddress),
                     );
+                    if (selectedAddr != null) {
+                      await addressProvider.saveShippingAddress(selectedAddr);
+                    }
                   },
                   child: ListTile(
                     leading: Icon(Icons.location_on),
-                    title: Text('Shipping Address'),
-                    subtitle: getAddressText(accountProvider.shippingAddress),
+                    title: Text('Default Shipping Address'),
+                    subtitle: getAddressText(addressProvider.shippingAddress),
                   ),
                 ),
                 GestureDetector(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => AddressPage(is_shipping: false)),
+                  onTap: () async {
+                    final selectedAddr = await showDialog<Address>(
+                      context: context,
+                      builder: (context) => AddressSelector(defaultAddress: addressProvider.billingAddress),
                     );
+                    if (selectedAddr != null) {
+                      await addressProvider.saveBillingAddress(selectedAddr);
+                    }
                   },
                   child: ListTile(
                     leading: Icon(Icons.location_on),
-                    title: Text('Billing Address'),
-                    subtitle: getAddressText(accountProvider.billingAddress),
+                    title: Text('Default Billing Address'),
+                    subtitle: getAddressText(addressProvider.billingAddress),
                   ),
                 ),
                 ListTile(

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../entity/entities.dart';
+import '../shared/atomi_alert_dialog.dart';
 
 class StorePickerDialog extends StatelessWidget {
   final List<Store> stores;
@@ -9,8 +10,10 @@ class StorePickerDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return AlertDialog(
-      title: Text('Select Store'),
+    return AtomiAlertDialog(
+      width: MediaQuery.of(context).size.width * 0.9,
+      height: MediaQuery.of(context).size.height * 0.9,
+      title: 'Select Store',
       content: SingleChildScrollView(
         child: ListBody(
           children: stores.map((store) => ListTile(
@@ -21,7 +24,7 @@ class StorePickerDialog extends StatelessWidget {
             },
           )).toList(),
         ),
-      ),
+      ), actions: [],
     );
   }
 }

@@ -1,18 +1,18 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
-import 'package:fryo/src/logic/product_provider.dart';
-import 'package:fryo/src/logic/store_provider.dart';
+import 'package:fryo/src/provider/product_provider.dart';
+import 'package:fryo/src/provider/store_provider.dart';
 import 'package:provider/provider.dart';
 
-import './src/logic/cart_provider.dart';
-import './src/logic/favorites_provider.dart';
-import './src/logic/user_provider.dart';
+import 'src/provider/cart_provider.dart';
+import 'src/provider/favorites_provider.dart';
+import 'src/provider/user_provider.dart';
 import 'src/widget/dashboard.dart';
 import './src/shared/config.dart';
 import 'firebase_options.dart';
-import 'src/logic/address_provider.dart';
-import 'src/logic/payment_method_provider.dart';
+import 'src/provider/address_provider.dart';
+import 'src/provider/payment_method_provider.dart';
 
 Future<void> initStripe() async {
   Stripe.publishableKey = "pk_test_b23w3aM03rrkeOOFbpp2pPWJ";

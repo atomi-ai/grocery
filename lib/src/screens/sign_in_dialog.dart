@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:provider/provider.dart';
 
-import '../logic/user_provider.dart';
+import '../provider/user_provider.dart';
 import '../widget/util.dart';
 import '../widget/dashboard.dart';
 

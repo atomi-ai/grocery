@@ -1,12 +1,12 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:fryo/src/logic/api_client.dart';
+import 'package:fryo/src/api/api_client.dart';
 import 'package:http/http.dart' as http;
 
 import '../entity/entities.dart';
 import '../shared/config.dart';
-import 'api_client.dart' as api;
+import '../api/api_client.dart' as api;
 
 class StoreProvider with ChangeNotifier {
   Store? _defaultStore = null;

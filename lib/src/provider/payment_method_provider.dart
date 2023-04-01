@@ -3,7 +3,7 @@ import 'package:fryo/src/entity/stripe.dart';
 
 import '../entity/user.dart';
 import '../shared/config.dart';
-import 'api_client.dart' as api;
+import '../api/api_client.dart' as api;
 
 class AtomiPaymentMethodProvider with ChangeNotifier {
   List<AtomiPaymentMethod> _paymentMethods = [];

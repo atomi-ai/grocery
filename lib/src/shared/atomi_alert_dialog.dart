@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 
-class CustomAlertDialog extends StatelessWidget {
+class AtomiAlertDialog extends StatelessWidget {
   final String title;
   final Widget content;
   final List<Widget> actions;
   final double width;
   final double height;
 
-  CustomAlertDialog({
+  AtomiAlertDialog({
     required this.title,
     required this.content,
     required this.actions,
