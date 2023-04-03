@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
+import 'package:fryo/src/entity/entities.dart';
+import 'package:fryo/src/provider/cart_provider.dart';
+import 'package:fryo/src/provider/favorites_provider.dart';
+import 'package:fryo/src/shared/buttons.dart';
+import 'package:fryo/src/shared/colors.dart';
+import 'package:fryo/src/shared/partials.dart';
+import 'package:fryo/src/shared/styles.dart';
 import 'package:provider/provider.dart';
-
-import '../entity/entities.dart';
-import '../provider/cart_provider.dart';
-import '../provider/favorites_provider.dart';
-import '../shared/buttons.dart';
-import '../shared/colors.dart';
-import '../shared/partials.dart';
-import '../shared/styles.dart';
 
 class ProductPage extends StatefulWidget {
   final Product productData;

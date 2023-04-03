@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../../entity/entities.dart';
-import '../../provider/cart_provider.dart';
-import '../../provider/product_provider.dart';
-import '../../shared/styles.dart';
-import '../../screens/checkout.dart';
+import 'package:fryo/src/entity/entities.dart';
+import 'package:fryo/src/provider/cart_provider.dart';
+import 'package:fryo/src/provider/product_provider.dart';
+import 'package:fryo/src/shared/styles.dart';
+import 'package:fryo/src/screens/checkout.dart';
 
 class MyCart extends StatefulWidget {
   @override

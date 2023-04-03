@@ -1,11 +1,10 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:fryo/src/api/backend_api.dart';
+import 'package:fryo/src/entity/entities.dart';
 import 'package:fryo/src/provider/store_provider.dart';
 import 'package:provider/provider.dart';
-
-import '../entity/entities.dart';
-import '../api/backend_api.dart';
 
 class ProductProvider with ChangeNotifier {
 

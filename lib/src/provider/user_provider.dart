@@ -2,8 +2,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
-import '../shared/config.dart';
-import '../api/api_client.dart';
+import 'package:fryo/src/shared/config.dart';
+import 'package:fryo/src/api/api_client.dart';
 
 // TODO(lamuguo): Move the function to api_client.dart
 Future<void> backendLogin() async {
@@ -28,8 +28,8 @@ class UserProvider with ChangeNotifier {
   User? get user => _user;
   bool get isLoggedIn => _user != null;
 
-  void login(User? user) {
-    backendLogin();
+  Future<void> login(User? user) async {
+    await backendLogin();
 
     _user = user;
     notifyListeners();

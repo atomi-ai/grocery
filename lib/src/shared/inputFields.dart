@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import './colors.dart';
-import './styles.dart';
+import 'package:fryo/src/shared/colors.dart';
+import 'package:fryo/src/shared/styles.dart';
 
 Container fryoTextInput(String hintText,
     {onTap, onChanged, onEditingComplete, onSubmitted}) {

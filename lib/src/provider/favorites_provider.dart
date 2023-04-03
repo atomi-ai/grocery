@@ -1,8 +1,7 @@
 import 'dart:developer';
 
 import 'package:flutter/foundation.dart';
-
-import '../entity/entities.dart';
+import 'package:fryo/src/entity/entities.dart';
 
 class FavoritesProvider with ChangeNotifier {
   Set<int> _favorites = {};

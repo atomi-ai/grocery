@@ -1,4 +1,4 @@
-import 'entities.dart';
+import 'package:fryo/src/entity/entities.dart';
 
 class AtomiPaymentMethod {
   final String id;

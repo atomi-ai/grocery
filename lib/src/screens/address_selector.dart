@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:fryo/src/entity/entities.dart';
 import 'package:fryo/src/provider/address_provider.dart';
+import 'package:fryo/src/screens/new_address_dialog.dart';
+import 'package:fryo/src/shared/atomi_alert_dialog.dart';
 import 'package:provider/provider.dart';
-import '../entity/entities.dart';
-import '../shared/atomi_alert_dialog.dart';
-import 'new_address_dialog.dart';
 
 class AddressSelector extends StatefulWidget {
   final Address defaultAddress;

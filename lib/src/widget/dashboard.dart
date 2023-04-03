@@ -1,19 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:fryo/src/provider/address_provider.dart';
+import 'package:fryo/src/provider/product_provider.dart';
 import 'package:fryo/src/provider/store_provider.dart';
+import 'package:fryo/src/provider/user_provider.dart';
 import 'package:fryo/src/screens/sign_in_dialog.dart';
+import 'package:fryo/src/shared/colors.dart';
+import 'package:fryo/src/shared/fryo_icons.dart';
+import 'package:fryo/src/widget/dashboard_appbar.dart';
+import 'package:fryo/src/widget/tabs/account_tab.dart';
+import 'package:fryo/src/widget/tabs/customize_tab.dart';
+import 'package:fryo/src/widget/tabs/favorites_tab.dart';
+import 'package:fryo/src/widget/tabs/my_cart.dart';
+import 'package:fryo/src/widget/tabs/store_tab.dart';
 import 'package:provider/provider.dart';
-
-import 'tabs/store_tab.dart';
-import '../provider/product_provider.dart';
-import '../provider/user_provider.dart';
-import 'tabs/account_tab.dart';
-import '../shared/colors.dart';
-import '../shared/fryo_icons.dart';
-import 'dashboard_appbar.dart';
-import 'tabs/customize_tab.dart';
-import 'tabs/favorites_tab.dart';
-import 'tabs/my_cart.dart';
 
 class Dashboard extends StatefulWidget {
   final String pageTitle;

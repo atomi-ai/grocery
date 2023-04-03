@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_stripe/flutter_stripe.dart' as stripe;
+import 'package:fryo/src/entity/entities.dart';
+import 'package:fryo/src/entity/stripe.dart';
+import 'package:fryo/src/provider/product_provider.dart';
+import 'package:fryo/src/provider/store_provider.dart';
 import 'package:provider/provider.dart';
-
-import '../entity/entities.dart';
-import '../entity/stripe.dart';
-import '../provider/product_provider.dart';
-import '../provider/store_provider.dart';
 
 Widget getAddressText(Address? t) {
   if (t == null) {

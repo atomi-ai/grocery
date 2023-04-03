@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import '../widget/util.dart';
-import 'new_payment_method_dialog.dart';
+import 'package:fryo/src/provider/payment_method_provider.dart';
+import 'package:fryo/src/screens/new_payment_method_dialog.dart';
+import 'package:fryo/src/widget/util.dart';
 import 'package:provider/provider.dart';
 
-import '../provider/payment_method_provider.dart';
 
 class PaymentMethodDialog extends StatefulWidget {
   const PaymentMethodDialog({Key? key}) : super(key: key);

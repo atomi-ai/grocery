@@ -1,9 +1,8 @@
 import 'package:flutter/foundation.dart';
+import 'package:fryo/src/api/api_client.dart' as api;
 import 'package:fryo/src/entity/stripe.dart';
-
-import '../entity/user.dart';
-import '../shared/config.dart';
-import '../api/api_client.dart' as api;
+import 'package:fryo/src/entity/user.dart';
+import 'package:fryo/src/shared/config.dart';
 
 class AtomiPaymentMethodProvider with ChangeNotifier {
   List<AtomiPaymentMethod> _paymentMethods = [];

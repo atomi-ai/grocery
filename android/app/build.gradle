@@ -43,6 +43,9 @@ android {
 
     sourceSets {
         main.java.srcDirs += 'src/main/kotlin'
+        debug {
+            manifest.srcFile 'src/debug/AndroidManifest.xml'
+        }
     }
 
     defaultConfig {

@@ -1,11 +1,9 @@
-
 import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
-
-import '../entity/entities.dart';
-import '../shared/config.dart';
-import '../api/api_client.dart' as api;
+import 'package:fryo/src/api/api_client.dart' as api;
+import 'package:fryo/src/entity/entities.dart';
+import 'package:fryo/src/shared/config.dart';
 
 class AddressProvider with ChangeNotifier {
   List<Address> _addresses = [];

@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
+import 'package:fryo/src/entity/entities.dart' as atomi;
+import 'package:fryo/src/provider/address_provider.dart';
+import 'package:fryo/src/provider/payment_method_provider.dart';
+import 'package:fryo/src/screens/address_selector.dart';
+import 'package:fryo/src/shared/atomi_alert_dialog.dart';
+import 'package:fryo/src/widget/util.dart';
 import 'package:provider/provider.dart';
-
-import '../shared/atomi_alert_dialog.dart';
-import '../entity/entities.dart' as atomi;
-import '../provider/address_provider.dart';
-import '../provider/payment_method_provider.dart';
-import '../widget/util.dart';
-import 'address_selector.dart';
 
 class NewPaymentMethodDialog extends StatefulWidget {
   @override

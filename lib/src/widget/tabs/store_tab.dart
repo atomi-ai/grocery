@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../../provider/store_provider.dart';
-import '../../screens/product_page.dart';
-import '../../provider/favorites_provider.dart';
-import '../../provider/product_provider.dart';
-import '../../shared/colors.dart';
-import '../../shared/fryo_icons.dart';
-import '../../shared/partials.dart';
-import '../../shared/styles.dart';
+import 'package:fryo/src/provider/store_provider.dart';
+import 'package:fryo/src/screens/product_page.dart';
+import 'package:fryo/src/provider/favorites_provider.dart';
+import 'package:fryo/src/provider/product_provider.dart';
+import 'package:fryo/src/shared/colors.dart';
+import 'package:fryo/src/shared/fryo_icons.dart';
+import 'package:fryo/src/shared/partials.dart';
+import 'package:fryo/src/shared/styles.dart';
 
 class StoreTab extends StatefulWidget {
   @override

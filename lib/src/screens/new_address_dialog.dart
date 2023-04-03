@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:fryo/src/entity/entities.dart';
+import 'package:fryo/src/provider/address_provider.dart';
 import 'package:provider/provider.dart';
-
-import '../entity/entities.dart';
-import '../provider/address_provider.dart';
 
 class NewAddressDialog extends StatelessWidget {
   final _formKey = GlobalKey<FormState>();

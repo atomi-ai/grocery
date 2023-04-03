@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:fryo/src/entity/entities.dart';
+import 'package:fryo/src/provider/address_provider.dart';
 import 'package:fryo/src/provider/payment_method_provider.dart';
 import 'package:fryo/src/provider/user_provider.dart';
 import 'package:fryo/src/screens/address_selector.dart';
 import 'package:fryo/src/screens/payment_method_dialog.dart';
+import 'package:fryo/src/widget/dashboard.dart';
+import 'package:fryo/src/widget/util.dart';
 import 'package:provider/provider.dart';
-
-import '../../entity/entities.dart';
-import '../../provider/address_provider.dart';
-import '../dashboard.dart';
-import '../util.dart';
 
 class AccountTab extends StatefulWidget {
   @override

@@ -1,11 +1,10 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:fryo/src/provider/user_provider.dart';
+import 'package:fryo/src/widget/dashboard.dart';
+import 'package:fryo/src/widget/util.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:provider/provider.dart';
-
-import '../provider/user_provider.dart';
-import '../widget/util.dart';
-import '../widget/dashboard.dart';
 
 class FullScreenSignInDialog extends StatefulWidget {
   @override
@@ -37,8 +36,7 @@ class _FullScreenSignInDialogState extends State<FullScreenSignInDialog> {
     if (user == null) {
       throw Exception("Get null user in /login, please retry");
     }
-    userProvider.login(user);
-
+    await userProvider.login(user);
     await refreshProviders(context);
     // 登录成功后，导航回Dashboard
     Navigator.of(context).popUntil((route) => route.isFirst);

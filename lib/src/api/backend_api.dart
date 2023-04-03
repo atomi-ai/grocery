@@ -1,9 +1,9 @@
 import 'dart:convert';
 
-import '../entity/entities.dart';
-import '../entity/payment_intent_request.dart';
-import '../shared/config.dart';
-import 'api_client.dart' as api;
+import 'package:fryo/src/entity/entities.dart';
+import 'package:fryo/src/entity/payment_intent_request.dart';
+import 'package:fryo/src/shared/config.dart';
+import 'package:fryo/src/api/api_client.dart' as api;
 
 Future<List<Store>> fetchStores() async {
   List<Store>? res = await api.get(

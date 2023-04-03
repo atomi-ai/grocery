@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import './colors.dart';
+import 'package:fryo/src/shared/colors.dart';
 
 /////////////////////////////////
 ///   TEXT STYLES

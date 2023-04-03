@@ -1,16 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:fryo/src/api/backend_api.dart';
+import 'package:fryo/src/entity/entities.dart';
 import 'package:fryo/src/entity/payment_intent_request.dart';
 import 'package:fryo/src/provider/address_provider.dart';
-import 'package:fryo/src/api/backend_api.dart';
+import 'package:fryo/src/provider/cart_provider.dart';
+import 'package:fryo/src/provider/payment_method_provider.dart';
+import 'package:fryo/src/provider/product_provider.dart';
 import 'package:fryo/src/screens/address_selector.dart';
+import 'package:fryo/src/screens/payment_method_dialog.dart';
+import 'package:fryo/src/widget/util.dart';
 import 'package:provider/provider.dart';
-
-import '../entity/entities.dart';
-import '../provider/cart_provider.dart';
-import '../provider/payment_method_provider.dart';
-import '../provider/product_provider.dart';
-import '../widget/util.dart';
-import 'payment_method_dialog.dart';
 
 class CheckoutPage extends StatefulWidget {
   // TODO(lamuguo): Change the type to int.

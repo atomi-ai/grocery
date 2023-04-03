@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-
-import '../entity/entities.dart';
-import '../shared/atomi_alert_dialog.dart';
+import 'package:fryo/src/entity/entities.dart';
+import 'package:fryo/src/shared/atomi_alert_dialog.dart';
 
 class StorePickerDialog extends StatelessWidget {
   final List<Store> stores;

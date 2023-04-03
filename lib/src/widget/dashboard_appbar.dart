@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:fryo/src/api/backend_api.dart';
+import 'package:fryo/src/entity/entities.dart';
+import 'package:fryo/src/provider/product_provider.dart';
+import 'package:fryo/src/provider/store_provider.dart';
 import 'package:fryo/src/shared/colors.dart';
 import 'package:fryo/src/shared/fryo_icons.dart';
 import 'package:fryo/src/shared/styles.dart';
+import 'package:fryo/src/widget/store_picker_dialog.dart';
 import 'package:provider/provider.dart';
-
-import '../entity/entities.dart';
-import '../api/backend_api.dart';
-import '../provider/product_provider.dart';
-import '../provider/store_provider.dart';
-import 'store_picker_dialog.dart';
 
 class DashboardAppBar extends StatelessWidget with PreferredSizeWidget {
   DashboardAppBar({Key? key}) : super(key: key);

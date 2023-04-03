@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:fryo/src/entity/entities.dart';
+import 'package:fryo/src/provider/favorites_provider.dart';
+import 'package:fryo/src/provider/product_provider.dart';
+import 'package:fryo/src/screens/product_page.dart';
+import 'package:fryo/src/shared/colors.dart';
 import 'package:provider/provider.dart';
-
-import '../../entity/entities.dart';
-import '../../provider/favorites_provider.dart';
-import '../../provider/product_provider.dart';
-import '../../shared/colors.dart';
-import '../../screens/product_page.dart';
 
 class FavoritesTab extends StatelessWidget {
   Widget getItem(bool hidden, Product product, FavoritesProvider favoritesProvider, BuildContext context) {
