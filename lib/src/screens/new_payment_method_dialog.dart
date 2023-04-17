@@ -58,12 +58,12 @@ class _NewPaymentMethodDialogState extends State<NewPaymentMethodDialog> {
               ),
               GestureDetector(
                 onTap: () async {
+                  final addressProvider = Provider.of<AddressProvider>(context, listen: false);
                   final newSelectedAddress = await showDialog<atomi.Address>(
                     context: context,
                     builder: (context) {
                       return AddressSelector(
-                          defaultAddress: Provider.of<AddressProvider>(
-                              context, listen: false).billingAddress);
+                          defaultAddress: addressProvider.billingAddress ?? atomi.Address.UNSET_ADDRESS);
                     }
                   );
                   if (newSelectedAddress == null) {

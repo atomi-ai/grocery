@@ -15,30 +15,35 @@ class AccountTab extends StatefulWidget {
 }
 
 class _AccountTabState extends State<AccountTab> {
-  Widget getAddress<T>(AddressProvider provider, Future<T> Function() func) {
-    return FutureBuilder(
-      future: func(),
-      builder: (BuildContext context, AsyncSnapshot<T> snapshot) {
-        if (snapshot.hasError) {
-          return Text('Error: ${snapshot.error}');
-        }
-        return getAddressText(provider.shippingAddress);
-      },
-    );
-  }
-
-  Widget aaa(BuildContext context) {
-    return Text('');
-  }
-
   @override
   void initState() {
     super.initState();
 
-    final addressProvider = Provider.of<AddressProvider>(context, listen: false);
+    final addressProvider = Provider.of<AddressProvider>(
+        context, listen: false);
     addressProvider.fetchShippingAddress();
     addressProvider.fetchBillingAddress();
     print('xfguo: AccountTab::initState()');
+  }
+
+  Widget _customListTile({required IconData icon, required String title, required Widget subtitle}) {
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+      child: Row(
+        children: [
+          Icon(icon),
+          SizedBox(width: 16),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(title, style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+              SizedBox(height: 4),
+              subtitle,
+            ],
+          ),
+        ],
+      ),
+    );
   }
 
   @override
@@ -49,96 +54,121 @@ class _AccountTabState extends State<AccountTab> {
     final addressProvider = Provider.of<AddressProvider>(context);
     final pmProvider = Provider.of<AtomiPaymentMethodProvider>(context);
 
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 10.0),
+      child: ListView(
         children: [
+          SizedBox(height: 20),
           if (user != null) ...[
-            SizedBox(height: 10),
             CircleAvatar(
               backgroundImage: NetworkImage(user.photoURL ?? ''),
               radius: 40,
             ),
+            SizedBox(height: 15),
+            Container(
+              padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+              child: Center(
+                child: Text(
+                  user?.displayName ?? '',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+              ),
+            ),
+            Container(
+              padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+              child: Center(
+                child: Text(
+                  user?.email ?? '',
+                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+                ),
+              ),
+            ),
             SizedBox(height: 20),
           ],
-          Expanded(
-            child: ListView(
-              padding: EdgeInsets.symmetric(vertical: 0, horizontal: 10),
+          Card(
+            child: Column(
               children: [
-                ListTile(
-                  leading: Icon(Icons.person),
-                  title: Text(user?.displayName ?? ''),
-                ),
-                ListTile(
-                  leading: Icon(Icons.email),
-                  title: Text(user?.email ?? ''),
-                ),
                 GestureDetector(
                   onTap: () async {
                     final selectedAddr = await showDialog<Address>(
-                        context: context,
-                        builder: (context) => AddressSelector(defaultAddress: addressProvider.shippingAddress),
+                      context: context,
+                      builder: (context) => AddressSelector(
+                          defaultAddress: addressProvider.shippingAddress ?? Address.UNSET_ADDRESS),
                     );
                     if (selectedAddr != null) {
                       await addressProvider.saveShippingAddress(selectedAddr);
                     }
                   },
-                  child: ListTile(
-                    leading: Icon(Icons.location_on),
-                    title: Text('Default Shipping Address'),
+                  child: _customListTile(
+                    icon: Icons.location_on,
+                    title: 'Default Shipping Address',
                     subtitle: getAddressText(addressProvider.shippingAddress),
                   ),
                 ),
+                Divider(),
                 GestureDetector(
                   onTap: () async {
                     final selectedAddr = await showDialog<Address>(
                       context: context,
-                      builder: (context) => AddressSelector(defaultAddress: addressProvider.billingAddress),
+                      builder: (context) => AddressSelector(
+                          defaultAddress: addressProvider.billingAddress ?? Address.UNSET_ADDRESS),
                     );
                     if (selectedAddr != null) {
                       await addressProvider.saveBillingAddress(selectedAddr);
                     }
                   },
-                  child: ListTile(
-                    leading: Icon(Icons.location_on),
-                    title: Text('Default Billing Address'),
+                  child: _customListTile(
+                    icon: Icons.location_on,
+                    title: 'Default Billing Address',
                     subtitle: getAddressText(addressProvider.billingAddress),
                   ),
                 ),
-                ListTile(
-                  leading: Icon(Icons.payment),
-                  title: Text('Payment Method'),
-                  subtitle: getPaymentMethodText(pmProvider.findPaymentMethodById(
-                      pmProvider.currentPaymentMethodId)),
+                Divider(),
+                GestureDetector(
                   onTap: () async {
                     final pmId = await showDialog<String>(
-                        context: context,
-                        builder: (context) => PaymentMethodDialog(),
+                      context: context,
+                      builder: (context) => PaymentMethodDialog(),
                     );
                     print('xfguo: pmId = ${pmId}');
-                    Provider.of<AtomiPaymentMethodProvider>(context, listen: false)
+                    Provider.of<AtomiPaymentMethodProvider>(
+                        context, listen: false)
                         .setCurrentPaymentMethod(pmId);
                   },
+                  child: _customListTile(
+                    icon: Icons.payment,
+                    title: 'Payment Method',
+                    subtitle: getPaymentMethodText(
+                        pmProvider.findPaymentMethodById(
+                            pmProvider.currentPaymentMethodId)),
+                  ),
                 ),
               ],
             ),
           ),
-          ElevatedButton(
-            onPressed: () async {
-              print('xfguo: before logout: isLoggedIn = ${userProvider.isLoggedIn}, ${userProvider.user}');
-              await userProvider.logout();
-              print('xfguo: after1 logout: isLoggedIn = ${userProvider.isLoggedIn}, ${userProvider.user}');
-              await refreshProviders(context);
+          SizedBox(height: 20),
+          Center(
+            child: ElevatedButton(
+              onPressed: () async {
+                print('xfguo: before logout: isLoggedIn = ${userProvider
+                    .isLoggedIn}, ${userProvider.user}');
+                await userProvider.logout();
+                print('xfguo: after1 logout: isLoggedIn = ${userProvider
+                    .isLoggedIn}, ${userProvider.user}');
+                await refreshProviders(context);
 
-              print('xfguo: after logout: isLoggedIn = ${userProvider.isLoggedIn}, ${userProvider.user}');
-              Navigator.of(context).pushReplacement(
-                MaterialPageRoute(
-                  builder: (context) => Dashboard(pageTitle: 'Welcome'),
-                ),
-              );
-            },
-            child: Text('Log Out'),
+                print('xfguo: after logout: isLoggedIn = ${userProvider
+                    .isLoggedIn}, ${userProvider.user}');
+                Navigator.of(context).pushReplacement(
+                  MaterialPageRoute(
+                    builder: (context) => Dashboard(pageTitle: 'Welcome'),
+                  ),
+                );
+              },
+              child: Text('Log Out'),
+            ),
           ),
+          SizedBox(height: 20),
         ],
       ),
     );

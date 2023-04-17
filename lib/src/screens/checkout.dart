@@ -22,7 +22,7 @@ class CheckoutPage extends StatefulWidget {
 }
 
 class _CheckoutPageState extends State<CheckoutPage> {
-  late Address _shippingAddress;
+  late Address? _shippingAddress;
   late String _currentPaymentMethodId;
 
   @override
@@ -246,13 +246,12 @@ class _CheckoutPageState extends State<CheckoutPage> {
         ),
         GestureDetector(
           onTap: () async {
+            final addrProvider = Provider.of<AddressProvider>(context, listen: false);
             final newSelectedAddress = await showDialog<Address>(
                 context: context,
                 builder: (context) {
                   return AddressSelector(
-                      defaultAddress:
-                          Provider.of<AddressProvider>(context, listen: false)
-                              .shippingAddress);
+                      defaultAddress: addrProvider.shippingAddress ?? Address.UNSET_ADDRESS);
                 });
             if (newSelectedAddress == null) {
               return;
@@ -310,7 +309,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                   PaymentIntentRequest piReq = PaymentIntentRequest(
                     amount: 1111,
                     paymentMethodId: _currentPaymentMethodId,
-                    shippingAddressId: _shippingAddress.id,
+                    shippingAddressId: _shippingAddress?.id ?? -1,
                   );
                   print('xfguo: place order, ${piReq}');
                   await placeOrder(piReq);

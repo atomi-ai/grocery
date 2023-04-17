@@ -9,19 +9,19 @@ class AddressProvider with ChangeNotifier {
   List<Address> _addresses = [];
   List<Address> get addresses => _addresses;
 
-  Address _shippingAddress = Address.UNSET_ADDRESS;
-  Address get shippingAddress => _shippingAddress;
-  Address _billingAddress = Address.UNSET_ADDRESS;
-  Address get billingAddress => _billingAddress;
+  Address? _shippingAddress = null;
+  Address? get shippingAddress => _shippingAddress;
+  Address? _billingAddress = null;
+  Address? get billingAddress => _billingAddress;
 
-  Future<Address> fetchShippingAddress() async {
+  Future<Address?> fetchShippingAddress() async {
     _shippingAddress = await api.get(url: '${Config.instance.apiUrl}/addresses/shipping',
         fromJson: (json) => Address.fromJson(json)) ?? Address.UNSET_ADDRESS;
     notifyListeners();
     return _shippingAddress;
   }
 
-  Future<Address> fetchBillingAddress() async {
+  Future<Address?> fetchBillingAddress() async {
     _billingAddress = await api.get(url: '${Config.instance.apiUrl}/addresses/billing',
             fromJson: (json) => Address.fromJson(json)) ?? Address.UNSET_ADDRESS;
     notifyListeners();

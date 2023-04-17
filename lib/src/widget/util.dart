@@ -6,8 +6,11 @@ import 'package:fryo/src/provider/store_provider.dart';
 import 'package:provider/provider.dart';
 
 Widget getAddressText(Address? t) {
-  if (t == null) {
-    return Text('not set address');
+  if (t == null || t.id == -1) {
+    return Text(
+      'not set address',
+      style: TextStyle(color: Colors.redAccent, fontWeight: FontWeight.bold), // 在这里设置字体颜色和粗细
+    );
   }
   return Text('${t.line1} ${t.line2}, ${t.city}, ${t.state}');
 }
@@ -22,7 +25,10 @@ String getBillingDetailStr(AtomiBillingDetails bd) {
 
 Widget getPaymentMethodText(AtomiPaymentMethod? pm) {
   if (pm == null) {
-    return Text('no payment method');
+    return Text(
+      'no payment method',
+      style: TextStyle(color: Colors.redAccent, fontWeight: FontWeight.bold), // 在这里设置字体颜色和粗细
+    );
   }
   return Text('Card: ****${pm.card.last4}(${pm.card.brand})'
       ' | exp: ${pm.card.expMonth}/${pm.card.expYear}'
