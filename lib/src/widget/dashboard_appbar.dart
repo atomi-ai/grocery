@@ -67,7 +67,7 @@ class DashboardAppBar extends StatelessWidget with PreferredSizeWidget {
 
     if (selectedStore != null) {
       await Provider.of<StoreProvider>(context, listen: false)
-          .saveDefaultStore(context, selectedStore);
+          .saveDefaultStore(selectedStore);
       await Provider.of<ProductProvider>(context, listen: false)
           .getProducts(selectedStore.id);
     }
