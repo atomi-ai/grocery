@@ -15,7 +15,7 @@ class Config {
   }
 
   static void loadTestingConfig() {
-    String apiUrl = 'http://localhost:8081/api';
+    String apiUrl = 'http://10.0.2.2:8081/api';
 
     _instance = Config._(apiUrl);
   }
