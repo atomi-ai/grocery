@@ -4,9 +4,13 @@
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter_stripe/flutter_stripe.dart' as stripe;
 import 'package:flutter_test/flutter_test.dart';
+import 'package:fryo/main.dart';
 import 'package:fryo/src/entity/entities.dart';
+import 'package:fryo/src/entity/stripe.dart';
 import 'package:fryo/src/provider/address_provider.dart';
+import 'package:fryo/src/provider/payment_method_provider.dart';
 import 'package:fryo/src/provider/product_provider.dart';
 import 'package:fryo/src/provider/store_provider.dart';
 import 'package:fryo/src/provider/user_provider.dart';
@@ -182,4 +186,60 @@ void main() {
     List<Address> endAddresses = addressProvider.addresses;
     expect(endAddresses.length, initialCount);
   });
+
+  group('Stripe Payment Method Test', () {
+    testWidgets('Test AtomiPaymentMethodProvider with Stripe', (WidgetTester tester) async {
+      await initStripe();
+      AtomiPaymentMethodProvider atomiPaymentMethodProvider = AtomiPaymentMethodProvider();
+
+      // 1. 调用 fetchPaymentMethods，确认 currentPaymentMethod 为空
+      await atomiPaymentMethodProvider.fetchPaymentMethods();
+      AtomiPaymentMethod? currentPaymentMethod = atomiPaymentMethodProvider.getCurrentPaymentMethod();
+      expect(currentPaymentMethod, null);
+
+      // 2. 从 Stripe 创建一个 paymentMethod
+      final billingDetails = stripe.BillingDetails(
+        email: 'email@stripe.com',
+        phone: '+48888000888',
+        address: stripe.Address(
+          city: 'Houston',
+          country: 'US',
+          line1: '1459  Circle Drive',
+          line2: '',
+          state: 'Texas',
+          postalCode: '77063',
+        ),
+      );
+      await stripe.Stripe.instance.dangerouslyUpdateCardDetails(stripe.CardDetails(
+        number: '4242424242424242',
+        cvc: '424',
+        expirationMonth: 04,
+        expirationYear: 2025,
+      ));
+      final paymentMethod = await stripe.Stripe.instance.createPaymentMethod(
+        params: stripe.PaymentMethodParams.card(
+          paymentMethodData: stripe.PaymentMethodData(
+            billingDetails: billingDetails,
+          ),
+        ),
+      );
+      expect(paymentMethod.id, startsWith('pm_'));
+      expect(paymentMethod.card.brand, equals('Visa'));
+      expect(paymentMethod.card.country, equals('US'));
+      expect(paymentMethod.card.expMonth, equals(04));
+      expect(paymentMethod.card.expYear, equals(2025));
+      expect(paymentMethod.card.last4, equals('4242'));
+      // 添加一个 payment method
+      await atomiPaymentMethodProvider.addPaymentMethod(paymentMethod.id);
+
+      // 设置为 current payment method
+      await atomiPaymentMethodProvider.setCurrentPaymentMethod(paymentMethod.id);
+
+      // 验证
+      AtomiPaymentMethod? updatedCurrentPaymentMethod = atomiPaymentMethodProvider.getCurrentPaymentMethod();
+      expect(updatedCurrentPaymentMethod, isNotNull);
+      expect(updatedCurrentPaymentMethod!.id, paymentMethod.id);
+    });
+  });
+
 }
