@@ -239,6 +239,14 @@ void main() {
       AtomiPaymentMethod? updatedCurrentPaymentMethod = atomiPaymentMethodProvider.getCurrentPaymentMethod();
       expect(updatedCurrentPaymentMethod, isNotNull);
       expect(updatedCurrentPaymentMethod!.id, paymentMethod.id);
+
+      // 验证完毕后删除 paymentMethod
+      await atomiPaymentMethodProvider.deletePaymentMethod(updatedCurrentPaymentMethod.id);
+
+      // 重新获取 paymentMethods 并确认 paymentMethod 已删除
+      await atomiPaymentMethodProvider.fetchPaymentMethods();
+      AtomiPaymentMethod? deletedPaymentMethod = atomiPaymentMethodProvider.findPaymentMethodById(updatedCurrentPaymentMethod.id);
+      expect(deletedPaymentMethod, null);
     });
   });
 

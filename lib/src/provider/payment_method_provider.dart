@@ -47,6 +47,10 @@ class AtomiPaymentMethodProvider with ChangeNotifier {
       url: '${Config.instance.apiUrl}/payment-methods/${pmId}',);
   }
 
+  Future<void> _deletePaymentMethod(String pmId) async {
+    await api.delete(url: '${Config.instance.apiUrl}/payment-methods/$pmId');
+  }
+
   Future<void> _fetchPaymentMethods() async {
     _paymentMethods = await api.get(url: '${Config.instance.apiUrl}/payment-methods',
         fromJson:  (json) => AtomiPaymentMethod.fromJson(json));
@@ -72,6 +76,12 @@ class AtomiPaymentMethodProvider with ChangeNotifier {
   Future<void> addPaymentMethod(String pmId) async {
     await _addNewPaymentMethod(pmId);
     await _fetchPaymentMethods();
+    notifyListeners();
+  }
+
+  Future<void> deletePaymentMethod(String pmId) async {
+    await _deletePaymentMethod(pmId);
+    await fetchPaymentMethods();
     notifyListeners();
   }
 }
