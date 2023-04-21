@@ -26,7 +26,7 @@ class StoreProvider with ChangeNotifier {
     return setDefaultStore(store);
   }
 
-  Future<void> saveDefaultStore(BuildContext context, Store store) async {
+  Future<void> saveDefaultStore(Store store) async {
     final Store savedStore = await api.put(
       url: '${Config.instance.apiUrl}/default-store/${store.id}',
       fromJson: (json) => Store.fromJson(json)
