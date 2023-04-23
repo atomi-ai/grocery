@@ -10,20 +10,20 @@ class Config {
 
   static Config get instance => _instance;
 
-  static void loadConfig() {
-    String host = '10.0.2.2';
-    int serverPort = 8081;
+  static void _loadConfig({host, serverPort = 8081, authPort = 9099}) {
     String apiUrl = 'http://$host:$serverPort/api';
-    int authPort = 9099;
-    // FirebaseAuth.instance.useAuthEmulator('10.0.2.2', 9099);
     _instance = Config._(apiUrl, host, serverPort, authPort);
   }
 
+  static void loadConfig() {
+    _loadConfig(host: '10.0.2.2');
+  }
+
+  static void loadIntegrationTestingConfig() {
+    _loadConfig(host: '10.0.2.2');
+  }
+
   static void loadTestingConfig() {
-    String host = '10.0.2.2';
-    int serverPort = 8081;
-    String apiUrl = 'http://$host:$serverPort/api';
-    int authPort = 9099;
-    _instance = Config._(apiUrl, host, serverPort, authPort);
+    _loadConfig(host: '127.0.0.1');
   }
 }

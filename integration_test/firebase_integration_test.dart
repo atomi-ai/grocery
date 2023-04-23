@@ -33,7 +33,7 @@ void main() {
   UserProvider userProvider = UserProvider();
   Future<void> userLogin() async {
     // 加载测试环境的配置
-    Config.loadTestingConfig();
+    Config.loadIntegrationTestingConfig();
 
     // 设置环境变量，指向本地 Firestore 和 Authentication 模拟器
     FirebaseAuth.instance.useAuthEmulator(Config.instance.host, Config.instance.authPort);

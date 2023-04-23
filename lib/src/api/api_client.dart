@@ -1,15 +1,11 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:http/http.dart' as http;
 
+String? token = null;
 Future<String> getCurrentToken() async {
-  final user = await FirebaseAuth.instance.currentUser;
-  if (user == null) {
-    return '';
-  }
-  return user.getIdToken();
+  return token ?? '';
 }
 
 // Generic part of API calls.

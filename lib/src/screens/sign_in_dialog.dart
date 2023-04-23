@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:fryo/src/api/api_client.dart' as api;
 import 'package:fryo/src/provider/user_provider.dart';
 import 'package:fryo/src/widget/dashboard.dart';
 import 'package:fryo/src/widget/util.dart';
@@ -36,6 +37,7 @@ class _FullScreenSignInDialogState extends State<FullScreenSignInDialog> {
     if (user == null) {
       throw Exception("Get null user in /login, please retry");
     }
+    api.token = await user.getIdToken();
     await userProvider.login(user);
     await refreshProviders(context);
     // 登录成功后，导航回Dashboard
