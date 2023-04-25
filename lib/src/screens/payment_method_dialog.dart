@@ -19,6 +19,7 @@ class _PaymentMethodDialogState extends State<PaymentMethodDialog> {
     super.didChangeDependencies();
 
     final pmProvider = Provider.of<AtomiPaymentMethodProvider>(context, listen: false);
+    // TODO(lamuguo): wait for the function below.
     pmProvider.fetchPaymentMethods();
   }
 

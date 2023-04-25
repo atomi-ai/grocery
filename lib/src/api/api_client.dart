@@ -79,6 +79,8 @@ Future<T?> request<T, E>({
     }
     return parseData<T, E>(jsonDecode(resBody), fromJson);
   } catch (e, stackTrace) {
+    // TODO(lamuguo): 感觉这里不太对。如果有错的话，这里不应该是个很好的handle错误的地方，
+    // 用defaultResult掩盖这样的错，感觉不是特别好。回头可以想下有什么更好的办法。
     print('xfguo: api call, but got exception on ${method}, ${url}, exception: ${e}');
     print('    Stack trace: $stackTrace');
     return defaultResult;

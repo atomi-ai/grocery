@@ -30,8 +30,8 @@ class StoreProvider with ChangeNotifier {
     setDefaultStore(savedStore);
   }
 
-  // Testing only now.
-  // Please remove the tag if the function is used by production.
+  // @TestingOnly
+  // Please remove the tag if you want to use the fucntion in production.
   Future<void> unsetDefaultStore() async {
     try {
       await api.delete(url: '${Config.instance.apiUrl}/default-store');

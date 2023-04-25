@@ -34,26 +34,29 @@ class AddressProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> addAddress(Address address) async {
-    await api.post(
-      url: '${Config.instance.apiUrl}/addresses',
-      body: jsonEncode(address.toJson()), );
-    fetchAddresses();
+  Future<Address> addAddress(Address address) async {
+    final res = await api.post(
+        url: '${Config.instance.apiUrl}/addresses',
+        body: jsonEncode(address.toJson()),
+        fromJson: (json) => Address.fromJson(json),
+    );
+    await fetchAddresses();
+    return res;
   }
 
   Future<void> saveShippingAddress(Address address) async {
     await api.post(url: '${Config.instance.apiUrl}/addresses/shipping/${address.id}');
-    fetchShippingAddress();
+    await fetchShippingAddress();
   }
 
   Future<void> saveBillingAddress(Address address) async {
     await api.post(url: '${Config.instance.apiUrl}/addresses/billing/${address.id}');
-    fetchBillingAddress();
+    await fetchBillingAddress();
   }
 
   Future<void> deleteAddress(int id) async {
     await api.delete(url: '${Config.instance.apiUrl}/addresses/$id');
-    init();
+    await init();
   }
 
   Future<void> init() async {
@@ -62,5 +65,13 @@ class AddressProvider with ChangeNotifier {
       fetchShippingAddress(),
       fetchAddresses(),
     ]);
+  }
+
+  // @TestingOnly
+  // The function is testing only, please remove the tag above if you want
+  // to use it in production.
+  Future<void> deleteAllAddresses() async {
+    await api.delete(url: '${Config.instance.apiUrl}/addresses');
+    await init();
   }
 }

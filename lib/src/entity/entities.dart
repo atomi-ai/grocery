@@ -71,7 +71,7 @@ class Address {
   Address({
     required this.line1,
     required this.city,
-    this.id = -1,
+    this.id = 0,
     this.line2 = '',
     this.state = '',
     this.country = '',
@@ -80,7 +80,7 @@ class Address {
 
   factory Address.fromJson(Map<String, dynamic> json) {
     return Address(
-      id: json['id'] ?? -1,
+      id: json['id'] ?? 0,
       line1: json['line1'],
       city: json['city'],
       line2: json['line2'] ?? '',
