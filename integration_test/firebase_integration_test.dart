@@ -106,12 +106,11 @@ void main() {
           ProductProvider productProvider = ProductProvider();
 
           Store? defaultStore = await storeProvider.getDefaultStore();
-
           if (defaultStore == null) {
             Store store = Store(id: 1, name: "first_store", address: "1200 Fremont Blvd");
             await storeProvider.saveDefaultStore(store);
             defaultStore = await storeProvider.getDefaultStore();
-            expect(defaultStore?.id, "test_store_id");
+            expect(defaultStore?.id, 1);
           }
 
           await productProvider.getProducts(defaultStore!.id);
