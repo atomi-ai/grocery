@@ -111,6 +111,7 @@ void main() {
             Store store = Store(id: 1, name: "first_store", address: "1200 Fremont Blvd");
             await storeProvider.saveDefaultStore(store);
             defaultStore = await storeProvider.getDefaultStore();
+            // TODO(dengquan): Why store.id == "test_store_id"?
             expect(defaultStore?.id, "test_store_id");
           }
 

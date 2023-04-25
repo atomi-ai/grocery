@@ -43,10 +43,10 @@ class Product {
     return Product(
       id: json['id'],
       name: json['name'],
-      imageUrl: json['imageUrl'],
+      imageUrl: json['image_url'],
       description: json['description'] ?? '',
-      price: json['price'],
-      discount: json['discount'],
+      price: (json['price'] as num).toDouble(),
+      discount: (json['discount'] as num).toDouble(),
       category: json['category'],
     );
   }

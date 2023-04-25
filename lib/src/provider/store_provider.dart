@@ -15,14 +15,10 @@ class StoreProvider with ChangeNotifier {
 
   Future<Store?> getDefaultStore() async {
     Store? store = null;
-    try {
-      store = await api.get(
-          url: '${Config.instance.apiUrl}/default-store',
-          fromJson: (json) => Store.fromJson(json)
-      );
-    } catch (e) {
-      print('xfguo: get exception in getting store');
-    }
+    store = await api.get(
+        url: '${Config.instance.apiUrl}/default-store',
+        fromJson: (json) => Store.fromJson(json)
+    );
     return setDefaultStore(store);
   }
 
@@ -32,5 +28,17 @@ class StoreProvider with ChangeNotifier {
       fromJson: (json) => Store.fromJson(json)
     );
     setDefaultStore(savedStore);
+  }
+
+  // Testing only now.
+  // Please remove the tag if the function is used by production.
+  Future<void> unsetDefaultStore() async {
+    try {
+      await api.delete(url: '${Config.instance.apiUrl}/default-store');
+      setDefaultStore(null);
+    } catch (e) {
+      print('Failed to unset default store: $e');
+      throw e;
+    }
   }
 }
