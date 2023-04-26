@@ -1,11 +1,21 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:http/http.dart' as http;
 
-String? token = null;
+// @TestingOnly
+String? testingToken = null;
 Future<String> getCurrentToken() async {
-  return token ?? '';
+  if (testingToken != null) {
+    // 这里的逻辑是只面向测试的，如果有别的更好的方法，我们可以改一下。
+    return testingToken!;
+  }
+  final user = await FirebaseAuth.instance.currentUser;
+  if (user == null) {
+    return '';
+  }
+  return user.getIdToken();
 }
 
 // Generic part of API calls.

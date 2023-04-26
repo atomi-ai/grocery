@@ -41,9 +41,9 @@ void main() {
 
     final responseBody = await response.transform(utf8.decoder).join();
     final jsonResponse = jsonDecode(responseBody);
-    api.token = jsonResponse['idToken'];
+    api.testingToken = jsonResponse['idToken'];
 
-    return api.token ?? '';
+    return api.testingToken ?? '';
   }
 
   setUp(() async {

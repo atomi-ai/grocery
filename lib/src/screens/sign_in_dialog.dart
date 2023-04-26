@@ -37,7 +37,6 @@ class _FullScreenSignInDialogState extends State<FullScreenSignInDialog> {
     if (user == null) {
       throw Exception("Get null user in /login, please retry");
     }
-    api.token = await user.getIdToken();
     await userProvider.login(user);
     await refreshProviders(context);
     // 登录成功后，导航回Dashboard
