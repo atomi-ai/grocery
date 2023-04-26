@@ -1,3 +1,10 @@
+class PaymentResult {
+  final String id;
+  final String status;
+
+  PaymentResult({required this.id, required this.status});
+}
+
 class Store {
   final int id;
   final String name;

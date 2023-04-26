@@ -21,8 +21,13 @@ Future<List<Product>> fetchProducts(int storeId) async {
 }
 
 // TODO(lamuguo): Should return something like OrderSummary.
-Future<void> placeOrder(PaymentIntentRequest paymentIntentRequest) async {
-  return api.post(
+Future<PaymentResult?> placeOrder(PaymentIntentRequest paymentIntentRequest) async {
+  final res = await api.post(
     url: '${Config.instance.apiUrl}/pay',
-    body: jsonEncode(paymentIntentRequest.toJson()), );
+    body: jsonEncode(paymentIntentRequest.toJson()));
+  if (res == null) {
+    return null;
+  }
+  Map<String, dynamic> result = jsonDecode(res);
+  return PaymentResult(id: result['id'], status: result['status']);
 }

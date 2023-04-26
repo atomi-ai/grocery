@@ -24,13 +24,15 @@ class CheckoutPage extends StatefulWidget {
 class _CheckoutPageState extends State<CheckoutPage> {
   late Address? _shippingAddress;
   late String _currentPaymentMethodId;
+  Future<PaymentResult?>? _paymentResultFuture;
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
 
     _shippingAddress = Provider.of<AddressProvider>(context).shippingAddress;
-    _currentPaymentMethodId = Provider.of<AtomiPaymentMethodProvider>(context).currentPaymentMethodId;
+    _currentPaymentMethodId =
+        Provider.of<AtomiPaymentMethodProvider>(context).currentPaymentMethodId;
   }
 
   Widget _buildOrderSummary(BuildContext context) {
@@ -246,12 +248,14 @@ class _CheckoutPageState extends State<CheckoutPage> {
         ),
         GestureDetector(
           onTap: () async {
-            final addrProvider = Provider.of<AddressProvider>(context, listen: false);
+            final addrProvider =
+                Provider.of<AddressProvider>(context, listen: false);
             final newSelectedAddress = await showDialog<Address>(
                 context: context,
                 builder: (context) {
                   return AddressSelector(
-                      defaultAddress: addrProvider.shippingAddress ?? Address.UNSET_ADDRESS);
+                      defaultAddress: addrProvider.shippingAddress ??
+                          Address.UNSET_ADDRESS);
                 });
             if (newSelectedAddress == null) {
               return;
@@ -267,6 +271,53 @@ class _CheckoutPageState extends State<CheckoutPage> {
           ),
         ),
       ],
+    );
+  }
+
+  void showPaymentDialog(BuildContext context, PaymentResult? paymentResult) {
+    bool success = paymentResult != null;
+    String title = success ? "Payment Successful" : "Payment Failed";
+    String message = success
+        ? "Your payment has been processed successfully."
+        : "There was an error processing your payment.";
+
+    Widget statusSection = success
+        ? Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              SizedBox(height: 10),
+              Text("Payment ID: ${paymentResult!.id}",
+                  style: TextStyle(fontSize: 12)),
+              Text("Status: ${paymentResult.status}",
+                  style: TextStyle(fontSize: 12)),
+            ],
+          )
+        : Container();
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(title),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(message),
+              statusSection,
+            ],
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: Text("OK"),
+              onPressed: () {
+                Navigator.pop(context); // Close the dialog
+                Navigator.pop(context); // Return to the previous page
+              },
+            ),
+          ],
+        );
+      },
     );
   }
 
@@ -303,20 +354,35 @@ class _CheckoutPageState extends State<CheckoutPage> {
                 'Total: \$${(widget.total + 6.0).toStringAsFixed(2)}',
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
               ),
-              ElevatedButton(
-                onPressed: () async {
-                  // Implement place order logic here
-                  PaymentIntentRequest piReq = PaymentIntentRequest(
-                    amount: 1111,
-                    paymentMethodId: _currentPaymentMethodId,
-                    shippingAddressId: _shippingAddress?.id ?? -1,
-                  );
-                  print('xfguo: place order, ${piReq}');
-                  await placeOrder(piReq);
-                  cartProvider.clearCart();
-                  Navigator.pop(context);
+              FutureBuilder<PaymentResult?>(
+                future: _paymentResultFuture,
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return CircularProgressIndicator();
+                  } else {
+                    if (snapshot.hasData) {
+                      WidgetsBinding.instance?.addPostFrameCallback((_) {
+                        showPaymentDialog(context, snapshot.data);
+                      });
+                    }
+                    return ElevatedButton(
+                      onPressed: () async {
+                        // Implement place order logic here
+                        PaymentIntentRequest piReq = PaymentIntentRequest(
+                          amount: (widget.total * 100 + 600).round(),
+                          paymentMethodId: _currentPaymentMethodId,
+                          shippingAddressId: _shippingAddress?.id ?? -1,
+                        );
+                        print('xfguo: place order, ${piReq}');
+                        setState(() {
+                          _paymentResultFuture = placeOrder(piReq);
+                        });
+                        cartProvider.clearCart();
+                      },
+                      child: Text('Place Order'),
+                    );
+                  }
                 },
-                child: Text('Place Order'),
               ),
             ],
           ),
