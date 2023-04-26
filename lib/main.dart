@@ -1,6 +1,5 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:fryo/firebase_options.dart';
 import 'package:fryo/src/provider/address_provider.dart';
 import 'package:fryo/src/provider/cart_provider.dart';
@@ -9,14 +8,10 @@ import 'package:fryo/src/provider/payment_method_provider.dart';
 import 'package:fryo/src/provider/product_provider.dart';
 import 'package:fryo/src/provider/store_provider.dart';
 import 'package:fryo/src/provider/user_provider.dart';
+import 'package:fryo/src/api/stripe_api.dart';
 import 'package:fryo/src/shared/config.dart';
 import 'package:fryo/src/widget/dashboard.dart';
 import 'package:provider/provider.dart';
-
-Future<void> initStripe() async {
-  Stripe.publishableKey = "pk_test_b23w3aM03rrkeOOFbpp2pPWJ";
-  await Stripe.instance.applySettings();
-}
 
 // TODO(lamuguo): Upgrade flutter to newer version (support ? and more)
 // TODO(lamuguo): 把fryo的名字改掉。

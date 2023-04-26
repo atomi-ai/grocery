@@ -5,11 +5,14 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:fryo/src/api/api_client.dart' as api;
 import 'package:fryo/src/entity/entities.dart';
+import 'package:fryo/src/entity/stripe.dart';
 import 'package:fryo/src/provider/address_provider.dart';
+import 'package:fryo/src/provider/payment_method_provider.dart';
 import 'package:fryo/src/provider/product_provider.dart';
 import 'package:fryo/src/provider/store_provider.dart';
 import 'package:fryo/src/provider/user_provider.dart';
 import 'package:fryo/src/shared/config.dart';
+import 'package:http/http.dart' as http;
 import 'package:mockito/annotations.dart';
 
 import 'user_provider_test.mocks.dart';
@@ -47,6 +50,9 @@ void main() {
     Config.loadTestingConfig();
     final token = await prepareApiTokenForTesting();
     print('ID token: ${token}');
+
+    // // 确保在测试中初始化WidgetsFlutterBinding
+    // TestWidgetsFlutterBinding.ensureInitialized();
 
     userProvider = UserProvider();
     mockUser = MockUser();
@@ -150,4 +156,81 @@ void main() {
     List<Address> endAddresses = addressProvider.addresses;
     expect(endAddresses.length, initialCount);
   });
+
+  test('Test AtomiPaymentMethodProvider with Stripe', () async {
+    AtomiPaymentMethodProvider atomiPaymentMethodProvider = AtomiPaymentMethodProvider();
+
+    // 0. 清空现在所有的payment methods.
+    atomiPaymentMethodProvider.deleteAllPaymentMethods();
+
+    // 1. 确认currentPaymentMethod 为空
+    expect(atomiPaymentMethodProvider.currentPaymentMethodId, '');
+
+    // 2. 从Stripe创建一个 paymentMethod
+    final pmId = await createPaymentMethod() ?? "";
+    // 添加一个 payment method
+    await atomiPaymentMethodProvider.addPaymentMethod(pmId);
+
+    // 设置为 current payment method
+    await atomiPaymentMethodProvider.setCurrentPaymentMethod(pmId);
+
+    // 验证
+    AtomiPaymentMethod? updatedCurrentPaymentMethod = atomiPaymentMethodProvider.getCurrentPaymentMethod();
+    expect(updatedCurrentPaymentMethod, isNotNull);
+    expect(updatedCurrentPaymentMethod!.id, pmId);
+
+    // 验证完毕后删除 paymentMethod
+    await atomiPaymentMethodProvider.deletePaymentMethod(updatedCurrentPaymentMethod.id);
+
+    // 重新获取 paymentMethods 并确认 paymentMethod 已删除
+    AtomiPaymentMethod? deletedPaymentMethod = atomiPaymentMethodProvider.findPaymentMethodById(updatedCurrentPaymentMethod.id);
+    expect(deletedPaymentMethod, null);
+
+    expect(atomiPaymentMethodProvider.getCurrentPaymentMethod(), null);
+  });
+}
+
+Future<String?> createPaymentMethod() async {
+  // 使用您的Stripe API密钥替换下面的字符串
+  final apiKey = 'sk_test_x7J2qxqTLBNo4WQoYkRNMEGx';
+
+  final client = http.Client();
+  final url = Uri.parse('https://api.stripe.com/v1/payment_methods');
+  final response = await client.post(
+    url,
+    headers: {
+      'Authorization': 'Bearer $apiKey',
+      'Content-Type': 'application/x-www-form-urlencoded',
+    },
+    body: {
+      'type': 'card',
+      'card[number]': '4242424242424242',
+      'card[exp_month]': '04',
+      'card[exp_year]': '2025',
+      'card[cvc]': '424',
+      'billing_details[email]': 'email@stripe.com',
+      'billing_details[phone]': '+48888000888',
+      'billing_details[address][city]': 'Houston',
+      'billing_details[address][country]': 'US',
+      'billing_details[address][line1]': '1459 Circle Drive',
+      'billing_details[address][line2]': '',
+      'billing_details[address][state]': 'Texas',
+      'billing_details[address][postal_code]': '77063',
+    },
+  );
+
+  if (response.statusCode == 200) {
+    final responseBody = json.decode(response.body);
+    final card = responseBody['card'];
+    expect(responseBody['id'], startsWith('pm_'));
+    expect(card['brand'], equals('visa'));
+    expect(card['country'], equals('US'));
+    expect(card['exp_month'], equals(04));
+    expect(card['exp_year'], equals(2025));
+    expect(card['last4'], equals('4242'));
+    return responseBody['id'] as String?;
+  } else {
+    print('Error creating PaymentMethod: ${response.body}');
+    return null;
+  }
 }

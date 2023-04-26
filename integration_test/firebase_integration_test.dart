@@ -7,8 +7,11 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_stripe/flutter_stripe.dart' as stripe;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:fryo/main.dart';
+import 'package:fryo/src/api/api_client.dart';
+import 'package:fryo/src/api/stripe_api.dart';
 import 'package:fryo/src/entity/entities.dart';
 import 'package:fryo/src/entity/stripe.dart';
+import 'package:fryo/src/entity/user.dart' as myUser;
 import 'package:fryo/src/provider/address_provider.dart';
 import 'package:fryo/src/provider/payment_method_provider.dart';
 import 'package:fryo/src/provider/product_provider.dart';
@@ -16,8 +19,6 @@ import 'package:fryo/src/provider/store_provider.dart';
 import 'package:fryo/src/provider/user_provider.dart';
 import 'package:fryo/src/shared/config.dart';
 import 'package:integration_test/integration_test.dart';
-import 'package:fryo/src/api/api_client.dart';
-import 'package:fryo/src/entity/user.dart' as myUser;
 
 final FirebaseOptions firebaseOptions = FirebaseOptions(
   apiKey: 'AIzaSyXXXXXX',
@@ -245,9 +246,10 @@ void main() {
       await atomiPaymentMethodProvider.deletePaymentMethod(updatedCurrentPaymentMethod.id);
 
       // 重新获取 paymentMethods 并确认 paymentMethod 已删除
-      await atomiPaymentMethodProvider.fetchPaymentMethods();
       AtomiPaymentMethod? deletedPaymentMethod = atomiPaymentMethodProvider.findPaymentMethodById(updatedCurrentPaymentMethod.id);
       expect(deletedPaymentMethod, null);
+
+      expect(atomiPaymentMethodProvider.getCurrentPaymentMethod(), null);
     });
   });
 

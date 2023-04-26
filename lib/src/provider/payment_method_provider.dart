@@ -5,23 +5,11 @@ import 'package:fryo/src/entity/user.dart';
 import 'package:fryo/src/shared/config.dart';
 
 class AtomiPaymentMethodProvider with ChangeNotifier {
-  List<AtomiPaymentMethod> _paymentMethods = [];
+  static final List<AtomiPaymentMethod> EMPTY_PAYMENT_METHODS = [];
+  List<AtomiPaymentMethod> _paymentMethods = EMPTY_PAYMENT_METHODS;
   List<AtomiPaymentMethod> get paymentMethods => _paymentMethods;
   String _currentPaymentMethodId = '';
   String get currentPaymentMethodId => _currentPaymentMethodId;
-
-  AtomiPaymentMethod? findPaymentMethodById(String pmId) {
-    for (var pm in _paymentMethods) {
-      if (pm.id == pmId) {
-        return pm;
-      }
-    }
-    return null;
-  }
-
-  AtomiPaymentMethod? getCurrentPaymentMethod() {
-    return findPaymentMethodById(_currentPaymentMethodId);
-  }
 
   Future<void> _saveCurrentPaymentMethod(String pmId) async {
     print('xfguo: _saveCurrentPaymentMethod: ${pmId}, ${_currentPaymentMethodId}');
@@ -52,8 +40,24 @@ class AtomiPaymentMethodProvider with ChangeNotifier {
   }
 
   Future<void> _fetchPaymentMethods() async {
-    _paymentMethods = await api.get(url: '${Config.instance.apiUrl}/payment-methods',
-        fromJson:  (json) => AtomiPaymentMethod.fromJson(json));
+    _paymentMethods = (await api.get(
+      url: '${Config.instance.apiUrl}/payment-methods',
+      fromJson:  (json) => AtomiPaymentMethod.fromJson(json),
+      defaultResult: EMPTY_PAYMENT_METHODS
+    ))!;
+  }
+
+  AtomiPaymentMethod? findPaymentMethodById(String pmId) {
+    for (var pm in _paymentMethods) {
+      if (pm.id == pmId) {
+        return pm;
+      }
+    }
+    return null;
+  }
+
+  AtomiPaymentMethod? getCurrentPaymentMethod() {
+    return findPaymentMethodById(_currentPaymentMethodId);
   }
 
   Future<void> fetchPaymentMethods() async {
@@ -81,6 +85,12 @@ class AtomiPaymentMethodProvider with ChangeNotifier {
 
   Future<void> deletePaymentMethod(String pmId) async {
     await _deletePaymentMethod(pmId);
+    await fetchPaymentMethods();
+    notifyListeners();
+  }
+
+  Future<void> deleteAllPaymentMethods() async {
+    await api.delete(url: '${Config.instance.apiUrl}/payment-methods');
     await fetchPaymentMethods();
     notifyListeners();
   }
