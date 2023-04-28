@@ -20,14 +20,14 @@ Future<List<Product>> fetchProducts(int storeId) async {
   return res ?? [];
 }
 
-// TODO(lamuguo): Should return something like OrderSummary.
 Future<PaymentResult?> placeOrder(PaymentIntentRequest paymentIntentRequest) async {
   final res = await api.post(
     url: '${Config.instance.apiUrl}/pay',
     body: jsonEncode(paymentIntentRequest.toJson()));
   if (res == null) {
-    return null;
+    return PaymentResult(result: PaymentResultStatus.FAILED);
   }
   Map<String, dynamic> result = jsonDecode(res);
-  return PaymentResult(id: result['id'], status: result['status']);
+  return PaymentResult(result: PaymentResultStatus.SUCCEEDED, id: result['id'], status: result['status']);
 }
+
