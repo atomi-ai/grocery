@@ -5,11 +5,13 @@ class PaymentIntentRequest {
   final String currency;
   final int shippingAddressId;
   final String paymentMethodId;
+  final int orderId;
 
   PaymentIntentRequest({
     required this.amount,
     required this.shippingAddressId,
     required this.paymentMethodId,
+    required this.orderId,
     this.currency = DEFAULT_CURRENCY,
   });
 
@@ -19,6 +21,7 @@ class PaymentIntentRequest {
       currency: json['currency'] as String,
       shippingAddressId: json['shipping_address_id'] as int,
       paymentMethodId: json['payment_method_id'] as String,
+      orderId: json['order_id'] as int,
     );
   }
 
@@ -28,6 +31,7 @@ class PaymentIntentRequest {
       'currency': currency,
       'shipping_address_id': shippingAddressId,
       'payment_method_id': paymentMethodId,
+      'order_id': orderId,
     };
   }
 

@@ -1,8 +1,101 @@
-class PaymentResult {
-  final String id;
-  final String status;
+enum PaymentResultStatus { SUCCEEDED, FAILED }
 
-  PaymentResult({required this.id, required this.status});
+class PaymentResult {
+  final PaymentResultStatus result;
+  final String? id;
+  final String? status;
+
+  PaymentResult({this.id, this.status, required this.result});
+}
+
+class Order {
+  final int? id;
+  final DateTime? createdAt;
+  final DateTime? updatedAt;
+  final String? paymentIntentId;
+  final List<OrderItem> orderItems;
+  final String? displayStatus;
+
+  Order({
+    this.id,
+    this.createdAt,
+    this.updatedAt,
+    this.paymentIntentId,
+    required this.orderItems,
+    this.displayStatus,
+  });
+
+  factory Order.fromJson(Map<String, dynamic> json) {
+    return Order(
+      id: json['id'],
+      createdAt: json['created_at'] != null
+          ? DateTime.parse(json['created_at'])
+          : null,
+      updatedAt: json['updated_at'] != null
+          ? DateTime.parse(json['updated_at'])
+          : null,
+      paymentIntentId: json['payment_intent_id'],
+      orderItems: List<OrderItem>.from(
+          json['order_items'].map((item) => OrderItem.fromJson(item))),
+      displayStatus: json['display_status'],
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    if (this.id != null) {
+      data['id'] = this.id;
+    }
+    if (this.createdAt != null) {
+      data['created_at'] = this.createdAt!.toIso8601String();
+    }
+    if (this.updatedAt != null) {
+      data['updated_at'] = this.updatedAt!.toIso8601String();
+    }
+    if (this.paymentIntentId != null) {
+      data['payment_intent_id'] = this.paymentIntentId;
+    }
+    data['order_items'] = this.orderItems.map((item) => item.toJson()).toList();
+    if (this.displayStatus != null) {
+      data['display_status'] = this.displayStatus;
+    }
+    return data;
+  }
+
+  @override
+  String toString() {
+    return 'Order{id: $id, createdAt: $createdAt, paymentIntentId: $paymentIntentId, order_itemss: $orderItems}';
+  }
+}
+
+class OrderItem {
+  final Product product;
+  final int quantity;
+
+  OrderItem({
+    required this.product,
+    required this.quantity,
+  });
+
+  factory OrderItem.fromJson(Map<String, dynamic> json) {
+    print('dq----${json['product']}');
+    return OrderItem(
+      product: Product.fromJson(json['product']),
+      quantity: json['quantity'],
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['product'] = this.product.toJson();
+    data['quantity'] = this.quantity;
+    return data;
+  }
+
+  @override
+  String toString() {
+    return 'OrderItem{product: $product, quantity: $quantity}';
+  }
 }
 
 class Store {
@@ -56,6 +149,18 @@ class Product {
       discount: (json['discount'] as num).toDouble(),
       category: json['category'],
     );
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['id'] = this.id;
+    data['name'] = this.name;
+    data['image_url'] = this.imageUrl;
+    data['description'] = this.description;
+    data['price'] = this.price;
+    data['discount'] = this.discount;
+    data['category'] = this.category;
+    return data;
   }
 
   @override

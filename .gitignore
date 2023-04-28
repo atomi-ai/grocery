@@ -72,3 +72,5 @@
 
 .flutter-plugins*
 android/app/google-services.json
+
+env-quan.py

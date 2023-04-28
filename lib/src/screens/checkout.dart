@@ -4,6 +4,7 @@ import 'package:fryo/src/entity/entities.dart';
 import 'package:fryo/src/entity/payment_intent_request.dart';
 import 'package:fryo/src/provider/address_provider.dart';
 import 'package:fryo/src/provider/cart_provider.dart';
+import 'package:fryo/src/provider/order_provider.dart';
 import 'package:fryo/src/provider/payment_method_provider.dart';
 import 'package:fryo/src/provider/product_provider.dart';
 import 'package:fryo/src/screens/address_selector.dart';
@@ -275,7 +276,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
   }
 
   void showPaymentDialog(BuildContext context, PaymentResult? paymentResult) {
-    bool success = paymentResult != null;
+    bool success = paymentResult?.result == PaymentResultStatus.SUCCEEDED;
     String title = success ? "Payment Successful" : "Payment Failed";
     String message = success
         ? "Your payment has been processed successfully."
@@ -367,11 +368,13 @@ class _CheckoutPageState extends State<CheckoutPage> {
                     }
                     return ElevatedButton(
                       onPressed: () async {
+                        OrderProvider orderProvider = Provider.of<OrderProvider>(context, listen: false);
                         // Implement place order logic here
                         PaymentIntentRequest piReq = PaymentIntentRequest(
                           amount: (widget.total * 100 + 600).round(),
                           paymentMethodId: _currentPaymentMethodId,
                           shippingAddressId: _shippingAddress?.id ?? -1,
+                          orderId: orderProvider.currentOrder!.id!,
                         );
                         print('xfguo: place order, ${piReq}');
                         setState(() {

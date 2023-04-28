@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:fryo/src/entity/entities.dart';
 import 'package:fryo/src/provider/address_provider.dart';
+import 'package:fryo/src/provider/order_provider.dart';
 import 'package:fryo/src/provider/payment_method_provider.dart';
 import 'package:fryo/src/provider/user_provider.dart';
 import 'package:fryo/src/screens/address_selector.dart';
+import 'package:fryo/src/screens/orders_page.dart';
 import 'package:fryo/src/screens/payment_method_dialog.dart';
 import 'package:fryo/src/widget/dashboard.dart';
 import 'package:fryo/src/widget/util.dart';
@@ -26,7 +28,7 @@ class _AccountTabState extends State<AccountTab> {
     print('xfguo: AccountTab::initState()');
   }
 
-  Widget _customListTile({required IconData icon, required String title, required Widget subtitle}) {
+  Widget _customListTile({required IconData icon, required String title, Widget? subtitle}) {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 16, vertical: 4),
       child: Row(
@@ -38,7 +40,7 @@ class _AccountTabState extends State<AccountTab> {
             children: [
               Text(title, style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
               SizedBox(height: 4),
-              subtitle,
+              if (subtitle != null) subtitle,
             ],
           ),
         ],
@@ -85,6 +87,26 @@ class _AccountTabState extends State<AccountTab> {
             ),
             SizedBox(height: 20),
           ],
+          Card(
+            child: GestureDetector(
+              onTap: () async {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => OrdersPage(),
+                  ),
+                );
+              },
+              child: ConstrainedBox(
+                constraints: BoxConstraints(minHeight: 60),
+                child: _customListTile(
+                  icon: Icons.assignment, // 这是一个表示订单的图标
+                  title: 'My Orders',
+                ),
+              ),
+            ),
+          ),
+          SizedBox(height: 20),
           Card(
             child: Column(
               children: [

@@ -79,4 +79,30 @@ class CartProvider with ChangeNotifier {
     print('xfguo: _cartItemsInCurrentStore return true');
     return true;
   }
+
+  Order createOrderFromCart(productIds, allProductmap){
+    List<OrderItem> orderItems = [];
+
+    // 遍历_cartItems，获取每个产品及其数量
+    for (int productId in _cartItems.keys) {
+      if (!productIds.contains(productId)) {
+        continue;
+      }
+      int quantity = _cartItems[productId]!;
+      final product = allProductmap[productId];
+      // 创建OrderItem并添加到orderItems列表
+      orderItems.add(
+        OrderItem(
+          product: product,
+          quantity: quantity,
+        ),
+      );
+    }
+
+    // 创建Order对象并设置orderItems
+    Order order = Order(orderItems: orderItems);
+
+    return order;
+  }
+
 }

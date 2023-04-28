@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:fryo/src/provider/order_provider.dart';
 import 'package:provider/provider.dart';
 
 import 'package:fryo/src/entity/entities.dart';
@@ -136,7 +137,14 @@ class _MyCartState extends State<MyCart> {
                     style: h5,
                   ),
                   ElevatedButton(
-                    onPressed: () {
+                    onPressed: () async {
+                      // 调用addOrder方法添加订单
+                      Order newOrder = cartProvider.createOrderFromCart(productProvider.productIdsInCurrentStore, productProvider.productsMap);
+                      OrderProvider orderProvider = Provider.of<OrderProvider>(context, listen: false);
+                      Order addedOrder = await orderProvider.addOrder(newOrder);
+                      // 将currentOrder设置为添加的订单
+                      orderProvider.currentOrder = addedOrder;
+
                       Navigator.push(
                         context,
                         MaterialPageRoute(
@@ -156,5 +164,4 @@ class _MyCartState extends State<MyCart> {
       ),
     );
   }
-
 }

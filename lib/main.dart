@@ -4,6 +4,7 @@ import 'package:fryo/firebase_options.dart';
 import 'package:fryo/src/provider/address_provider.dart';
 import 'package:fryo/src/provider/cart_provider.dart';
 import 'package:fryo/src/provider/favorites_provider.dart';
+import 'package:fryo/src/provider/order_provider.dart';
 import 'package:fryo/src/provider/payment_method_provider.dart';
 import 'package:fryo/src/provider/product_provider.dart';
 import 'package:fryo/src/provider/store_provider.dart';
@@ -38,6 +39,7 @@ void main() async {
         ChangeNotifierProvider(create: (_) => ProductProvider()),
         ChangeNotifierProvider(create: (_) => AddressProvider()),
         ChangeNotifierProvider(create: (_) => AtomiPaymentMethodProvider()),
+        ChangeNotifierProvider(create: (_) => OrderProvider()),
       ],
       child: MyApp(),
     ),
