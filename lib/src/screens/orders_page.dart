@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:fryo/src/entity/entities.dart';
 import 'package:fryo/src/provider/order_provider.dart';
 import 'package:provider/provider.dart';
+import 'package:intl/intl.dart';
 
 class OrdersPage extends StatefulWidget {
   @override
@@ -19,9 +20,6 @@ class _OrdersPageState extends State<OrdersPage> {
 
   Future<void> _fetchOrdersFromProvider() async {
     await Provider.of<OrderProvider>(context, listen: false).fetchOrders();
-  }
-  String formatDate(DateTime createdAt) {
-    return '${createdAt.year}-${createdAt.month.toString().padLeft(2, '0')}-${createdAt.day.toString().padLeft(2, '0')} ${createdAt.hour.toString().padLeft(2, '0')}:${createdAt.minute.toString().padLeft(2, '0')}:${createdAt.second.toString().padLeft(2, '0')}';
   }
 
   Widget buildOrderItem(BuildContext context, OrderItem item) {
@@ -68,9 +66,7 @@ class _OrdersPageState extends State<OrdersPage> {
         break;
     }
 
-    String formattedDate = formatDate(order.createdAt!);
     double totalPrice = order.orderItems.fold(0, (sum, item) => sum + (item.product.price * item.quantity));
-
     return Card(
       margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: Padding(
@@ -81,7 +77,9 @@ class _OrdersPageState extends State<OrdersPage> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(formattedDate),
+                Text(
+                  '${DateFormat('yyyy-MM-dd HH:mm:ss').format(order.createdAt!)}',
+                ),
                 Text(
                   '${order.displayStatus}',
                   style: TextStyle(color: statusTextColor, fontWeight: FontWeight.bold),
@@ -90,21 +88,11 @@ class _OrdersPageState extends State<OrdersPage> {
             ),
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 10.0),
-              // child: Divider(
-              //   color: Colors.grey,
-              //   thickness: 0.3,
-              //   height: 0.3,
-              // ),
             ),
             for (OrderItem item in order.orderItems)
               buildOrderItem(context, item),
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 10.0),
-              // child: Divider(
-              //   color: Colors.grey,
-              //   thickness: 0.3,
-              //   height: 0.3,
-              // ),
             ),
             Align(
               alignment: Alignment.centerRight,
