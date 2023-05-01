@@ -27,11 +27,13 @@ steps:
     GIT_TOKEN:
       from_secret: github_token
   commands:
+    - apt update && apt install -y netcat
     - git clone https://$GIT_USERNAME:$GIT_TOKEN@github.com/atomi-ai/atomi.git
     - cd atomi
     - go mod vendor
     - go build ./testing/init_db
     - go build .
+    - ../test_driver/wait-for-port.sh 127.0.0.1 3306
     - CONFIG_FILE=.config/testing.yaml ./init_db
     - CONFIG_FILE=.config/testing.yaml ./atomi
   detach: true
@@ -39,8 +41,8 @@ steps:
 - name: main
   image: ghcr.io/cirruslabs/flutter:3.7.9
   commands:
+    - apt update && apt install -y netcat
     - flutter pub get
-    # 明天加一下端口检测，今天先简单的sleep 60过了。
-    # 另外，明天还要想下在哪里加 flutter build apk，这个又慢又容易错。
-    - sleep 60
+    - ./test_driver/wait-for-port.sh 127.0.0.1 9099
+    - ./test_driver/wait-for-port.sh 127.0.0.1 8081
     - flutter test test/src/provider/user_provider_test.dart
