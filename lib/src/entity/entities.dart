@@ -78,7 +78,6 @@ class OrderItem {
   });
 
   factory OrderItem.fromJson(Map<String, dynamic> json) {
-    print('dq----${json['product']}');
     return OrderItem(
       product: Product.fromJson(json['product']),
       quantity: json['quantity'],
