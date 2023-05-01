@@ -24,6 +24,8 @@ class _AccountTabState extends State<AccountTab> {
         context, listen: false);
     addressProvider.fetchShippingAddress();
     addressProvider.fetchBillingAddress();
+    final pmProvider = Provider.of<AtomiPaymentMethodProvider>(context, listen: false);
+    pmProvider.fetchPaymentMethods();
     print('xfguo: AccountTab::initState()');
   }
 
