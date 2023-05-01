@@ -24,10 +24,10 @@ class AtomiPaymentMethodProvider with ChangeNotifier {
     _currentPaymentMethodId = user.paymentMethodId;
   }
 
-  Future<String> _fetchCurrentPaymentMethodId() async {
+  Future<void> _fetchCurrentPaymentMethodId() async {
     final User user = await api.get(url: '${Config.instance.apiUrl}/user',
         fromJson: (json) => User.fromJson(json));
-    return user.paymentMethodId;
+    _currentPaymentMethodId = user.paymentMethodId;
   }
 
   Future<void> _addNewPaymentMethod(String pmId) async {

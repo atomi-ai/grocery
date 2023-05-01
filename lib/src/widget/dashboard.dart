@@ -115,7 +115,7 @@ class _DashboardState extends State<Dashboard> {
                     BottomNavigationBarItem(
                         icon: Icon(Fryo.heart_1), label: 'Favorites'),
                     BottomNavigationBarItem(
-                      icon: userProvider.isLoggedIn
+                      icon: userProvider.isLoggedIn && userProvider.user?.photoURL?.isNotEmpty == true
                           ? CircleAvatar(
                         radius: 14,
                         backgroundImage:

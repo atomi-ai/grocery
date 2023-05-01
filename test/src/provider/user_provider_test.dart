@@ -4,9 +4,13 @@ import 'dart:io';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:fryo/src/api/api_client.dart' as api;
+import 'package:fryo/src/api/backend_api.dart';
 import 'package:fryo/src/entity/entities.dart';
+import 'package:fryo/src/entity/payment_intent_request.dart';
 import 'package:fryo/src/entity/stripe.dart';
 import 'package:fryo/src/provider/address_provider.dart';
+import 'package:fryo/src/provider/cart_provider.dart';
+import 'package:fryo/src/provider/order_provider.dart';
 import 'package:fryo/src/provider/payment_method_provider.dart';
 import 'package:fryo/src/provider/product_provider.dart';
 import 'package:fryo/src/provider/store_provider.dart';
@@ -188,12 +192,142 @@ void main() {
 
     expect(atomiPaymentMethodProvider.getCurrentPaymentMethod(), null);
   });
+
+  test('Test cart and checkout', () async {
+    CartProvider cartProvider = CartProvider();
+    ProductProvider productProvider = ProductProvider();
+    await productProvider.getProducts(1);
+    List<Product> products = productProvider.products;
+    expect(products.length, greaterThanOrEqualTo(4));
+    // Add the first two products to the cart
+    cartProvider.addToCart(products[0], 1);
+    cartProvider.addToCart(products[1], 2);
+
+    // Create a map of all products
+    final allProductMap = {
+      for (var product in products) product.id: product
+    };
+
+    // Calculate the total price
+    double totalPrice = cartProvider.calculateTotal(
+        cartProvider.cartItems, allProductMap.keys, allProductMap);
+    // Verify the total price
+    expect(totalPrice, products[0].price + 2 * products[1].price);
+
+    AddressProvider addressProvider = AddressProvider();
+    Address shippingAddress = Address(
+      line1: '123 Shipping St.',
+      city: 'Shipping City',
+      state: 'Shipping State',
+      country: 'USA',
+      postalCode: '12345',
+    );
+    await addressProvider.addAddress(shippingAddress);
+    Address? updatedAddress = addressProvider.addresses.firstWhere((p) => p.line1 == shippingAddress.line1 && p.city == shippingAddress.city);
+    await addressProvider.saveShippingAddress(updatedAddress);
+    Address? defaultShippingAddress = addressProvider.shippingAddress;
+    expect(defaultShippingAddress?.id, isNotNull);
+
+    AtomiPaymentMethodProvider atomiPaymentMethodProvider = AtomiPaymentMethodProvider();
+    atomiPaymentMethodProvider.fetchPaymentMethods();
+    if (atomiPaymentMethodProvider.getCurrentPaymentMethod() == null) {
+      final pmId = await createPaymentMethod() ?? "";
+      await atomiPaymentMethodProvider.addPaymentMethod(pmId);
+      await atomiPaymentMethodProvider.setCurrentPaymentMethod(pmId);
+    }
+    AtomiPaymentMethod? paymentMethod = atomiPaymentMethodProvider.getCurrentPaymentMethod();
+    expect(paymentMethod?.id, isNotNull);
+
+    // Create order from cart
+    Order order = cartProvider.createOrderFromCart(
+        allProductMap.keys, allProductMap);
+
+    // Create an instance of OrderProvider
+    final orderProvider = OrderProvider();
+
+    // Add order to OrderProvider
+    Order addedOrder = await orderProvider.addOrder(order);
+    orderProvider.currentOrder = addedOrder;
+
+    // Prepare PaymentIntentRequest based on the current order
+    PaymentIntentRequest piReq = PaymentIntentRequest(
+      amount: (totalPrice * 100 + 600).round(),
+      paymentMethodId: paymentMethod!.id,
+      shippingAddressId: defaultShippingAddress!.id,
+      orderId: orderProvider.currentOrder!.id!,
+    );
+
+    // Call the placeOrder function with the prepared PaymentIntentRequest
+    PaymentResult? paymentResult = await placeOrder(piReq);
+
+    // Assume the checkout is successful based on the paymentResult status
+    bool isCheckoutSuccessful = paymentResult?.status == 'succeeded';
+    expect(isCheckoutSuccessful, isTrue);
+
+    // Clear the cart after the successful checkout
+    cartProvider.clearCart();
+
+    // Add another two products to the cart
+    cartProvider.addToCart(products[3], 3);
+    cartProvider.addToCart(products[2], 4);
+
+    // Calculate the total price
+    totalPrice = cartProvider.calculateTotal(
+        cartProvider.cartItems, allProductMap.keys, allProductMap);
+    // Verify the total price
+    expect(totalPrice, products[3].price * 3 + products[2].price * 4);
+    final pmId2 = await createPaymentMethod() ?? "";
+    await atomiPaymentMethodProvider.addPaymentMethod(pmId2);
+    await atomiPaymentMethodProvider.setCurrentPaymentMethod(pmId2);
+    final paymentMethod2 = atomiPaymentMethodProvider.getCurrentPaymentMethod();
+    expect(paymentMethod2?.id, pmId2);
+
+    // Create order from cart
+    order = cartProvider.createOrderFromCart(
+        allProductMap.keys, allProductMap);
+
+    // Add order to OrderProvider
+    Order addedOrder2 = await orderProvider.addOrder(order);
+    orderProvider.currentOrder = addedOrder2;
+
+    // Prepare PaymentIntentRequest based on the current order
+    piReq = PaymentIntentRequest(
+      amount: (totalPrice * 100 + 600).round(),
+      paymentMethodId: paymentMethod2!.id,
+      shippingAddressId: defaultShippingAddress!.id,
+      orderId: orderProvider.currentOrder!.id!,
+    );
+
+    // Call the placeOrder function with the prepared PaymentIntentRequest
+    paymentResult = await placeOrder(piReq);
+
+    // Assume the checkout is successful based on the paymentResult status
+    isCheckoutSuccessful = paymentResult?.status == 'succeeded';
+    expect(isCheckoutSuccessful, isTrue);
+
+    // Clear the cart after the successful checkout
+    cartProvider.clearCart();
+
+    // Fetch orders
+    await orderProvider.fetchOrders();
+    // Verify if the orders are present in the orders list
+    bool isAddedOrderPresent = orderProvider.orders
+        .any((o) => o.id == addedOrder.id && o.createdAt == addedOrder.createdAt);
+    bool isAddedOrder2Present = orderProvider.orders
+        .any((o) => o.id == addedOrder2.id && o.createdAt == addedOrder2.createdAt);
+
+    expect(isAddedOrderPresent, isTrue);
+    expect(isAddedOrder2Present, isTrue);
+
+    addressProvider.deleteAddress(defaultShippingAddress!.id);
+    atomiPaymentMethodProvider.deletePaymentMethod(paymentMethod!.id);
+    atomiPaymentMethodProvider.deletePaymentMethod(paymentMethod2!.id);
+  });
 }
 
 Future<String?> createPaymentMethod() async {
   // 使用您的Stripe API密钥替换下面的字符串
   final apiKey = 'sk_test_x7J2qxqTLBNo4WQoYkRNMEGx';
-
   final client = http.Client();
   final url = Uri.parse('https://api.stripe.com/v1/payment_methods');
   final response = await client.post(

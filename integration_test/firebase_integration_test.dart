@@ -6,7 +6,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_stripe/flutter_stripe.dart' as stripe;
 import 'package:flutter_test/flutter_test.dart';
-import 'package:fryo/main.dart';
 import 'package:fryo/src/api/api_client.dart';
 import 'package:fryo/src/api/stripe_api.dart';
 import 'package:fryo/src/entity/entities.dart';
@@ -192,9 +191,13 @@ void main() {
       await initStripe();
       AtomiPaymentMethodProvider atomiPaymentMethodProvider = AtomiPaymentMethodProvider();
 
-      // 1. 调用 fetchPaymentMethods，确认 currentPaymentMethod 为空
+      // 1. 调用 fetchPaymentMethods
       await atomiPaymentMethodProvider.fetchPaymentMethods();
       AtomiPaymentMethod? currentPaymentMethod = atomiPaymentMethodProvider.getCurrentPaymentMethod();
+      if (currentPaymentMethod != null) {
+        await atomiPaymentMethodProvider.deletePaymentMethod(currentPaymentMethod.id);
+        currentPaymentMethod = atomiPaymentMethodProvider.getCurrentPaymentMethod();
+      }
       expect(currentPaymentMethod, null);
 
       // 2. 从 Stripe 创建一个 paymentMethod

@@ -28,6 +28,18 @@ class _CheckoutPageState extends State<CheckoutPage> {
   Future<PaymentResult?>? _paymentResultFuture;
 
   @override
+  void initState() {
+    super.initState();
+
+    final addressProvider = Provider.of<AddressProvider>(
+        context, listen: false);
+    addressProvider.fetchShippingAddress();
+    addressProvider.fetchBillingAddress();
+    final pmProvider = Provider.of<AtomiPaymentMethodProvider>(context, listen: false);
+    pmProvider.fetchPaymentMethods();
+  }
+
+  @override
   void didChangeDependencies() {
     super.didChangeDependencies();
 

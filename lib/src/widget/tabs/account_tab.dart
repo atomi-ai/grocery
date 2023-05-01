@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fryo/src/entity/entities.dart';
 import 'package:fryo/src/provider/address_provider.dart';
-import 'package:fryo/src/provider/order_provider.dart';
 import 'package:fryo/src/provider/payment_method_provider.dart';
 import 'package:fryo/src/provider/user_provider.dart';
 import 'package:fryo/src/screens/address_selector.dart';
@@ -25,6 +24,8 @@ class _AccountTabState extends State<AccountTab> {
         context, listen: false);
     addressProvider.fetchShippingAddress();
     addressProvider.fetchBillingAddress();
+    final pmProvider = Provider.of<AtomiPaymentMethodProvider>(context, listen: false);
+    pmProvider.fetchPaymentMethods();
     print('xfguo: AccountTab::initState()');
   }
 
@@ -63,7 +64,9 @@ class _AccountTabState extends State<AccountTab> {
           SizedBox(height: 20),
           if (user != null) ...[
             CircleAvatar(
-              backgroundImage: NetworkImage(user.photoURL ?? ''),
+              backgroundImage: user.photoURL?.isNotEmpty == true
+                  ? NetworkImage(user.photoURL!)
+                  : null,
               radius: 40,
             ),
             SizedBox(height: 15),
@@ -71,7 +74,7 @@ class _AccountTabState extends State<AccountTab> {
               padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
               child: Center(
                 child: Text(
-                  user?.displayName ?? '',
+                  user.displayName ?? '',
                   style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
               ),
@@ -80,7 +83,7 @@ class _AccountTabState extends State<AccountTab> {
               padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
               child: Center(
                 child: Text(
-                  user?.email ?? '',
+                  user.email ?? '',
                   style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
                 ),
               ),
