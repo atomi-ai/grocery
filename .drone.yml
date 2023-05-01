@@ -1,0 +1,46 @@
+---
+kind: pipeline
+type: kubernetes
+name: hello-world
+
+steps:
+- name: deploy-mysql
+  image: mysql:5.7
+  environment:
+    MYSQL_ROOT_PASSWORD: password
+    MYSQL_DATABASE: atomi_exp
+    MYSQL_USER: appuser
+    MYSQL_PASSWORD: p6FGFvLcQ2sm
+  detach: true
+
+- name: deploy-firebase
+  image: spine3/firebase-emulator
+  environment:
+    GCP_PROJECT: "quickstart-123456"
+    ENABLE_UI: "true"
+  detach: true
+
+- name: build-and-run-atomi
+  image: golang:1.20
+  environment:
+    GIT_USERNAME: admin-atomi
+    GIT_TOKEN:
+      from_secret: github_token
+  commands:
+    - git clone https://$GIT_USERNAME:$GIT_TOKEN@github.com/atomi-ai/atomi.git
+    - cd atomi
+    - go mod vendor
+    - go build ./testing/init_db
+    - go build .
+    - CONFIG_FILE=.config/testing.yaml ./init_db
+    - CONFIG_FILE=.config/testing.yaml ./atomi
+  detach: true
+
+- name: main
+  image: ghcr.io/cirruslabs/flutter:3.7.9
+  commands:
+    - flutter pub get
+    # 明天加一下端口检测，今天先简单的sleep 60过了。
+    # 另外，明天还要想下在哪里加 flutter build apk，这个又慢又容易错。
+    - sleep 60
+    - flutter test test/src/provider/user_provider_test.dart
