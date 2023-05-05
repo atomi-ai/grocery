@@ -28,7 +28,7 @@ steps:
       from_secret: github_token
   commands:
     - apt update && apt install -y netcat
-    - git clone https://$GIT_USERNAME:$GIT_TOKEN@github.com/atomi-ai/atomi.git
+    - git clone https://$GIT_USERNAME:$GIT_TOKEN@github.com/${DRONE_REPO_OWNER}/atomi.git
     - cd atomi
     - go mod vendor
     - go build ./testing/init_db
