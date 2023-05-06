@@ -34,6 +34,7 @@ steps:
     - go build ./testing/init_db
     - go build .
     - ../test_driver/wait-for-port.sh 127.0.0.1 3306
+    - ../test_driver/wait-for-port.sh 127.0.0.1 9099
     - CONFIG_FILE=.config/testing.yaml ./init_db
     - CONFIG_FILE=.config/testing.yaml ./atomi
   detach: true
