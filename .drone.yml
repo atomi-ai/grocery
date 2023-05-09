@@ -31,7 +31,7 @@ steps:
     - git clone https://$GIT_USERNAME:$GIT_TOKEN@github.com/${DRONE_REPO_OWNER}/atomi.git
     - cd atomi
     - go mod vendor
-    - go build ./testing/init_db
+    - go build ./exp/init_db
     - go build .
     - ../test_driver/wait-for-port.sh 127.0.0.1 3306
     - ../test_driver/wait-for-port.sh 127.0.0.1 9099
