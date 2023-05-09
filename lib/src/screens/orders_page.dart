@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fryo/src/entity/entities.dart';
 import 'package:fryo/src/provider/order_provider.dart';
+import 'package:fryo/src/screens/order_detail_page.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 
@@ -67,41 +68,51 @@ class _OrdersPageState extends State<OrdersPage> {
     }
 
     double totalPrice = order.orderItems.fold(0, (sum, item) => sum + (item.product.price * item.quantity));
-    return Card(
-      margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  '${DateFormat('yyyy-MM-dd HH:mm:ss').format(order.createdAt!)}',
-                ),
-                Text(
-                  '${order.displayStatus}',
-                  style: TextStyle(color: statusTextColor, fontWeight: FontWeight.bold),
-                ),
-              ],
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 10.0),
-            ),
-            for (OrderItem item in order.orderItems)
-              buildOrderItem(context, item),
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 10.0),
-            ),
-            Align(
-              alignment: Alignment.centerRight,
-              child: Text(
-                'Total: \$${totalPrice.toStringAsFixed(2)}',
-                style: TextStyle(fontWeight: FontWeight.bold),
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => OrderDetailsPage(order: order),
+          ),
+        );
+      },
+      child: Card(
+        margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    '${DateFormat('yyyy-MM-dd HH:mm:ss').format(order.createdAt!)}',
+                  ),
+                  Text(
+                    '${order.displayStatus}',
+                    style: TextStyle(color: statusTextColor, fontWeight: FontWeight.bold),
+                  ),
+                ],
               ),
-            ),
-          ],
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 10.0),
+              ),
+              for (OrderItem item in order.orderItems)
+                buildOrderItem(context, item),
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 10.0),
+              ),
+              Align(
+                alignment: Alignment.centerRight,
+                child: Text(
+                  'Total: \$${totalPrice.toStringAsFixed(2)}',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
