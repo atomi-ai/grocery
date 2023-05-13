@@ -251,7 +251,6 @@ class _CheckoutPageState extends State<CheckoutPage> {
                     duration: Duration(seconds: 2),
                   ),
                 );
-                Navigator.pop(context);
                 return;
               }
               setState(() {
@@ -352,21 +351,29 @@ class _CheckoutPageState extends State<CheckoutPage> {
       children: [
         GestureDetector(
           onTap: () async {
-            final addrProvider =
-                Provider.of<AddressProvider>(context, listen: false);
             final newSelectedAddress = await showDialog<Address>(
                 context: context,
                 builder: (context) {
                   return AddressSelector(
-                      defaultAddress: addrProvider.shippingAddress ??
-                          Address.UNSET_ADDRESS);
+                      defaultAddress: _shippingAddress ?? Address.UNSET_ADDRESS);
                 });
             if (newSelectedAddress == null) {
               return;
             }
             print('xfguo: new selectedBillingAddress: ${newSelectedAddress}');
+            if (_deliveryMethod == DeliveryMethod.UberDelivery) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text('The address has been changed. Please select the delivery method again'),
+                  duration: Duration(seconds: 2),
+                ),
+              );
+            }
             setState(() {
               _shippingAddress = newSelectedAddress;
+              _deliveryMethod = DeliveryMethod.Pickup;
+              _shippingCost = 0.0;
+              _uberQuoteResult = null;
             });
           },
           child: ListTile(
