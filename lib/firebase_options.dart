@@ -68,7 +68,7 @@ class DefaultFirebaseOptions {
     projectId: 'quickstart-1589068586497',
     storageBucket: 'quickstart-1589068586497.appspot.com',
     iosClientId: '194699638421-sof24sph0bakbpp17tes5qo1h3rpbs20.apps.googleusercontent.com',
-    iosBundleId: 'com.example.grocery',
+    iosBundleId: 'ai.atomi.grocery',
   );
 
   static const FirebaseOptions macos = FirebaseOptions(
@@ -78,6 +78,6 @@ class DefaultFirebaseOptions {
     projectId: 'quickstart-1589068586497',
     storageBucket: 'quickstart-1589068586497.appspot.com',
     iosClientId: '194699638421-sof24sph0bakbpp17tes5qo1h3rpbs20.apps.googleusercontent.com',
-    iosBundleId: 'com.example.grocery',
+    iosBundleId: 'ai.atomi.grocery',
   );
 }

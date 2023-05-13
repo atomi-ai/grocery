@@ -9,7 +9,7 @@
       "client_info": {
         "mobilesdk_app_id": "1:194699638421:android:5468232c7abc2ceb5dcd9c",
         "android_client_info": {
-          "package_name": "com.example.grocery"
+          "package_name": "ai.atomi.grocery"
         }
       },
       "oauth_client": [
@@ -17,7 +17,7 @@
           "client_id": "194699638421-4lvopcc9hhd6ek4chsfs7idmgaf63cjv.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "com.example.grocery",
+            "package_name": "ai.atomi.grocery",
             "certificate_hash": "2c7a3f46b70126671addb25b5a0d3fb933ff9b4c"
           }
         },
@@ -42,7 +42,7 @@
               "client_id": "194699638421-sof24sph0bakbpp17tes5qo1h3rpbs20.apps.googleusercontent.com",
               "client_type": 2,
               "ios_info": {
-                "bundle_id": "com.example.grocery"
+                "bundle_id": "ai.atomi.grocery"
               }
             }
           ]
