@@ -13,6 +13,7 @@ class Order {
   final DateTime? createdAt;
   final DateTime? updatedAt;
   final String? paymentIntentId;
+  final String? deliveryId;
   final List<OrderItem> orderItems;
   final String? displayStatus;
 
@@ -21,6 +22,7 @@ class Order {
     this.createdAt,
     this.updatedAt,
     this.paymentIntentId,
+    this.deliveryId,
     required this.orderItems,
     this.displayStatus,
   });
@@ -35,6 +37,7 @@ class Order {
           ? DateTime.parse(json['updated_at'])
           : null,
       paymentIntentId: json['payment_intent_id'],
+      deliveryId: json['delivery_id'],
       orderItems: List<OrderItem>.from(
           json['order_items'].map((item) => OrderItem.fromJson(item))),
       displayStatus: json['display_status'],
@@ -55,6 +58,9 @@ class Order {
     if (this.paymentIntentId != null) {
       data['payment_intent_id'] = this.paymentIntentId;
     }
+    if (this.deliveryId != null) {
+      data['delivery_id'] = this.deliveryId;
+    }
     data['order_items'] = this.orderItems.map((item) => item.toJson()).toList();
     if (this.displayStatus != null) {
       data['display_status'] = this.displayStatus;
@@ -64,7 +70,7 @@ class Order {
 
   @override
   String toString() {
-    return 'Order{id: $id, createdAt: $createdAt, paymentIntentId: $paymentIntentId, order_itemss: $orderItems}';
+    return 'Order{id: $id, createdAt: $createdAt, paymentIntentId: $paymentIntentId, deliveryId: $deliveryId,order_itemss: $orderItems}';
   }
 }
 
@@ -101,8 +107,13 @@ class Store {
   final int id;
   final String name;
   final String address;
+  final String city;
+  final String state;
+  final String zipCode;
+  final String phone;
 
-  Store({required this.id, required this.name, required this.address});
+  Store({required this.id, required this.name, required this.address,
+  required this.city, required this.state, required this.zipCode, required this.phone});
 
   factory Store.fromJson(Map<String, dynamic> json) {
     print('xfguo: Store.fromJson json = ${json}');
@@ -110,12 +121,20 @@ class Store {
       id: json['id'],
       name: json['name'],
       address: json['address'],
+      city: json['city'],
+      state: json['state'],
+      zipCode: json['zip_code'],
+      phone: json['phone'],
     );
   }
 
   @override
   String toString() {
-    return 'Store{id: $id, name: $name, address: $address}';
+    return 'Store{id: $id, name: $name, address: $address, city: $city, state: $state, zipCode: $zipCode, phone: $phone}';
+  }
+
+  String getAddressString() {
+    return '$address, $city, $state, $zipCode';
   }
 }
 
@@ -216,6 +235,10 @@ class Address {
   @override
   String toString() {
     return 'Address{id: $id, line1: $line1, line2: $line2, city: $city, state: $state, country: $country, postalCode: $postalCode}';
+  }
+
+  String getAddressString() {
+    return '$line1 $line2, $city, $state, $postalCode';
   }
 
   static final UNSET_ADDRESS = Address(line1: 'UNSET', city: 'UNSET');

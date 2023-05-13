@@ -14,6 +14,9 @@ class MyCart extends StatefulWidget {
 }
 
 class _MyCartState extends State<MyCart> {
+  Future<Order?>? _orderFuture;
+  bool _orderProcessed = false;
+
   Widget _buildCartItem(BuildContext context, Product product, int quantity) {
     final cartProvider = Provider.of<CartProvider>(context);
     return Card(
@@ -93,7 +96,7 @@ class _MyCartState extends State<MyCart> {
 
     final total = cartProvider.calculateTotal(
       cartProvider.cartItems, productProvider.productIdsInCurrentStore, productProvider.productsMap);
-
+    OrderProvider orderProvider = Provider.of<OrderProvider>(context, listen: false);
     return Scaffold(
       appBar: AppBar(
         title: Text('My Cart'),
@@ -136,25 +139,38 @@ class _MyCartState extends State<MyCart> {
                     'Total: \$${total.toStringAsFixed(2)}',
                     style: h5,
                   ),
-                  ElevatedButton(
-                    onPressed: () async {
-                      // 调用addOrder方法添加订单
-                      Order newOrder = cartProvider.createOrderFromCart(productProvider.productIdsInCurrentStore, productProvider.productsMap);
-                      OrderProvider orderProvider = Provider.of<OrderProvider>(context, listen: false);
-                      Order addedOrder = await orderProvider.addOrder(newOrder);
-                      // 将currentOrder设置为添加的订单
-                      orderProvider.currentOrder = addedOrder;
-
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => CheckoutPage(
-                            total: total,
-                          ),
-                        ),
-                      );
+                  FutureBuilder<Order?>(
+                    future: _orderFuture,
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return CircularProgressIndicator();
+                      } else {
+                        if (snapshot.hasData && !_orderProcessed) {
+                          _orderProcessed = true;
+                          WidgetsBinding.instance.addPostFrameCallback((_) {
+                            // 将currentOrder设置为添加的订单
+                            orderProvider.currentOrder = snapshot.data;
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => CheckoutPage(),
+                              ),
+                            );
+                          });
+                        }
+                        return ElevatedButton(
+                          onPressed: () async {
+                            // 调用addOrder方法添加订单
+                            Order newOrder = cartProvider.createOrderFromCart(productProvider.productIdsInCurrentStore, productProvider.productsMap);
+                            setState(() {
+                              _orderFuture = orderProvider.addOrder(newOrder);
+                              _orderProcessed = false;
+                            });
+                          },
+                          child: Text('Checkout'),
+                        );
+                      }
                     },
-                    child: Text('Checkout'),
                   ),
                 ],
               ),
