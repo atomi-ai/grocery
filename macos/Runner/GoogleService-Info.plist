@@ -13,7 +13,7 @@
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
-	<string>com.example.grocery</string>
+	<string>ai.atomi.grocery</string>
 	<key>PROJECT_ID</key>
 	<string>quickstart-1589068586497</string>
 	<key>STORAGE_BUCKET</key>
