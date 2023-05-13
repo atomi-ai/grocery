@@ -53,13 +53,13 @@ class _OrdersPageState extends State<OrdersPage> {
   Widget buildOrderCard(BuildContext context, Order order) {
     Color statusTextColor;
     switch (order.displayStatus) {
-      case 'succeeded':
+      case 'COMPLETED':
         statusTextColor = Colors.green;
         break;
-      case 'pending payment':
+      case 'WAITING_FOR_PAYMENT':
         statusTextColor = Colors.red;
         break;
-      case 'refunded':
+      case 'REFUNDED':
         statusTextColor = Colors.grey;
         break;
       default:
