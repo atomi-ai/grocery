@@ -15,6 +15,7 @@ class MyCart extends StatefulWidget {
 
 class _MyCartState extends State<MyCart> {
   Future<Order?>? _orderFuture;
+  bool _orderProcessed = false;
 
   Widget _buildCartItem(BuildContext context, Product product, int quantity) {
     final cartProvider = Provider.of<CartProvider>(context);
@@ -144,17 +145,15 @@ class _MyCartState extends State<MyCart> {
                       if (snapshot.connectionState == ConnectionState.waiting) {
                         return CircularProgressIndicator();
                       } else {
-                        if (snapshot.hasData) {
+                        if (snapshot.hasData && !_orderProcessed) {
+                          _orderProcessed = true;
                           WidgetsBinding.instance.addPostFrameCallback((_) {
                             // 将currentOrder设置为添加的订单
                             orderProvider.currentOrder = snapshot.data;
-
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => CheckoutPage(
-                                  total: total,
-                                ),
+                                builder: (context) => CheckoutPage(),
                               ),
                             );
                           });
@@ -165,6 +164,7 @@ class _MyCartState extends State<MyCart> {
                             Order newOrder = cartProvider.createOrderFromCart(productProvider.productIdsInCurrentStore, productProvider.productsMap);
                             setState(() {
                               _orderFuture = orderProvider.addOrder(newOrder);
+                              _orderProcessed = false;
                             });
                           },
                           child: Text('Checkout'),

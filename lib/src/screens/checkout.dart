@@ -2,30 +2,34 @@ import 'package:flutter/material.dart';
 import 'package:fryo/src/api/backend_api.dart';
 import 'package:fryo/src/entity/entities.dart';
 import 'package:fryo/src/entity/payment_intent_request.dart';
+import 'package:fryo/src/entity/uber.dart';
 import 'package:fryo/src/provider/address_provider.dart';
 import 'package:fryo/src/provider/cart_provider.dart';
 import 'package:fryo/src/provider/order_provider.dart';
 import 'package:fryo/src/provider/payment_method_provider.dart';
-import 'package:fryo/src/provider/product_provider.dart';
+import 'package:fryo/src/provider/store_provider.dart';
 import 'package:fryo/src/screens/address_selector.dart';
 import 'package:fryo/src/screens/payment_method_dialog.dart';
 import 'package:fryo/src/widget/util.dart';
 import 'package:provider/provider.dart';
 
+enum DeliveryMethod { Pickup, UberDelivery }
+
 class CheckoutPage extends StatefulWidget {
-  // TODO(lamuguo): Change the type to int.
-  final double total;
-
-  CheckoutPage({required this.total});
-
   @override
   _CheckoutPageState createState() => _CheckoutPageState();
 }
 
 class _CheckoutPageState extends State<CheckoutPage> {
+  DeliveryMethod _deliveryMethod = DeliveryMethod.Pickup;
+  double _shippingCost = 0.0;
+  double _total = 0.0;
+  UberQuoteResult? _uberQuoteResult;
   late Address? _shippingAddress;
   late String _currentPaymentMethodId;
   Future<PaymentResult?>? _paymentResultFuture;
+  TextEditingController _nameController = TextEditingController();
+  TextEditingController _phoneController = TextEditingController();
 
   @override
   void initState() {
@@ -33,8 +37,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
 
     final addressProvider = Provider.of<AddressProvider>(
         context, listen: false);
-    addressProvider.fetchShippingAddress();
-    addressProvider.fetchBillingAddress();
+    addressProvider.init();
     final pmProvider = Provider.of<AtomiPaymentMethodProvider>(context, listen: false);
     pmProvider.fetchPaymentMethods();
   }
@@ -49,21 +52,15 @@ class _CheckoutPageState extends State<CheckoutPage> {
   }
 
   Widget _buildOrderSummary(BuildContext context) {
-    final cartProvider = Provider.of<CartProvider>(context);
-    final productProvider = Provider.of<ProductProvider>(context);
-
+    OrderProvider orderProvider = Provider.of<OrderProvider>(context, listen: false);
+    List<OrderItem> orderItems = orderProvider.currentOrder!.orderItems;
     double total = 0.0;
-    double shippingCost = 5.0;
     double tax = 0.0;
     List<Widget> itemsList = [];
 
-    for (var e in cartProvider.cartItems.entries) {
-      int productId = e.key;
-      int quantity = e.value;
-      if (!productProvider.productsMap.containsKey(productId)) {
-        continue;
-      }
-      Product product = productProvider.productsMap[productId]!;
+    for (var e in orderItems) {
+      int quantity = e.quantity;
+      Product product = e.product;
       double price = product.price * quantity;
       total += price;
 
@@ -125,9 +122,14 @@ class _CheckoutPageState extends State<CheckoutPage> {
       ),
     );
 
-    // TODO(lamuguo): Call some API to calculate shipping cost and tax.
     var subtotal = total;
-    total += shippingCost + tax;
+    total += _shippingCost + tax;
+
+    setState(() {
+      _total = total;
+    });
+
+    columnItems.add(_buildDeliveryMethodSelector());
 
     columnItems.add(Divider());
     columnItems.add(
@@ -160,7 +162,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
               style: TextStyle(fontSize: 16.0),
             ),
             Text(
-              '\$${shippingCost.toStringAsFixed(2)}',
+              '\$${_shippingCost.toStringAsFixed(2)}',
               style: TextStyle(fontSize: 16.0),
             ),
           ],
@@ -199,7 +201,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
               style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
             ),
             Text(
-              '\$${total.toStringAsFixed(2)}',
+              '\$${_total.toStringAsFixed(2)}',
               style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
             ),
           ],
@@ -213,17 +215,113 @@ class _CheckoutPageState extends State<CheckoutPage> {
     );
   }
 
+  Widget _buildDeliveryMethodSelector() {
+    final storeProvider = Provider.of<StoreProvider>(context, listen: false);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Text(
+          'Delivery Method:',
+          style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
+        ),
+        ListTile(
+          leading: Radio<DeliveryMethod>(
+            value: DeliveryMethod.Pickup,
+            groupValue: _deliveryMethod,
+            onChanged: (DeliveryMethod? value) {
+              setState(() {
+                _deliveryMethod = value!;
+                _shippingCost = 0.0;
+                _uberQuoteResult = null;
+              });
+            },
+          ),
+          title: Text('In-Store Pickup'),
+        ),
+        ListTile(
+          leading: Radio<DeliveryMethod>(
+            value: DeliveryMethod.UberDelivery,
+            groupValue: _deliveryMethod,
+            onChanged: (DeliveryMethod? value) async {
+              if (_shippingAddress == null || _shippingAddress!.getAddressString().isEmpty) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text('Please select a shipping address.'),
+                    duration: Duration(seconds: 2),
+                  ),
+                );
+                Navigator.pop(context);
+                return;
+              }
+              setState(() {
+                _deliveryMethod = value!;
+              });
+              // Call API to calculate shipping cost
+              UberQuoteRequest uberQuoteRequest = UberQuoteRequest(
+                dropoffAddress: _shippingAddress!.getAddressString(),
+                pickupAddress: storeProvider.defaultStore!.getAddressString(),
+              );
+              UberQuoteResult uberQuoteResult = await getUberQuote(uberQuoteRequest);
+              if (uberQuoteResult.result == UberQuoteResultStatus.SUCCEEDED && uberQuoteResult.id!.isNotEmpty) {
+                setState(() {
+                  _shippingCost = uberQuoteResult.fee.toDouble() / 100.0;
+                  _uberQuoteResult = uberQuoteResult;
+                });
+              } else {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text('Uber delivery not available.'),
+                    duration: Duration(seconds: 2),
+                  ),
+                );
+                setState(() {
+                  _deliveryMethod = DeliveryMethod.Pickup;
+                  _shippingCost = 0.0;
+                  _uberQuoteResult = null;
+                });
+              }
+            },
+          ),
+          title: Text('Uber Delivery'),
+        ),
+        if (_deliveryMethod == DeliveryMethod.UberDelivery) _buildUberDeliveryInfo(),
+      ],
+    );
+  }
+
+  Widget _buildUberDeliveryInfo() {
+    if (_uberQuoteResult == null) {
+      return Center(child: CircularProgressIndicator());
+    } else if (_uberQuoteResult!.result != UberQuoteResultStatus.SUCCEEDED || _uberQuoteResult!.id!.isEmpty) {
+      return Text('Uber delivery not available.');
+    } else {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,  // Add this line
+        children: [
+          Text('Duration: ${_uberQuoteResult!.duration}'),
+          Text('Expires: ${_uberQuoteResult!.expires}'),
+          TextField(
+            controller: _nameController,
+            decoration: InputDecoration(
+              hintText: 'Enter Name',
+            ),
+          ),
+          TextField(
+            controller: _phoneController,
+            decoration: InputDecoration(
+              hintText: 'Enter Phone Number',
+            ),
+          ),
+        ],
+      );
+    }
+  }
+
   Widget _buildPaymentMethod() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Container(
-          alignment: Alignment.center,
-          child: Text(
-            'Payment Method',
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-          ),
-        ),
         Consumer<AtomiPaymentMethodProvider>(
           builder: (context, pmProvider, child) {
             return GestureDetector(
@@ -252,13 +350,6 @@ class _CheckoutPageState extends State<CheckoutPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Container(
-          alignment: Alignment.center,
-          child: Text(
-            'Shipping Address',
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-          ),
-        ),
         GestureDetector(
           onTap: () async {
             final addrProvider =
@@ -280,6 +371,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
           },
           child: ListTile(
             leading: Icon(Icons.location_on),
+            title: Text('Shipping Address'),
             subtitle: getAddressText(_shippingAddress),
           ),
         ),
@@ -337,7 +429,9 @@ class _CheckoutPageState extends State<CheckoutPage> {
   @override
   Widget build(BuildContext context) {
     final cartProvider = Provider.of<CartProvider>(context);
-
+    final storeProvider = Provider.of<StoreProvider>(context, listen: false);
+    OrderProvider orderProvider = Provider.of<OrderProvider>(context, listen: false);
+    List<OrderItem> orderItems = orderProvider.currentOrder!.orderItems;
     return Scaffold(
       appBar: AppBar(
         title: Text('Checkout'),
@@ -349,11 +443,9 @@ class _CheckoutPageState extends State<CheckoutPage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 _buildOrderSummary(context),
-                // SizedBox(height: 10),
                 _buildShippingAddress(),
-                SizedBox(height: 10),
                 _buildPaymentMethod(),
-              ],
+            ],
             ),
           )),
       bottomNavigationBar: BottomAppBar(
@@ -364,7 +456,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                'Total: \$${(widget.total + 6.0).toStringAsFixed(2)}',
+                'Total: \$${_total.toStringAsFixed(2)}',
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
               ),
               FutureBuilder<PaymentResult?>(
@@ -374,19 +466,44 @@ class _CheckoutPageState extends State<CheckoutPage> {
                     return CircularProgressIndicator();
                   } else {
                     if (snapshot.hasData) {
-                      WidgetsBinding.instance?.addPostFrameCallback((_) {
+                      WidgetsBinding.instance.addPostFrameCallback((_) {
                         showPaymentDialog(context, snapshot.data);
                       });
                     }
                     return ElevatedButton(
                       onPressed: () async {
+                        if (_deliveryMethod == DeliveryMethod.UberDelivery &&
+                            (_nameController.text.isEmpty || _phoneController.text.isEmpty)) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text('Please enter the pickup name and phone number.')),
+                          );
+                          return;
+                        }
                         OrderProvider orderProvider = Provider.of<OrderProvider>(context, listen: false);
-                        // Implement place order logic here
+                        UberDeliveryData? deliveryData;
+                        if (_deliveryMethod == DeliveryMethod.UberDelivery) {
+                          deliveryData = UberDeliveryData(
+                            quoteId: _uberQuoteResult!.id!,
+                            dropoffAddress: _shippingAddress!.getAddressString(),
+                            dropoffName: _nameController.text,
+                            dropoffPhoneNumber: _phoneController.text,
+                            manifestItems: orderItems.map((orderItem) {
+                              return ManifestItem(
+                                name: orderItem.product.name,
+                                quantity: orderItem.quantity,
+                              );
+                            }).toList(),
+                            pickupAddress: storeProvider.defaultStore!.getAddressString(),
+                            pickupName: storeProvider.defaultStore!.name,
+                            pickupPhoneNumber: storeProvider.defaultStore!.phone,
+                          );
+                        }
                         PaymentIntentRequest piReq = PaymentIntentRequest(
-                          amount: (widget.total * 100 + 600).round(),
+                          amount: (_total * 100).round(),
                           paymentMethodId: _currentPaymentMethodId,
                           shippingAddressId: _shippingAddress?.id ?? -1,
                           orderId: orderProvider.currentOrder!.id!,
+                          deliveryData: deliveryData,
                         );
                         print('xfguo: place order, ${piReq}');
                         setState(() {

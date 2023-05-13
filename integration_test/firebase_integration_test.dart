@@ -107,7 +107,8 @@ void main() {
 
           Store? defaultStore = await storeProvider.getDefaultStore();
           if (defaultStore == null) {
-            Store store = Store(id: 1, name: "first_store", address: "1200 Fremont Blvd");
+            Store store = Store(id: 1, name: "first_store", address: "1200 Fremont Blvd",
+            city: "Fremont", state: "CA", zipCode: "94555", phone: "5103490111");
             await storeProvider.saveDefaultStore(store);
             defaultStore = await storeProvider.getDefaultStore();
             expect(defaultStore?.id, 1);

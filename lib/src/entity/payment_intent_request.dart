@@ -1,3 +1,5 @@
+import 'package:fryo/src/entity/uber.dart';
+
 const String DEFAULT_CURRENCY = 'usd';
 
 class PaymentIntentRequest {
@@ -6,6 +8,7 @@ class PaymentIntentRequest {
   final int shippingAddressId;
   final String paymentMethodId;
   final int orderId;
+  final UberDeliveryData? deliveryData;
 
   PaymentIntentRequest({
     required this.amount,
@@ -13,6 +16,7 @@ class PaymentIntentRequest {
     required this.paymentMethodId,
     required this.orderId,
     this.currency = DEFAULT_CURRENCY,
+    this.deliveryData,
   });
 
   factory PaymentIntentRequest.fromJson(Map<String, dynamic> json) {
@@ -22,6 +26,7 @@ class PaymentIntentRequest {
       shippingAddressId: json['shipping_address_id'] as int,
       paymentMethodId: json['payment_method_id'] as String,
       orderId: json['order_id'] as int,
+      deliveryData: UberDeliveryData.fromJson(json['delivery_data']),
     );
   }
 
@@ -32,12 +37,14 @@ class PaymentIntentRequest {
       'shipping_address_id': shippingAddressId,
       'payment_method_id': paymentMethodId,
       'order_id': orderId,
+      'delivery_data': deliveryData?.toJson(),
     };
   }
 
   @override
   String toString() {
     return 'PaymentIntentRequest{amount: $amount, currency: $currency, '
-        'shippingAddressId: $shippingAddressId, paymentMethodId: $paymentMethodId}';
+        'shippingAddressId: $shippingAddressId, paymentMethodId: $paymentMethodId'
+        'deliveryData: $deliveryData}';
   }
 }

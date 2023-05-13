@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:fryo/src/entity/entities.dart';
 import 'package:fryo/src/entity/payment_intent_request.dart';
+import 'package:fryo/src/entity/uber.dart';
 import 'package:fryo/src/shared/config.dart';
 import 'package:fryo/src/api/api_client.dart' as api;
 
@@ -31,3 +32,21 @@ Future<PaymentResult?> placeOrder(PaymentIntentRequest paymentIntentRequest) asy
   return PaymentResult(result: PaymentResultStatus.SUCCEEDED, id: result['id'], status: result['status']);
 }
 
+Future<UberQuoteResult> getUberQuote(UberQuoteRequest uberQuoteRequest) async {
+  final res = await api.post(
+      url: '${Config.instance.apiUrl}/uber/quote',
+      body: jsonEncode(uberQuoteRequest.toJson()));
+
+  if (res == null) {
+    return UberQuoteResult(result: UberQuoteResultStatus.FAILED);;
+  }
+
+  Map<String, dynamic> result = jsonDecode(res);
+  return UberQuoteResult(
+      result: UberQuoteResultStatus.SUCCEEDED,
+      id: result['id'],
+      fee: result['fee'],
+      duration: result['duration'],
+      expires: result['expires'],
+  );
+}
