@@ -244,10 +244,11 @@ class _CheckoutPageState extends State<CheckoutPage> {
             value: DeliveryMethod.UberDelivery,
             groupValue: _deliveryMethod,
             onChanged: (DeliveryMethod? value) async {
-              if (_shippingAddress == null || _shippingAddress!.getAddressString().isEmpty) {
+              if (_shippingAddress == null || _shippingAddress!.getAddressString().isEmpty ||
+                      _nameController.text.isEmpty || _phoneController.text.isEmpty) {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
-                    content: Text('Please select a shipping address.'),
+                    content: Text('Please select a shipping address and enter the pickup name and phone number.'),
                     duration: Duration(seconds: 2),
                   ),
                 );
@@ -259,7 +260,11 @@ class _CheckoutPageState extends State<CheckoutPage> {
               // Call API to calculate shipping cost
               UberQuoteRequest uberQuoteRequest = UberQuoteRequest(
                 dropoffAddress: _shippingAddress!.getAddressString(),
+                dropoffName: _nameController.text,
+                dropoffPhoneNumber: _phoneController.text,
                 pickupAddress: storeProvider.defaultStore!.getAddressString(),
+                pickupName: storeProvider.defaultStore!.name,
+                pickupPhoneNumber: storeProvider.defaultStore!.phone,
               );
               UberQuoteResult uberQuoteResult = await getUberQuote(uberQuoteRequest);
               if (uberQuoteResult.result == UberQuoteResultStatus.SUCCEEDED && uberQuoteResult.id!.isNotEmpty) {
@@ -289,6 +294,30 @@ class _CheckoutPageState extends State<CheckoutPage> {
     );
   }
 
+  Widget _buildDropoffInfo() {
+    bool canEdit = _deliveryMethod == DeliveryMethod.Pickup;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        TextField(
+          controller: _nameController,
+          decoration: InputDecoration(
+            hintText: 'Enter Name',
+          ),
+          enabled: canEdit,  // 根据 _deliveryMethod 设置是否可以编辑
+        ),
+        TextField(
+          controller: _phoneController,
+          decoration: InputDecoration(
+            hintText: 'Enter Phone Number',
+          ),
+          enabled: canEdit,  // 根据 _deliveryMethod 设置是否可以编辑
+        ),
+      ],
+    );
+  }
+
   Widget _buildUberDeliveryInfo() {
     if (_uberQuoteResult == null) {
       return Center(child: CircularProgressIndicator());
@@ -296,22 +325,10 @@ class _CheckoutPageState extends State<CheckoutPage> {
       return Text('Uber delivery not available.');
     } else {
       return Column(
-        crossAxisAlignment: CrossAxisAlignment.start,  // Add this line
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text('Duration: ${_uberQuoteResult!.duration}'),
           Text('Expires: ${_uberQuoteResult!.expires}'),
-          TextField(
-            controller: _nameController,
-            decoration: InputDecoration(
-              hintText: 'Enter Name',
-            ),
-          ),
-          TextField(
-            controller: _phoneController,
-            decoration: InputDecoration(
-              hintText: 'Enter Phone Number',
-            ),
-          ),
         ],
       );
     }
@@ -450,6 +467,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 _buildOrderSummary(context),
+                _buildDropoffInfo(),
                 _buildShippingAddress(),
                 _buildPaymentMethod(),
             ],
@@ -486,6 +504,22 @@ class _CheckoutPageState extends State<CheckoutPage> {
                           );
                           return;
                         }
+                        if (_deliveryMethod == DeliveryMethod.UberDelivery) {
+                          DateTime expiryTime = DateTime.parse(_uberQuoteResult!.expires);
+                          DateTime now = DateTime.now().toUtc();
+                          if (expiryTime.difference(now).inMinutes < 2) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text('Uber delivery order is close to expiry. Please reselect.')),
+                            );
+                            setState(() {
+                              _deliveryMethod = DeliveryMethod.Pickup;
+                              _shippingCost = 0.0;
+                              _uberQuoteResult = null;
+                            });
+                            return;
+                          }
+                        }
+
                         OrderProvider orderProvider = Provider.of<OrderProvider>(context, listen: false);
                         UberDeliveryData? deliveryData;
                         if (_deliveryMethod == DeliveryMethod.UberDelivery) {
