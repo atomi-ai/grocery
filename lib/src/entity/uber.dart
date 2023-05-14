@@ -1,23 +1,39 @@
 class UberQuoteRequest {
   final String dropoffAddress;
+  final String dropoffName;
+  final String dropoffPhoneNumber;
   final String pickupAddress;
+  final String pickupName;
+  final String pickupPhoneNumber;
 
   UberQuoteRequest({
     required this.dropoffAddress,
+    required this.dropoffName,
+    required this.dropoffPhoneNumber,
     required this.pickupAddress,
+    required this.pickupName,
+    required this.pickupPhoneNumber,
   });
 
   factory UberQuoteRequest.fromJson(Map<String, dynamic> json) {
     return UberQuoteRequest(
       dropoffAddress: json['dropoff_address'] as String,
+      dropoffName: json['dropoff_name'] as String,
+      dropoffPhoneNumber: json['dropoff_phone_number'] as String,
       pickupAddress: json['pickup_address'] as String,
+      pickupName: json['pickup_name'] as String,
+      pickupPhoneNumber: json['pickup_phone_number'] as String,
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
       'dropoff_address': dropoffAddress,
+      'dropoff_name': dropoffName,
+      'dropoff_phone_number': dropoffPhoneNumber,
       'pickup_address': pickupAddress,
+      'pickup_name': pickupName,
+      'pickup_phone_number': pickupPhoneNumber,
     };
   }
 }

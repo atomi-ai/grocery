@@ -27,6 +27,8 @@ class OrderDetailsPage extends StatelessWidget {
             SizedBox(height: 10),
             Text('Payment Intent ID: ${order.paymentIntentId}'),
             SizedBox(height: 10),
+            Text('Deliver ID: ${order.deliveryId}'),
+            SizedBox(height: 10),
             Text('Status: ${order.displayStatus}'),
             SizedBox(height: 20),
             Text(
