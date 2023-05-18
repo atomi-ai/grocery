@@ -28,7 +28,7 @@ class _MyCartState extends State<MyCart> {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             // Product image
-            Image.asset(
+            Image.network(
               product.imageUrl,
               width: 50,
               height: 50,

@@ -26,7 +26,7 @@ class _OrdersPageState extends State<OrdersPage> {
   Widget buildOrderItem(BuildContext context, OrderItem item) {
     return Row(
       children: [
-        Image.asset(
+        Image.network(
           '${item.product.imageUrl}',
           height: 60,
           width: 60,

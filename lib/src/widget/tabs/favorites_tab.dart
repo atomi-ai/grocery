@@ -11,7 +11,7 @@ class FavoritesTab extends StatelessWidget {
     Widget item = ListTile(
       leading: ClipRRect(
         borderRadius: BorderRadius.circular(8.0),
-        child: Image.asset(
+        child: Image.network(
           product.imageUrl,
           width: 60,
           height: 60,

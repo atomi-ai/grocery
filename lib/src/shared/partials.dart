@@ -32,7 +32,7 @@ Widget foodItem(
                 child: Hero(
                     transitionOnUserGestures: true,
                     tag: food.name,
-                    child: Image.asset(food.imageUrl, width: imgWidth)))),
+                    child: Image.network(food.imageUrl, width: imgWidth)))),
         Positioned(
           bottom: (isProductPage) ? 10 : 70,
           right: 0,

@@ -68,7 +68,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
         Card(
           child: Row(
             children: [
-              Image.asset(
+              Image.network(
                 product.imageUrl,
                 width: 50.0,
                 height: 50.0,

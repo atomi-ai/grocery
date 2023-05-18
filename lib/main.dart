@@ -23,6 +23,7 @@ import 'package:provider/provider.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
+    name: 'atomi-grocery',
     options: DefaultFirebaseOptions.currentPlatform,
   );
   Config.loadConfig();

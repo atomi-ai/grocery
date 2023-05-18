@@ -1,20 +1,20 @@
 {
   "project_info": {
-    "project_number": "194699638421",
-    "project_id": "quickstart-1589068586497",
-    "storage_bucket": "quickstart-1589068586497.appspot.com"
+    "project_number": "509179936149",
+    "project_id": "zephyr-atomi",
+    "storage_bucket": "zephyr-atomi.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:194699638421:android:5468232c7abc2ceb5dcd9c",
+        "mobilesdk_app_id": "1:509179936149:android:b07a8b3220c42447910a9c",
         "android_client_info": {
           "package_name": "ai.atomi.grocery"
         }
       },
       "oauth_client": [
         {
-          "client_id": "194699638421-4lvopcc9hhd6ek4chsfs7idmgaf63cjv.apps.googleusercontent.com",
+          "client_id": "509179936149-gocgu1jj8mc428keijq65dm1e7ts295e.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "ai.atomi.grocery",
@@ -22,28 +22,21 @@
           }
         },
         {
-          "client_id": "194699638421-u1l66at0p3vfio68cbpq8blurdhbdv5o.apps.googleusercontent.com",
+          "client_id": "509179936149-3947h2vgeahr42vun5kr0u002qihtrn8.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyDQ9_LRdrRCLGsYtLh8rqW4Yb5aZtCEa5Q"
+          "current_key": "AIzaSyDfEYNgO44Wba7mvlqb_XqpsNfYSLsIc0I"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "194699638421-u1l66at0p3vfio68cbpq8blurdhbdv5o.apps.googleusercontent.com",
+              "client_id": "509179936149-3947h2vgeahr42vun5kr0u002qihtrn8.apps.googleusercontent.com",
               "client_type": 3
-            },
-            {
-              "client_id": "194699638421-sof24sph0bakbpp17tes5qo1h3rpbs20.apps.googleusercontent.com",
-              "client_type": 2,
-              "ios_info": {
-                "bundle_id": "ai.atomi.grocery"
-              }
             }
           ]
         }

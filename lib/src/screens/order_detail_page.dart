@@ -40,7 +40,7 @@ class OrderDetailsPage extends StatelessWidget {
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: ListTile(
-                    leading: Image.asset(
+                    leading: Image.network(
                       '${item.product.imageUrl}',
                       height: 60,
                       width: 60,
