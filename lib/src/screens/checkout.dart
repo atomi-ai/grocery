@@ -23,9 +23,11 @@ class CheckoutPage extends StatefulWidget {
 class _CheckoutPageState extends State<CheckoutPage> {
   DeliveryMethod _deliveryMethod = DeliveryMethod.Pickup;
   double _shippingCost = 0.0;
+  double _tax_rate = 0.0;
+  TaxInfo? _taxInfo;
   double _total = 0.0;
   UberQuoteResult? _uberQuoteResult;
-  late Address? _shippingAddress;
+  Address? _shippingAddress;
   late String _currentPaymentMethodId;
   Future<PaymentResult?>? _paymentResultFuture;
   TextEditingController _nameController = TextEditingController();
@@ -34,12 +36,12 @@ class _CheckoutPageState extends State<CheckoutPage> {
   @override
   void initState() {
     super.initState();
-
     final addressProvider = Provider.of<AddressProvider>(
         context, listen: false);
     addressProvider.init();
     final pmProvider = Provider.of<AtomiPaymentMethodProvider>(context, listen: false);
     pmProvider.fetchPaymentMethods();
+    _getTaxInfo();
   }
 
   @override
@@ -51,18 +53,56 @@ class _CheckoutPageState extends State<CheckoutPage> {
         Provider.of<AtomiPaymentMethodProvider>(context).currentPaymentMethodId;
   }
 
+  double _calculateTotal() {
+    double total = 0.0;
+    OrderProvider orderProvider = Provider.of<OrderProvider>(context, listen: false);
+    List<OrderItem> orderItems = orderProvider.currentOrder!.orderItems;
+    for (var e in orderItems) {
+      int quantity = e.quantity;
+      Product product = e.product;
+      double price = product.price * quantity;
+      total += price;
+    }
+    return total;
+  }
+
+  Future<void> _getTaxInfo() async {
+    String postalCode = '';
+    String state = '';
+    if (_deliveryMethod == DeliveryMethod.Pickup) {
+      final storeProvider = Provider.of<StoreProvider>(context, listen: false);
+      postalCode = storeProvider.defaultStore!.zipCode;
+      state = storeProvider.defaultStore!.state;
+    } else if (_shippingAddress != null && _shippingAddress!.postalCode != '') {
+        postalCode = _shippingAddress!.postalCode;
+        state = _shippingAddress!.state;
+    }
+    if (postalCode != '') {
+      TaxAddress taxAddress = TaxAddress(
+        postalCode: postalCode,
+        state: state,
+      );
+      _taxInfo = await getTaxRate(taxAddress);
+    } else {
+      _taxInfo = TaxInfo(estimatedCombinedRate: 0.0);
+    }
+    double subtotal = _calculateTotal();
+    _tax_rate = _taxInfo!.estimatedCombinedRate;
+    double tax = subtotal * _tax_rate;
+    setState(() {
+      _total = subtotal + _shippingCost + tax;
+    });
+  }
+
   Widget _buildOrderSummary(BuildContext context) {
     OrderProvider orderProvider = Provider.of<OrderProvider>(context, listen: false);
     List<OrderItem> orderItems = orderProvider.currentOrder!.orderItems;
-    double total = 0.0;
-    double tax = 0.0;
     List<Widget> itemsList = [];
 
     for (var e in orderItems) {
       int quantity = e.quantity;
       Product product = e.product;
       double price = product.price * quantity;
-      total += price;
 
       itemsList.add(
         Card(
@@ -122,18 +162,16 @@ class _CheckoutPageState extends State<CheckoutPage> {
       ),
     );
 
-    var subtotal = total;
-    total += _shippingCost + tax;
-
-    setState(() {
-      _total = total;
-    });
-
     columnItems.add(_buildDeliveryMethodSelector());
 
-    columnItems.add(Divider());
-    columnItems.add(
-      Padding(
+    if (_taxInfo == null) {
+      columnItems.add(CircularProgressIndicator());
+    } else {
+      // 显示订单总结信息
+      double subtotal = _calculateTotal();
+      double tax = subtotal * _tax_rate;
+      columnItems.add(Divider());
+      columnItems.add(Padding(
         padding: EdgeInsets.symmetric(vertical: 0.0),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -148,11 +186,8 @@ class _CheckoutPageState extends State<CheckoutPage> {
             ),
           ],
         ),
-      ),
-    );
-
-    columnItems.add(
-      Padding(
+      ));
+      columnItems.add(Padding(
         padding: EdgeInsets.symmetric(vertical: 0.0),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -167,10 +202,8 @@ class _CheckoutPageState extends State<CheckoutPage> {
             ),
           ],
         ),
-      ),
-    );
-    columnItems.add(
-      Padding(
+      ));
+      columnItems.add(Padding(
         padding: EdgeInsets.symmetric(vertical: 0.0),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -185,13 +218,9 @@ class _CheckoutPageState extends State<CheckoutPage> {
             ),
           ],
         ),
-      ),
-    );
-    columnItems.add(
-      Divider(thickness: 2.0),
-    );
-    columnItems.add(
-      Padding(
+      ));
+      columnItems.add(Divider(thickness: 2.0));
+      columnItems.add(Padding(
         padding: EdgeInsets.symmetric(vertical: 0.0),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -206,13 +235,13 @@ class _CheckoutPageState extends State<CheckoutPage> {
             ),
           ],
         ),
-      ),
-    );
-
+      ));
+    }
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: columnItems,
     );
+
   }
 
   Widget _buildDeliveryMethodSelector() {
@@ -235,6 +264,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                 _shippingCost = 0.0;
                 _uberQuoteResult = null;
               });
+              _getTaxInfo();
             },
           ),
           title: Text('In-Store Pickup'),
@@ -267,11 +297,12 @@ class _CheckoutPageState extends State<CheckoutPage> {
                 pickupPhoneNumber: storeProvider.defaultStore!.phone,
               );
               UberQuoteResult uberQuoteResult = await getUberQuote(uberQuoteRequest);
-              if (uberQuoteResult.result == UberQuoteResultStatus.SUCCEEDED && uberQuoteResult.id!.isNotEmpty) {
+              if (uberQuoteResult.result == UberQuoteResultStatus.SUCCEEDED && uberQuoteResult.id.isNotEmpty) {
                 setState(() {
                   _shippingCost = uberQuoteResult.fee.toDouble() / 100.0;
                   _uberQuoteResult = uberQuoteResult;
                 });
+                _getTaxInfo();
               } else {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
@@ -321,7 +352,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
   Widget _buildUberDeliveryInfo() {
     if (_uberQuoteResult == null) {
       return Center(child: CircularProgressIndicator());
-    } else if (_uberQuoteResult!.result != UberQuoteResultStatus.SUCCEEDED || _uberQuoteResult!.id!.isEmpty) {
+    } else if (_uberQuoteResult!.result != UberQuoteResultStatus.SUCCEEDED || _uberQuoteResult!.id.isEmpty) {
       return Text('Uber delivery not available.');
     } else {
       return Column(
@@ -392,6 +423,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
               _shippingCost = 0.0;
               _uberQuoteResult = null;
             });
+            _getTaxInfo();
           },
           child: ListTile(
             leading: Icon(Icons.location_on),
@@ -524,7 +556,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                         UberDeliveryData? deliveryData;
                         if (_deliveryMethod == DeliveryMethod.UberDelivery) {
                           deliveryData = UberDeliveryData(
-                            quoteId: _uberQuoteResult!.id!,
+                            quoteId: _uberQuoteResult!.id,
                             dropoffAddress: _shippingAddress!.getAddressString(),
                             dropoffName: _nameController.text,
                             dropoffPhoneNumber: _phoneController.text,
