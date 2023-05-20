@@ -38,7 +38,7 @@ Future<UberQuoteResult> getUberQuote(UberQuoteRequest uberQuoteRequest) async {
       body: jsonEncode(uberQuoteRequest.toJson()));
 
   if (res == null) {
-    return UberQuoteResult(result: UberQuoteResultStatus.FAILED);;
+    return UberQuoteResult(result: UberQuoteResultStatus.FAILED);
   }
 
   Map<String, dynamic> result = jsonDecode(res);
@@ -49,4 +49,12 @@ Future<UberQuoteResult> getUberQuote(UberQuoteRequest uberQuoteRequest) async {
       duration: result['duration'],
       expires: result['expires'],
   );
+}
+
+Future<TaxInfo> getTaxRate(TaxAddress taxAddress) async {
+  TaxInfo? res = await api.post(
+      url: '${Config.instance.apiUrl}/tax-rate',
+      body: jsonEncode(taxAddress.toJson()),
+      fromJson: (json) => TaxInfo.fromJson(json));
+  return res ?? TaxInfo(estimatedCombinedRate: 0.0);
 }

@@ -243,3 +243,57 @@ class Address {
 
   static final UNSET_ADDRESS = Address(line1: 'UNSET', city: 'UNSET');
 }
+
+class TaxAddress {
+  final String state;
+  final String postalCode;
+
+  TaxAddress({
+    this.state = '',
+    required this.postalCode,
+  });
+
+  factory TaxAddress.fromJson(Map<String, dynamic> json) {
+    return TaxAddress(
+      state: json['state'] ?? 'CA',
+      postalCode: json['postal_code'] ?? '00000',
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['state'] = this.state;
+    data['postal_code'] = this.postalCode;
+    return data;
+  }
+
+  @override
+  String toString() {
+    return 'TaxAddress{state: $state, postalCode: $postalCode}';
+  }
+}
+
+class TaxInfo {
+  final double estimatedCombinedRate;
+
+  TaxInfo({
+    required this.estimatedCombinedRate,
+  });
+
+  factory TaxInfo.fromJson(Map<String, dynamic> json) {
+    return TaxInfo(
+      estimatedCombinedRate: json['estimated_combined_rate'] ?? 0.0,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['estimated_combined_rate'] = this.estimatedCombinedRate;
+    return data;
+  }
+
+  @override
+  String toString() {
+    return 'TaxInfo{estimatedCombinedRate: $estimatedCombinedRate}';
+  }
+}
