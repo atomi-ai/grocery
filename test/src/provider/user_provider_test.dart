@@ -8,6 +8,7 @@ import 'package:fryo/src/api/backend_api.dart';
 import 'package:fryo/src/entity/entities.dart';
 import 'package:fryo/src/entity/payment_intent_request.dart';
 import 'package:fryo/src/entity/stripe.dart';
+import 'package:fryo/src/entity/uber.dart';
 import 'package:fryo/src/provider/address_provider.dart';
 import 'package:fryo/src/provider/cart_provider.dart';
 import 'package:fryo/src/provider/order_provider.dart';
@@ -210,18 +211,21 @@ void main() {
     };
 
     // Calculate the total price
-    double totalPrice = cartProvider.calculateTotal(
+    double subtotal = cartProvider.calculateTotal(
         cartProvider.cartItems, allProductMap.keys, allProductMap);
     // Verify the total price
-    expect(totalPrice, products[0].price + 2 * products[1].price);
+    expect(subtotal, products[0].price + 2 * products[1].price);
+
+    Store store = Store(id: 1, name: "my store", address: "1 Washington St",
+        city: "San Jose", state: "CA", zipCode: "95192", phone: "4089241111");
 
     AddressProvider addressProvider = AddressProvider();
     Address shippingAddress = Address(
-      line1: '123 Shipping St.',
-      city: 'Shipping City',
-      state: 'Shipping State',
+      line1: '101 Washington St',
+      city: 'San Jose',
+      state: 'CA',
       country: 'USA',
-      postalCode: '12345',
+      postalCode: '95202',
     );
     await addressProvider.addAddress(shippingAddress);
     Address? updatedAddress = addressProvider.addresses.firstWhere((p) => p.line1 == shippingAddress.line1 && p.city == shippingAddress.city);
@@ -250,9 +254,21 @@ void main() {
     Order addedOrder = await orderProvider.addOrder(order);
     orderProvider.currentOrder = addedOrder;
 
+    // DeliveryMethod == Pickup
+    double shippingCost = 0.0;
+    TaxAddress taxAddress = TaxAddress(
+      postalCode: store.zipCode,
+      state: store.state,
+    );
+    TaxInfo taxInfo = await getTaxRate(taxAddress);
+    double tax_rate = taxInfo.estimatedCombinedRate;
+    expect(tax_rate, greaterThan(0.0));
+
+    double tax = subtotal * tax_rate;
+    double total = subtotal + shippingCost + tax;
     // Prepare PaymentIntentRequest based on the current order
     PaymentIntentRequest piReq = PaymentIntentRequest(
-      amount: (totalPrice * 100 + 600).round(),
+      amount: (total * 100).round(),
       paymentMethodId: paymentMethod!.id,
       shippingAddressId: defaultShippingAddress!.id,
       orderId: orderProvider.currentOrder!.id!,
@@ -273,10 +289,10 @@ void main() {
     cartProvider.addToCart(products[2], 4);
 
     // Calculate the total price
-    totalPrice = cartProvider.calculateTotal(
+    subtotal = cartProvider.calculateTotal(
         cartProvider.cartItems, allProductMap.keys, allProductMap);
     // Verify the total price
-    expect(totalPrice, products[3].price * 3 + products[2].price * 4);
+    expect(subtotal, products[3].price * 3 + products[2].price * 4);
     final pmId2 = await createPaymentMethod() ?? "";
     await atomiPaymentMethodProvider.addPaymentMethod(pmId2);
     await atomiPaymentMethodProvider.setCurrentPaymentMethod(pmId2);
@@ -291,12 +307,53 @@ void main() {
     Order addedOrder2 = await orderProvider.addOrder(order);
     orderProvider.currentOrder = addedOrder2;
 
+    // DeliveryMethod == UberDelivery
+    UberQuoteRequest uberQuoteRequest = UberQuoteRequest(
+      dropoffAddress: defaultShippingAddress.getAddressString(),
+      dropoffName: 'customer name',
+      dropoffPhoneNumber: '4089241222',
+      pickupAddress: store.getAddressString(),
+      pickupName: store.name,
+      pickupPhoneNumber: store.phone,
+    );
+    UberQuoteResult uberQuoteResult = await getUberQuote(uberQuoteRequest);
+    expect(uberQuoteResult.result, UberQuoteResultStatus.SUCCEEDED);
+    expect(uberQuoteResult.fee, greaterThan(0));
+    UberDeliveryData deliveryData = UberDeliveryData(
+      quoteId: uberQuoteResult.id,
+      dropoffAddress: uberQuoteRequest.dropoffAddress,
+      dropoffName: uberQuoteRequest.dropoffName,
+      dropoffPhoneNumber: uberQuoteRequest.dropoffPhoneNumber,
+      manifestItems: orderProvider.currentOrder!.orderItems.map((orderItem) {
+        return ManifestItem(
+          name: orderItem.product.name,
+          quantity: orderItem.quantity,
+        );
+      }).toList(),
+      pickupAddress: uberQuoteRequest.pickupAddress,
+      pickupName: uberQuoteRequest.pickupName,
+      pickupPhoneNumber: uberQuoteRequest.pickupPhoneNumber,
+    );
+
+    shippingCost = uberQuoteResult.fee.toDouble() / 100.0;
+    taxAddress = TaxAddress(
+      postalCode: defaultShippingAddress.postalCode,
+      state: defaultShippingAddress.state,
+    );
+    taxInfo = await getTaxRate(taxAddress);
+    tax_rate = taxInfo.estimatedCombinedRate;
+    expect(tax_rate, greaterThan(0.0));
+
+    tax = subtotal * tax_rate;
+    total = subtotal + shippingCost + tax;
+
     // Prepare PaymentIntentRequest based on the current order
     piReq = PaymentIntentRequest(
-      amount: (totalPrice * 100 + 600).round(),
+      amount: (total * 100).round(),
       paymentMethodId: paymentMethod2!.id,
-      shippingAddressId: defaultShippingAddress!.id,
+      shippingAddressId: defaultShippingAddress.id,
       orderId: orderProvider.currentOrder!.id!,
+      deliveryData: deliveryData,
     );
 
     // Call the placeOrder function with the prepared PaymentIntentRequest
@@ -315,14 +372,14 @@ void main() {
     bool isAddedOrderPresent = orderProvider.orders
         .any((o) => o.id == addedOrder.id && o.createdAt == addedOrder.createdAt);
     bool isAddedOrder2Present = orderProvider.orders
-        .any((o) => o.id == addedOrder2.id && o.createdAt == addedOrder2.createdAt);
+        .any((o) => o.id == addedOrder2.id && o.createdAt == addedOrder2.createdAt && o.deliveryId != null);
 
     expect(isAddedOrderPresent, isTrue);
     expect(isAddedOrder2Present, isTrue);
 
-    addressProvider.deleteAddress(defaultShippingAddress!.id);
-    atomiPaymentMethodProvider.deletePaymentMethod(paymentMethod!.id);
-    atomiPaymentMethodProvider.deletePaymentMethod(paymentMethod2!.id);
+    addressProvider.deleteAddress(defaultShippingAddress.id);
+    atomiPaymentMethodProvider.deletePaymentMethod(paymentMethod.id);
+    atomiPaymentMethodProvider.deletePaymentMethod(paymentMethod2.id);
   });
 }
 
